@@ -1,213 +1,186 @@
-# Instacart End-to-End Data Analytics Pipeline
+# Instacart End-to-End Data & Next-Basket Recommendation Pipeline
 
-An end-to-end data analytics project built with **Databricks, PySpark, Delta Lake, PostgreSQL, and Neon**, using the Instacart Market Basket dataset.
+An end-to-end data engineering, analytics, machine learning, and recommendation project built with **Databricks, PySpark, Delta Lake, MLflow, PostgreSQL, and Neon**, using the Instacart Market Basket dataset.
 
-The project covers the full analytics lifecycle: data ingestion, data quality validation, cleaning and transformation, KPI engineering, behavioral analysis, visualization, cloud database integration, and a planned machine learning layer for customer-product reorder prediction.
+The project covers the complete lifecycle:
+
+- Data ingestion
+- Data quality validation
+- Cleaning and transformation
+- KPI engineering
+- Exploratory analytics
+- Feature engineering
+- Candidate generation
+- Machine learning
+- MLflow experiment tracking
+- Next-basket recommendation
+- Structured Streaming
+- Databricks Auto Loader
+- Lakeflow Jobs
+- Neon PostgreSQL serving
+- Interactive Databricks AI/BI dashboards
+- Git and GitHub version control
+
+The final objective is:
+
+> **Predict the 5 products most likely to appear in each customer's next basket.**
 
 ---
 
-## Project Overview
+# Project Overview
 
-Online grocery platforms generate large amounts of transactional data that can be used to better understand:
+Online grocery platforms generate large volumes of transactional data that can be used to understand:
 
 - Customer purchasing behavior
 - Product popularity
 - Customer loyalty
 - Reorder patterns
 - Category performance
-- Ordering habits throughout the week and day
+- Ordering habits
+- Product discovery
+- Future basket composition
 
-This project analyzes Instacart grocery-order data using a scalable data-processing workflow in **Databricks**.
+This project uses the **Instacart Market Basket Analysis** dataset to build a scalable pipeline in Databricks.
 
-The current pipeline transforms raw CSV files into validated Delta tables, builds reusable analytical datasets, calculates business KPIs, creates visualizations and dashboards, and exports analytical tables to a cloud-hosted **PostgreSQL database on Neon**.
-
-The next phase of the project will extend this analytical foundation with feature engineering and machine learning to predict future product reorders.
-
----
-
-## Business Objectives
-
-The project aims to answer several business questions.
-
-### Product Analysis
-
-- Which products are purchased most frequently?
-- Which products generate the highest customer loyalty?
-- Are the most popular products also the most frequently reordered?
-- Which products combine high demand and high reorder rates?
-
-### Category Analysis
-
-- Which departments generate the highest purchase volume?
-- Which aisles contain the most frequently purchased products?
-- Which product categories dominate customer baskets?
-
-### Customer Analysis
-
-- How frequently do customers place orders?
-- How are customers distributed across frequency segments?
-- Which customers demonstrate higher levels of engagement and loyalty?
-
-### Temporal Analysis
-
-- Which days generate the highest ordering activity?
-- At what hours are customers most active?
-- How does purchasing behavior change between morning, afternoon, evening, and night?
-
-### Future Predictive Objective
-
-The next phase of the project focuses on:
-
-> **Predicting whether a customer is likely to reorder a specific product.**
-
-This will extend the project from descriptive analytics toward predictive analytics and recommendation-oriented use cases.
+The project evolves from descriptive analytics into a complete next-basket recommendation workflow.
 
 ---
 
-## Dataset
+# Dataset
 
 The project uses the **Instacart Market Basket Analysis** dataset.
 
-The dataset represents grocery shopping behavior across more than 200,000 customers and contains information about:
+Approximate scale:
 
-- Customers
-- Orders
-- Products
-- Departments
-- Aisles
-- Product positions inside baskets
-- Reordered products
-- Order sequences
-- Order day
-- Order hour
-- Time elapsed between consecutive orders
+| Metric | Value |
+|---|---:|
+| Customers | 206,209 |
+| Orders | ~3.4M |
+| Products | 49,688 |
+| Aisles | 134 |
+| Departments | 21 |
+| Product-order interactions | 33.8M+ |
 
-### Main Source Tables
+Main source tables:
 
-| Table | Description |
-|---|---|
-| `orders` | Order-level information for each customer |
-| `order_products_prior` | Products contained in customers' historical orders |
-| `order_products_train` | Products contained in training orders |
-| `products` | Product catalogue |
-| `aisles` | Product aisle reference data |
-| `departments` | Product department reference data |
+- `orders`
+- `order_products_prior`
+- `order_products_train`
+- `products`
+- `aisles`
+- `departments`
 
-### Dataset Scale
-
-The project processes approximately:
-
-- **206,209 customers**
-- **3.4 million orders**
-- **49,688 products**
-- **134 aisles**
-- **21 departments**
-- More than **33 million customer-product interactions**
-
-The transaction volume makes the dataset well suited to distributed processing with **Apache Spark / PySpark**.
+The dataset size makes it suitable for distributed processing using Apache Spark.
 
 ---
 
-## Technology Stack
+# Technology Stack
 
 | Technology | Role |
 |---|---|
-| **Databricks** | Main analytics and data engineering environment |
-| **Apache Spark / PySpark** | Distributed data processing and transformation |
-| **Delta Lake** | Persistent storage format for processed datasets |
-| **Spark SQL** | Data querying and validation |
-| **Python** | Data processing and analytical logic |
-| **Databricks Visualizations** | Exploratory analysis and visualizations |
-| **Databricks Dashboard** | Business KPI visualization layer |
-| **PostgreSQL** | Relational analytical serving layer |
-| **Neon** | Serverless PostgreSQL cloud database |
-| **JDBC** | Databricks-to-PostgreSQL connectivity |
-| **Git** | Version control |
-| **GitHub** | Source-code hosting and project documentation |
+| Databricks | Main data, analytics, ML and orchestration platform |
+| Apache Spark / PySpark | Distributed processing |
+| Spark SQL | Data querying and validation |
+| Delta Lake | Persistent analytical storage |
+| Unity Catalog | Data organization and governance |
+| Python | Data and ML logic |
+| Spark MLlib | Machine-learning pipelines |
+| MLflow | Experiment tracking and model comparison |
+| Databricks Auto Loader | Incremental file ingestion |
+| Structured Streaming | Streaming processing |
+| Lakeflow Jobs | Workflow orchestration |
+| Databricks AI/BI Dashboard | Interactive visualization and recommendation demo |
+| PostgreSQL | External serving database |
+| Neon | Serverless PostgreSQL platform |
+| Databricks Secrets | Secure credential management |
+| Git | Version control |
+| GitHub | Repository hosting and pull-request workflow |
 
 ---
 
-## Project Architecture
+# Final Architecture
 
 ```mermaid
 flowchart TD
 
     A[Instacart CSV Dataset]
 
-    A --> B[01 - Data Ingestion]
-
+    A --> B[01 Data Ingestion]
     B --> C[Imported Delta Tables]
 
-    C --> D[02 - Data Quality Validation]
-
-    D --> E[03 - Cleaning & Transformation]
+    C --> D[02 Data Quality Validation]
+    D --> E[03 Cleaning & Transformation]
 
     E --> F[Cleaned Delta Tables]
 
-    F --> G[04 - KPI Engineering]
+    F --> G[04 KPI Engineering]
+    G --> H[05 Analytics & Visualization]
 
-    G --> H[Analytical KPI Tables]
+    F --> I[07 Feature Engineering]
+    I --> J[08 Baseline Reorder Modeling]
+    J --> K[09 Advanced Candidate Generation]
+    K --> L[10 Next-Basket Features]
+    L --> M[11 Modeling + MLflow]
+    M --> N[12 Recommendation Strategy]
 
-    H --> I[05 - Data Analysis & Visualization]
+    N --> O[Final Top-5 Recommendations]
+    O --> P[Databricks Serving Table]
+    P --> Q[14 Lakeflow Serving Job]
+    Q --> R[Neon PostgreSQL]
 
-    I --> J[Databricks Dashboard]
+    S[Incoming Order Files]
+    S --> T[File Arrival Trigger]
+    T --> U[13 Auto Loader + Structured Streaming]
+    U --> V[Streaming Delta Table]
 
-    H --> K[06 - Neon PostgreSQL Integration]
-
-    K --> L[Neon PostgreSQL Serving Layer]
-
-    H --> M[Future: Feature Engineering]
-
-    M --> N[Future: Machine Learning]
-
-    N --> O[Future: Reorder Predictions]
-
-    O --> L
+    O --> W[Databricks AI/BI Dashboard]
 ```
 
----
+The project currently has two operational workflows.
 
-## Data Pipeline
-
-The project follows a modular notebook architecture.
-
-Each notebook performs one clearly defined stage of the pipeline.
+### Recommendation workflow
 
 ```text
-Raw CSV Files
-      │
-      ▼
-01 - Data Ingestion
-      │
-      ▼
-Imported Delta Tables
-      │
-      ▼
-02 - Data Quality Validation
-      │
-      ▼
-03 - Cleaning & Transformation
-      │
-      ▼
-Cleaned Delta Tables
-      │
-      ▼
-04 - KPI Engineering
-      │
-      ▼
-Analysis Tables
-      │
-      ├──────────────► 05 - Analysis & Dashboard
-      │
-      └──────────────► 06 - Neon PostgreSQL
-                             │
-                             ▼
-                       Serving Database
+Historical Instacart Data
+        ↓
+Feature Engineering
+        ↓
+Candidate Generation
+        ↓
+Next-Basket Features
+        ↓
+Machine Learning
+        ↓
+Top-5 Recommendation Strategy
+        ↓
+Databricks Serving Table
+        ↓
+Lakeflow Job
+        ↓
+Neon PostgreSQL
 ```
+
+### Streaming workflow
+
+```text
+New Order File
+        ↓
+File Arrival Trigger
+        ↓
+Auto Loader
+        ↓
+Structured Streaming
+        ↓
+Delta Order Events Table
+```
+
+The streaming workflow demonstrates incremental ingestion.
+
+It is intentionally separate from model retraining: a newly streamed order does **not automatically retrain the recommendation model**.
 
 ---
 
-## Repository Structure
+# Repository Structure
 
 ```text
 instacart-databricks-analytics/
@@ -218,38 +191,41 @@ instacart-databricks-analytics/
 ├── 04_analysis_and_kpi.ipynb
 ├── 05_data_analysis_and_visualization.ipynb
 ├── 06_databricks_neon_postgres_setup.ipynb
+├── 07_feature_engineering.ipynb
+├── 08_reorder_prediction.ipynb
+├── 09_advanced_candidate_generation.ipynb
+├── 10_next_basket_feature_engineering.ipynb
+├── 11_next_basket_modeling_mlflow.ipynb
+├── 12_recommendation_strategy.ipynb
+├── 13_streaming_ingestion.ipynb
+├── 14_export_recommendations_to_neon.ipynb
+│
+├── images/
+│   ├── dashboard_overview_top.png
+│   ├── dashboard_overview_bottom.png
+│   └── customer_explorer.png
 │
 ├── .gitignore
 └── README.md
 ```
 
-Planned extensions:
-
-```text
-07_feature_engineering.ipynb
-08_reorder_prediction.ipynb
-09_model_evaluation.ipynb
-10_batch_predictions.ipynb
-```
-
 ---
 
-## 01 — Data Ingestion
+# 01 — Data Ingestion
 
 **Notebook:** `01_importing_data.ipynb`
 
-The first notebook creates the initial data layer of the project.
+The first notebook creates the initial data layer.
 
-### Main Tasks
+Main tasks:
 
-- Load the Instacart CSV files into Spark DataFrames
-- Inspect and validate imported schemas
+- Load Instacart CSV files into Spark DataFrames
+- Validate schemas
 - Add ingestion metadata
-- Persist imported datasets as Delta tables
-- Compare row counts before and after persistence
-- Validate that the ingestion process does not alter record volumes
+- Persist datasets as Delta tables
+- Compare source and persisted row counts
 
-### Output Schema
+Output schema:
 
 ```text
 workspace.imported_data
@@ -266,131 +242,46 @@ order_products_prior
 order_products_train
 ```
 
-This layer preserves the imported datasets before analytical transformations are applied.
-
 ---
 
-## 02 — Data Quality Validation
+# 02 — Data Quality Validation
 
 **Notebook:** `02_check_data_quality.ipynb`
 
-The second notebook performs systematic quality controls before data transformation.
+Quality controls include:
 
-### Validation Areas
+- Missing-value checks
+- Duplicate detection
+- Referential-integrity validation
+- Business-rule validation
+- Order-sequence validation
+- Basket-position validation
+- Expected-domain checks
 
-#### Missing Values
-
-Checks null values across important columns.
-
-#### Duplicate Records
-
-Tests whether identifiers and transaction records contain unexpected duplicates.
-
-#### Referential Integrity
-
-Validates relationships such as:
-
-```text
-products.aisle_id
-        ↓
-aisles.aisle_id
-```
-
-and:
-
-```text
-products.department_id
-        ↓
-departments.department_id
-```
-
-#### Business Rules
-
-Validates expected domains and logical constraints including:
-
-- Order days
-- Order hours
-- Reordered flags
-- Cart positions
-- Customer order sequences
-
-#### Order Sequence Validation
-
-Checks whether `order_number` evolves logically for each customer.
-
-#### Basket Sequence Validation
-
-Tests the consistency of `add_to_cart_order` within individual orders.
+A missing product-category relationship was detected and handled without deleting the affected transaction.
 
 ---
 
-## Data Quality Issue Identified
-
-One product contained missing category references.
-
-The cleaning process mapped the missing relationship to existing fallback categories:
-
-```text
-aisle_id = 100
-department_id = 21
-```
-
-This preserves referential integrity without removing the affected product or associated transactions.
-
----
-
-## 03 — Cleaning and Transformation
+# 03 — Cleaning and Transformation
 
 **Notebook:** `03_cleaning_and_transformation.ipynb`
 
-This notebook transforms the validated imported data into standardized analytical datasets.
-
-### Main Transformations
+Main transformations include:
 
 - Data type standardization
 - Text normalization
-- Removal of unnecessary whitespace
-- Lowercase standardization for categories
 - Product-name cleanup
 - Missing-category handling
-- Addition of processing metadata
-- Combination of prior and training transaction datasets
+- Metadata creation
+- Combination of prior and training transactions
 
-Common PySpark functions used include:
-
-```python
-F.trim()
-F.lower()
-F.col()
-F.cast()
-F.when()
-F.concat()
-F.current_timestamp()
-```
-
-### Product Standardization
-
-Hundreds of product names are standardized to improve consistency during downstream analysis.
-
-The missing product-category relationship identified during the quality phase is also corrected here.
-
-### Combined Transaction Table
-
-Historical and training order-product datasets are combined into one analytical transaction table.
-
-The resulting dataset contains more than:
-
-> **33 million product-order records**
-
-available for downstream analysis.
-
-### Output Schema
+Output schema:
 
 ```text
 workspace.cleaned_data
 ```
 
-Tables include:
+Main tables:
 
 ```text
 departments
@@ -400,320 +291,69 @@ orders
 order_products
 ```
 
+The combined order-product dataset contains approximately:
+
+**33,819,106 rows**
+
 ---
 
-## 04 — KPI Engineering
+# 04 — KPI Engineering
 
 **Notebook:** `04_analysis_and_kpi.ipynb`
 
-This notebook creates reusable analytical tables from the cleaned datasets.
+Reusable analytical tables are created instead of repeatedly calculating the same metrics inside visualization queries.
 
-Instead of repeatedly computing the same metrics inside visualization queries, business KPIs are calculated once and persisted.
-
-### Output Schema
+Output schema:
 
 ```text
 workspace.analysis_data
 ```
 
-Eight analytical KPI tables are generated.
-
-### Order KPIs
+Main analytical tables include:
 
 ```text
 order_kpis
-```
-
-Approximately:
-
-```text
-3,346,083 orders
-```
-
-Measures include:
-
-- Customer identifier
-- Order number
-- Basket/product counts
-- Reordered product counts
-- New product counts
-- Average basket characteristics
-- Temporal order information
-
-### Customer KPIs
-
-```text
 customer_kpis
-```
-
-Approximately:
-
-```text
-206,209 customers
-```
-
-Features include:
-
-- Total orders
-- Maximum order number
-- Orders containing product detail
-- Total products purchased
-- Average basket size
-- Total reordered products
-- Total new products
-- Overall reorder rate
-- Average days between orders
-- Final order set
-- Customer frequency segment
-
-### Product KPIs
-
-```text
 product_kpis
-```
-
-Approximately:
-
-```text
-49,688 products
-```
-
-Measures include:
-
-- Total purchase count
-- Unique customer count
-- Reordered purchase count
-- First purchase count
-- Product reorder rate
-- Average add-to-cart position
-- Aisle
-- Department
-
-### Aisle KPIs
-
-```text
 aisle_kpis
-```
-
-Provides aggregated performance indicators across Instacart aisles.
-
-### Department KPIs
-
-```text
 department_kpis
-```
-
-Provides aggregated purchase indicators across the 21 departments.
-
-### Temporal KPIs
-
-Three additional tables support temporal behavioral analysis:
-
-```text
 daily_kpis
 hourly_kpis
 time_period_kpis
 ```
 
-They analyze customer activity according to:
-
-- Day of week
-- Hour of day
-- Morning
-- Afternoon
-- Evening
-- Night
+They support customer, product, category and temporal analysis.
 
 ---
 
-## 05 — Data Analysis and Visualization
+# 05 — Data Analysis and Visualization
 
 **Notebook:** `05_data_analysis_and_visualization.ipynb`
 
-This notebook consumes the previously calculated analytical tables.
+The analytical layer is used to study:
 
-Core KPIs are **not recalculated** here.
+- Most purchased products
+- Product reorder behavior
+- Product popularity vs loyalty
+- Department performance
+- Aisle performance
+- Customer order frequency
+- Customer segmentation
+- Orders by day
+- Orders by hour
+- Orders by time period
 
-Its purpose is to transform the analytical layer into interpretable business insights and visualizations.
-
-### Product Analysis
-
-#### Most Purchased Products
-
-The analysis identifies the products generating the greatest purchase volume.
-
-Frequently purchased products are strongly represented by fresh-food items such as bananas and organic produce.
-
-#### Product Popularity vs Customer Loyalty
-
-A scatter plot compares:
-
-```text
-X-axis → Total Purchases
-Y-axis → Reorder Rate (%)
-```
-
-This helps distinguish between products that are:
-
-- Highly popular and highly loyal
-- Popular but less frequently reordered
-- Lower-volume but highly loyal
-- Lower-volume and less frequently reordered
-
-The visualization focuses on high-volume products to improve readability.
+One major descriptive finding is that **produce dominates purchasing activity**, particularly fresh fruits and vegetables.
 
 ---
 
-### Category Analysis
-
-#### Department Performance
-
-Purchase volume is compared across departments.
-
-The **produce** department generates the highest purchase volume.
-
-Other major departments include:
-
-- Dairy & eggs
-- Snacks
-- Beverages
-- Frozen products
-- Pantry
-
-#### Aisle Performance
-
-The analysis ranks aisles according to total purchase volume.
-
-Fresh-food aisles, especially fresh fruits and fresh vegetables, represent a substantial share of purchasing activity.
-
----
-
-### Customer Analysis
-
-#### Customer Order Frequency
-
-Customers are analyzed according to their total number of orders.
-
-The distribution shows that:
-
-- Many customers place relatively few orders
-- Progressively fewer customers reach very high order frequencies
-- A smaller subset represents highly active recurring customers
-
-#### Customer Frequency Segmentation
-
-Customers are grouped into behavioral frequency segments:
-
-```text
-regular
-loyal
-occasional
-```
-
-This provides a simplified view of customer engagement and purchasing frequency.
-
----
-
-### Temporal Analysis
-
-#### Orders by Day of Week
-
-Order volume is compared across the seven encoded days of the week.
-
-This highlights variation in customer activity depending on the day.
-
-#### Orders by Hour of Day
-
-Order volume is analyzed across the 24 hours of the day.
-
-The analysis shows:
-
-- Very low activity overnight
-- Rapid growth during the morning
-- Strong activity between late morning and afternoon
-- Decreasing activity during the evening
-
-#### Orders by Time Period
-
-Hours are grouped into broader periods:
-
-```text
-morning
-afternoon
-evening
-night
-```
-
-The afternoon represents the highest order volume, followed by the morning.
-
-Night-time activity is considerably lower.
-
----
-
-## Dashboard
-
-A Databricks dashboard consolidates the main business visualizations.
-
-The dashboard follows the analytical storyline:
-
-```text
-Products
-   ↓
-Categories
-   ↓
-Customers
-   ↓
-Time
-```
-
-Main dashboard visualizations include:
-
-1. Top purchased products
-2. Product popularity vs customer loyalty
-3. Purchases by department
-4. Top aisles by purchase volume
-5. Customer order-frequency distribution
-6. Customer frequency segments
-7. Orders by day of week
-8. Orders by hour
-9. Orders by time period
-
-The dashboard provides a concise view of the most important behavioral and commercial patterns identified in the dataset.
-
----
-
-## 06 — Neon PostgreSQL Integration
+# 06 — Neon PostgreSQL Integration
 
 **Notebook:** `06_databricks_neon_postgres_setup.ipynb`
 
-The project implements a connection between Databricks and a serverless PostgreSQL database hosted on **Neon**.
+Databricks is connected to a serverless PostgreSQL database hosted on Neon.
 
-This introduces an external relational serving layer.
-
-### Architecture
-
-```text
-Databricks Delta Tables
-        │
-        │ JDBC
-        ▼
-Neon PostgreSQL
-        │
-        ▼
-SQL Queries / Applications / Future Prediction Serving
-```
-
-### Connection
-
-Databricks communicates with Neon through JDBC.
-
-The connection is validated using PostgreSQL queries before analytical tables are exported.
-
-### Exported Tables
-
-Analytical KPI tables are exported into the PostgreSQL `public` schema.
-
-Examples:
+Seven analytical KPI tables are exported to Neon:
 
 ```text
 public.aisle_kpis
@@ -725,15 +365,9 @@ public.product_kpis
 public.time_period_kpis
 ```
 
-The very large order-level KPI table is handled separately because of storage limitations in the current Neon environment.
+Database credentials are not hard-coded.
 
----
-
-## Credential Security
-
-Database credentials are **not hard-coded inside the public notebook**.
-
-The Neon password is retrieved using Databricks Secrets:
+The password is retrieved through Databricks Secrets:
 
 ```python
 neon_password = dbutils.secrets.get(
@@ -742,224 +376,543 @@ neon_password = dbutils.secrets.get(
 )
 ```
 
-This prevents database passwords from being exposed in the GitHub repository.
-
 ---
 
-## Key Analytical Insights
+# 07 — Feature Engineering
 
-### Fresh Produce Dominates Demand
+**Notebook:** `07_feature_engineering.ipynb`
 
-Fresh fruits and vegetables represent a substantial share of purchases.
+A historical customer-product feature dataset is created for reorder prediction.
 
-The produce department significantly exceeds most other departments in total purchase volume.
-
-### Customer Loyalty Varies by Product
-
-Certain products display strong reorder behavior, indicating stable customer preferences.
-
-### Popularity and Loyalty Are Related but Not Identical
-
-High purchase volume does not automatically correspond to the highest reorder rate.
-
-The popularity-versus-loyalty analysis identifies products that combine both high demand and strong repeat-purchase behavior.
-
-### Customer Activity Is Concentrated Among Recurring Buyers
-
-Many customers place relatively few orders, while a smaller group demonstrates considerably higher ordering frequency.
-
-### Ordering Activity Follows Strong Temporal Patterns
-
-Order volume is low overnight, increases rapidly during the morning, remains high during the day, and decreases later in the evening.
-
-These patterns could support:
-
-- Inventory planning
-- Campaign timing
-- Customer segmentation
-- Personalized marketing
-- Recommendation systems
-
----
-
-## Next Phase — Feature Engineering
-
-The next major phase of the project is to construct a machine-learning-ready dataset.
-
-The objective will be to model:
-
-> **The probability that a customer will reorder a specific product.**
-
-Feature engineering will combine information at several levels.
-
-### Customer Features
-
-Potential features include:
+Output:
 
 ```text
-total_orders
-average_basket_size
-overall_reorder_rate
-average_days_between_orders
-total_products_purchased
-customer_frequency_segment
+workspace.ml_data.reorder_features
 ```
 
-### Product Features
+Dataset scale:
 
-Potential features include:
+| Metric | Value |
+|---|---:|
+| Rows | 8,474,661 |
+| Customers | 131,209 |
+| Products | 49,468 |
+| Positive reorder labels | 828,824 |
+| Positive rate | 9.78% |
+| Columns | 74 |
+
+Feature groups include:
+
+- Customer behavior
+- Product behavior
+- Customer-product interaction
+- Recency
+- Reorder cycles
+- Momentum
+- Streaks
+- Category affinity
+- Temporal compatibility
+- Basket context
+
+The initial candidate set only contains products previously purchased by each customer.
+
+Baseline candidate coverage:
+
+**59.86%**
+
+---
+
+# 08 — Baseline Reorder Prediction
+
+**Notebook:** `08_reorder_prediction.ipynb`
+
+The baseline model compares three Spark ML algorithms.
+
+| Model | ROC-AUC | PR-AUC |
+|---|---:|---:|
+| Logistic Regression | 0.8270 | 0.4093 |
+| Random Forest | 0.8163 | 0.4034 |
+| Gradient Boosted Trees | 0.8295 | 0.4171 |
+
+Baseline Top-5 performance:
+
+| Metric | Result |
+|---|---:|
+| Precision@5 | 0.3860 |
+| Recall@5 | 0.4052 |
+| Hit Rate@5 | 0.8044 |
+| NDCG@5 | 0.5259 |
+| MAP@5 | 0.4248 |
+
+The main limitation was that the candidate universe only contained previously purchased products.
+
+---
+
+# 09 — Advanced Candidate Generation
+
+**Notebook:** `09_advanced_candidate_generation.ipynb`
+
+The candidate universe is expanded using:
+
+- Historical reorder candidates
+- Aisle-based candidates
+- Co-purchase candidates
+
+Several candidate budgets were evaluated.
+
+| Strategy | Candidate Coverage |
+|---|---:|
+| Historical products only | 59.86% |
+| Top 20 aisle + Top 10 co-purchase | 62.52% |
+| Top 30 aisle + Top 15 co-purchase | 63.12% |
+| All candidates | 63.69% |
+
+The selected strategy uses:
+
+**Top 30 aisle candidates + Top 15 co-purchase candidates**
+
+Coverage improves from:
+
+**59.86% → 63.12%**
+
+Improvement:
+
+**+3.26 percentage points**
+
+Final candidate table:
 
 ```text
-total_purchase_count
-unique_customer_count
-product_reorder_rate
-average_add_to_cart_position
+workspace.ml_data.next_basket_candidates
+```
+
+Scale:
+
+- 13,519,765 candidate rows
+- 131,209 customers
+- 873,920 positive labels
+
+---
+
+# 10 — Next-Basket Feature Engineering
+
+**Notebook:** `10_next_basket_feature_engineering.ipynb`
+
+The expanded candidate universe is enriched with features for final next-basket scoring.
+
+Output:
+
+```text
+workspace.ml_data.next_basket_features
+```
+
+Scale:
+
+| Metric | Value |
+|---|---:|
+| Rows | 13,519,765 |
+| Customers | 131,209 |
+| Positive labels | 873,920 |
+| Columns | 84 |
+| Duplicate candidates | 0 |
+| Missing feature values | 0 |
+
+Feature groups include:
+
+- Customer behavior
+- Product behavior
+- Customer-product interaction
+- Recency
+- Reorder cycle
+- Shopping-time compatibility
+- Category affinity
+- Candidate-source scores
+- New-product indicators
+- Recent basket context
+
+---
+
+# 11 — Next-Basket Modeling with MLflow
+
+**Notebook:** `11_next_basket_modeling_mlflow.ipynb`
+
+A permanent customer-level train/validation split is used.
+
+This prevents customer leakage between training and validation.
+
+Validation set:
+
+- **26,360 customers**
+- **2,715,125 candidate rows**
+- **174,199 positive labels**
+
+After categorical encoding, the final feature vector contains:
+
+**233 features**
+
+MLflow is used to track model experiments.
+
+### Final Model Comparison
+
+| Model | ROC-AUC | PR-AUC | Training Time |
+|---|---:|---:|---:|
+| Logistic Regression | 0.8650 | 0.3870 | ~2.45 min |
+| Gradient Boosted Trees | 0.8676 | 0.3966 | ~33.3 min |
+
+GBT achieved slightly better predictive performance.
+
+However, **Logistic Regression was selected as the practical scoring model** because its performance is very close while requiring much less training time.
+
+GBT remains an accuracy benchmark.
+
+---
+
+# 12 — Recommendation Strategy
+
+**Notebook:** `12_recommendation_strategy.ipynb`
+
+Model probabilities are converted into final Top-5 recommendations.
+
+Baseline Top-5 performance:
+
+| Metric | Result |
+|---|---:|
+| Precision@5 | 0.3793 |
+| Recall@5 within candidate set | 0.3558 |
+| Hit Rate@5 | 0.8025 |
+| End-to-End Recall@5 | 0.2492 |
+
+The recommendation strategy balances:
+
+```text
+Repeat-purchase accuracy
+vs.
+New-product discovery
+```
+
+Several strategies were evaluated.
+
+The selected strategy conditionally includes a new-product recommendation when its probability is at least:
+
+**0.04**
+
+This increases product discovery while preserving most overall recommendation quality.
+
+Final serving table:
+
+```text
+workspace.ml_data.next_basket_serving_recommendations
+```
+
+Final output:
+
+| Metric | Value |
+|---|---:|
+| Customers | 26,360 |
+| Recommendations/customer | 5 |
+| Total recommendations | 131,800 |
+| New-product recommendations | ~1,988 |
+
+Final serving fields include:
+
+```text
+user_id
+target_order_id
+recommendation_rank
+product_id
+product_name
 aisle
 department
-```
-
-### Customer × Product Features
-
-These features will describe the relationship between an individual customer and a specific product.
-
-Potential features include:
-
-```text
-times_customer_bought_product
-customer_product_reorder_rate
-orders_since_last_product_purchase
-average_cart_position_for_customer_product
-share_of_customer_orders_containing_product
-```
-
-### Order Context Features
-
-Potential features include:
-
-```text
-order_number
-order_dow
-order_hour_of_day
-days_since_prior_order
+purchase_probability
+is_new_to_customer
+candidate_source
+recommendation_strategy
 ```
 
 ---
 
-## Machine Learning Roadmap
+# 13 — Streaming Ingestion
 
-The planned modeling pipeline is:
+**Notebook:** `13_streaming_ingestion.ipynb`
+
+The project includes event-driven incremental ingestion using:
+
+- Databricks Auto Loader
+- Structured Streaming
+- Delta Lake
+- Unity Catalog
+- Checkpointing
+- Lakeflow Jobs
+- File-arrival triggers
+
+Incoming path:
 
 ```text
-Historical Transactions
-        │
-        ▼
-Feature Engineering
-        │
-        ▼
-Training Dataset
-        │
-        ▼
-Train / Validation Split
-        │
-        ▼
-Baseline Classification Model
-        │
-        ▼
-Model Evaluation
-        │
-        ▼
-Feature Improvements
-        │
-        ▼
-Final Reorder Model
-        │
-        ▼
-Batch Predictions
-        │
-        ▼
+/Volumes/workspace/streaming_data/streaming_files/incoming_orders
+```
+
+Streaming output table:
+
+```text
+workspace.streaming_data.order_events
+```
+
+When a new file arrives, the Lakeflow Job triggers the streaming notebook.
+
+Checkpointing prevents previously processed files from being ingested repeatedly.
+
+### Important Architecture Note
+
+Streaming ingestion is currently independent from recommendation retraining.
+
+```text
+New order file
+       ↓
+Auto Loader
+       ↓
+Structured Streaming
+       ↓
+order_events Delta table
+```
+
+A newly ingested order does **not automatically retrain the model**.
+
+---
+
+# 14 — Recommendation Serving to Neon
+
+**Notebook:** `14_export_recommendations_to_neon.ipynb`
+
+Final recommendations are exported from Databricks into Neon PostgreSQL.
+
+Architecture:
+
+```text
+Databricks Serving Table
+        ↓
+Lakeflow Serving Job
+        ↓
+PostgreSQL Connector
+        ↓
 Neon PostgreSQL
 ```
 
-Potential baseline models include:
-
-- Logistic Regression
-- Decision Tree
-- Random Forest
-- Gradient-Boosted Trees
-
-Model selection will be based on validation performance rather than model complexity alone.
-
----
-
-## Future Prediction Serving
-
-Future model outputs could be exported to Neon using tables such as:
+Target PostgreSQL table:
 
 ```text
-customer_product_predictions
-customer_recommendations
-model_results
+next_basket_recommendations
 ```
 
-A future recommendation query could resemble:
+Verified exported row count:
 
-```sql
-SELECT
-    customer_id,
-    product_name,
-    reorder_probability
-FROM customer_recommendations
-WHERE customer_id = 12345
-ORDER BY reorder_probability DESC
-LIMIT 10;
-```
+**131,800**
 
-This would transform Neon from an analytical storage destination into a serving database for predictive outputs.
+The export uses Databricks Secrets for secure credential retrieval.
 
 ---
 
-## Project Status
+# Lakeflow Jobs
+
+Two separate Lakeflow workflows are implemented.
+
+## Streaming Ingestion Job
+
+```text
+New Order File
+      ↓
+File Arrival Trigger
+      ↓
+Notebook 13
+      ↓
+Auto Loader
+      ↓
+Streaming Delta Table
+```
+
+## Recommendation Serving Job
+
+```text
+Final Recommendation Table
+      ↓
+Notebook 14
+      ↓
+Neon PostgreSQL
+```
+
+The workflows remain separate because streaming ingestion does not currently trigger model retraining.
+
+---
+
+# Final Databricks AI/BI Dashboard
+
+The final recommendation dashboard contains two pages.
+
+---
+
+## Recommendation Overview
+
+![Recommendation Overview](images/dashboard_overview_top.png)
+
+Main KPIs:
+
+| KPI | Value |
+|---|---:|
+| Customers Served | 26.36K |
+| Total Recommendations | 131.8K |
+| Average Purchase Probability | 38.5% |
+| New-Product Recommendations | 1.99K |
+
+The page also includes:
+
+- Recommendations by Department
+- Average Purchase Probability by Recommendation Rank
+- Recommendation Mix by Candidate Source
+
+![Recommendation Mix](images/dashboard_overview_bottom.png)
+
+---
+
+## Customer Explorer
+
+The Customer Explorer provides an interactive demonstration of the recommendation system.
+
+![Customer Explorer](images/customer_explorer.png)
+
+A customer ID can be selected and the dashboard displays that customer's Top-5 recommendations.
+
+Displayed fields:
+
+- Rank
+- Recommended Product
+- Purchase Probability
+- Department
+- Recommendation Source
+
+This provides a user-facing demonstration of the final recommendation output.
+
+---
+
+# Final Results
+
+| Metric | Result |
+|---|---:|
+| Transaction records processed | 33.8M+ |
+| Historical feature rows | 8.47M |
+| Final candidate rows | 13.52M |
+| Baseline candidate coverage | 59.86% |
+| Final candidate coverage | 63.12% |
+| Candidate coverage improvement | +3.26 pp |
+| Validation customers | 26,360 |
+| Logistic Regression ROC-AUC | 0.8650 |
+| GBT ROC-AUC | 0.8676 |
+| Final Precision@5 | 0.3793 |
+| Final Hit Rate@5 | 80.25% |
+| Final recommendations | 131,800 |
+| New-product recommendations | ~1,988 |
+| Neon serving rows | 131,800 |
+
+---
+
+# Data Layers
+
+The project separates data responsibilities into several schemas.
+
+```text
+workspace.imported_data
+        ↓
+workspace.cleaned_data
+        ↓
+workspace.analysis_data
+        ↓
+workspace.ml_data
+
+workspace.streaming_data
+```
+
+This separation keeps ingestion, transformation, analytics, machine learning and streaming concerns organized.
+
+---
+
+# Engineering Principles
+
+### Separation of Concerns
+
+Each notebook performs a clearly defined responsibility.
+
+### Data Quality Before Transformation
+
+Quality validation is performed before downstream transformations.
+
+### Persistent Delta Tables
+
+Intermediate, analytical and ML datasets are stored as Delta tables.
+
+### Customer-Level Validation Split
+
+Customers do not overlap between model training and validation.
+
+### Candidate Generation Before Scoring
+
+The system avoids scoring every product for every customer.
+
+### MLflow Experiment Tracking
+
+Model performance and training time are compared systematically.
+
+### Practical Model Selection
+
+The final scoring model is selected using both predictive performance and computational cost.
+
+### Secure Credential Management
+
+Neon credentials are stored using Databricks Secrets.
+
+### Incremental Streaming
+
+Auto Loader and checkpointing provide incremental ingestion.
+
+### Honest Workflow Separation
+
+Streaming ingestion and recommendation retraining are not presented as the same process.
+
+---
+
+# Project Status
 
 | Phase | Status |
 |---|---|
 | Data ingestion | ✅ Completed |
 | Data quality validation | ✅ Completed |
 | Data cleaning | ✅ Completed |
-| Data transformation | ✅ Completed |
 | Delta Lake persistence | ✅ Completed |
 | KPI engineering | ✅ Completed |
-| Product analysis | ✅ Completed |
-| Category analysis | ✅ Completed |
-| Customer analysis | ✅ Completed |
-| Temporal analysis | ✅ Completed |
-| Databricks dashboard | ✅ Completed |
+| Exploratory analysis | ✅ Completed |
 | Neon PostgreSQL integration | ✅ Completed |
-| Secure credential management | ✅ Completed |
-| Feature engineering | ⬜ Planned |
-| Reorder prediction | ⬜ Planned |
-| Model evaluation | ⬜ Planned |
-| Prediction serving | ⬜ Planned |
-| Recommendation layer | ⬜ Planned |
+| Feature engineering | ✅ Completed |
+| Baseline reorder modeling | ✅ Completed |
+| Candidate generation | ✅ Completed |
+| Next-basket feature engineering | ✅ Completed |
+| MLflow model comparison | ✅ Completed |
+| Recommendation strategy | ✅ Completed |
+| Top-5 recommendation serving | ✅ Completed |
+| Structured Streaming | ✅ Completed |
+| Auto Loader ingestion | ✅ Completed |
+| Lakeflow Jobs | ✅ Completed |
+| Neon recommendation serving | ✅ Completed |
+| AI/BI recommendation dashboard | ✅ Completed |
+| Customer Explorer | ✅ Completed |
 
 ---
 
-## How to Run the Project
+# How to Run the Project
 
-### 1. Clone the Repository
+## 1. Clone the Repository
 
 ```bash
 git clone https://github.com/nour2344/instacart-databricks-analytics.git
-```
-
-Move into the project directory:
-
-```bash
 cd instacart-databricks-analytics
 ```
 
-### 2. Import the Notebooks into Databricks
-
-Upload the `.ipynb` files into a Databricks workspace.
+## 2. Import the Notebooks into Databricks
 
 Run the notebooks in numerical order:
 
@@ -970,29 +923,25 @@ Run the notebooks in numerical order:
 04_analysis_and_kpi
 05_data_analysis_and_visualization
 06_databricks_neon_postgres_setup
+07_feature_engineering
+08_reorder_prediction
+09_advanced_candidate_generation
+10_next_basket_feature_engineering
+11_next_basket_modeling_mlflow
+12_recommendation_strategy
+13_streaming_ingestion
+14_export_recommendations_to_neon
 ```
 
-### 3. Configure Dataset Paths
+## 3. Configure the Instacart Dataset
 
-The Instacart CSV files must be accessible from Databricks.
+Make the Instacart CSV files available to Databricks and update the source paths if necessary.
 
-If the file locations differ from the original development environment, update the paths in:
+## 4. Configure Neon
 
-```text
-01_importing_data.ipynb
-```
+Create a Neon PostgreSQL database and store the password securely using Databricks Secrets.
 
-### 4. Configure Neon
-
-To reproduce the PostgreSQL integration:
-
-1. Create a Neon PostgreSQL project
-2. Retrieve the PostgreSQL connection parameters
-3. Create a Databricks Secret Scope
-4. Store the Neon password securely
-5. Update the non-sensitive connection parameters if required
-
-The database password should be retrieved with:
+Example:
 
 ```python
 neon_password = dbutils.secrets.get(
@@ -1003,39 +952,7 @@ neon_password = dbutils.secrets.get(
 
 ---
 
-## Engineering Principles
-
-### Separation of Concerns
-
-Each notebook performs one clearly defined stage of the pipeline.
-
-### Reusable Analytical Layer
-
-KPIs are calculated once and persisted rather than repeatedly recalculated during visualization.
-
-### Data Quality Before Transformation
-
-Validation is performed before cleaning and analytical aggregation.
-
-### Persistent Delta Tables
-
-Intermediate and analytical datasets are stored as Delta tables to support reproducibility.
-
-### Secure Credential Management
-
-Database secrets are separated from public source code.
-
-### Scalable Processing
-
-Large transactional datasets are processed using Spark instead of local in-memory workflows.
-
-### Business-Oriented Analytics
-
-Technical transformations are connected to interpretable customer and product behavior.
-
----
-
-## Skills Demonstrated
+# Key Skills Demonstrated
 
 This project demonstrates practical experience with:
 
@@ -1046,69 +963,54 @@ This project demonstrates practical experience with:
 - PySpark
 - Spark SQL
 - Delta Lake
-- Data Quality Validation
-- ETL / ELT Pipelines
-- Data Cleaning
+- Unity Catalog
+- ETL / ELT
+- Data Quality
 - Data Transformation
 - KPI Engineering
-- Exploratory Data Analysis
-- Customer Analytics
-- Product Analytics
-- Behavioral Analytics
-- Data Visualization
-- Dashboard Development
+- Feature Engineering
+- Machine Learning
+- Spark MLlib
+- Recommendation Systems
+- Candidate Generation
+- Ranking Strategies
+- MLflow
+- Structured Streaming
+- Auto Loader
+- File-Arrival Triggers
+- Lakeflow Jobs
 - PostgreSQL
 - Neon
-- JDBC Integration
 - Secret Management
+- Databricks AI/BI Dashboards
 - Git
 - GitHub
-
-Planned extensions will additionally cover:
-
-- Feature Engineering
-- Classification Modeling
-- Model Evaluation
-- Prediction Serving
-- Recommendation Systems
+- Branching
+- Pull Requests
 
 ---
 
-## Development Roadmap
+# Future Improvements
 
-```text
-Phase 1 — Data Foundation
-✅ Ingestion
-✅ Data quality validation
-✅ Cleaning
-✅ Transformation
+Possible future extensions include:
 
-Phase 2 — Analytics
-✅ KPI layer
-✅ Behavioral analysis
-✅ Dashboard
-
-Phase 3 — Data Serving
-✅ Neon PostgreSQL integration
-
-Phase 4 — Predictive Analytics
-⬜ Feature engineering
-⬜ Reorder prediction
-⬜ Model evaluation
-
-Phase 5 — Serving & Recommendations
-⬜ Batch predictions
-⬜ PostgreSQL prediction tables
-⬜ Customer recommendations
-```
+- Scheduled model retraining
+- Model drift monitoring
+- Automatic recommendation refresh after sufficient new customer activity
+- Recommendation API
+- Online feature serving
+- A/B testing
+- Advanced ranking models
+- Additional product-discovery strategies
+- CI/CD validation with GitHub Actions
 
 ---
 
-## Author
+# Author
 
 **Nour**
 
-Data engineering and analytics project developed as part of a practical Databricks internship and portfolio project.
+Data Engineering / Machine Learning / Analytics portfolio project developed using Databricks.
 
 ---
 
