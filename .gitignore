@@ -3,3 +3,7 @@ archive/
 __pycache__/
 *.log
 .DS_Store
+
+.databricks/
+.venv/
+.pytest_cache/

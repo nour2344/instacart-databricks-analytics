@@ -1,0 +1,28 @@
+bundle:
+  name: instacart-databricks-analytics
+
+include:
+  - resources/*.yml
+
+sync:
+  exclude:
+    - "01_*.ipynb"
+    - "02_*.ipynb"
+    - "03_*.ipynb"
+    - "04_*.ipynb"
+    - "05_*.ipynb"
+    - "06_*.ipynb"
+    - "07_*.ipynb"
+    - "08_*.ipynb"
+    - "09_*.ipynb"
+    - "10_*.ipynb"
+    - "11_*.ipynb"
+    - "12_*.ipynb"
+    - "images/"
+    - "README.md"
+
+targets:
+  workspace:
+    default: true
+    workspace:
+      host: https://dbc-26c634b3-e8f0.cloud.databricks.com
