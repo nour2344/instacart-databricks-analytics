@@ -1,0 +1,26 @@
+resources:
+  jobs:
+    instacart_recommendation_serving:
+      name: instacart-recommendation-serving
+
+      email_notifications:
+        no_alert_for_skipped_runs: false
+
+      max_concurrent_runs: 1
+
+      tasks:
+        - task_key: export_recommendations_to_neon
+          notebook_task:
+            notebook_path: /Workspace/Users/ndhibi13@gmail.com/export_recommendations_to_neon.py
+            source: WORKSPACE
+          environment_key: Default
+
+      queue:
+        enabled: true
+
+      environments:
+        - environment_key: Default
+          spec:
+            environment_version: "5"
+
+      performance_target: PERFORMANCE_OPTIMIZED
