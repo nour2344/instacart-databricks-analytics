@@ -11,8 +11,7 @@ resources:
       tasks:
         - task_key: export_recommendations_to_neon
           notebook_task:
-            notebook_path: /Workspace/Users/ndhibi13@gmail.com/export_recommendations_to_neon.py
-            source: WORKSPACE
+            notebook_path: ../14_export_recommendations_to_neon.ipynb
           environment_key: Default
 
       queue:
