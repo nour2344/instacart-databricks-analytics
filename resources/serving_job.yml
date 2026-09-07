@@ -1,0 +1,40 @@
+resources:
+  jobs:
+    instacart_recommendation_serving:
+      name: instacart-recommendation-serving
+
+      # Notify only if the job ultimately fails
+      email_notifications:
+        on_failure:
+          - ndhibi13@gmail.com
+        no_alert_for_skipped_runs: true
+
+      max_concurrent_runs: 1
+
+      tasks:
+        - task_key: export_recommendations_to_neon
+
+          notebook_task:
+            notebook_path: ../14_export_recommendations_to_neon.ipynb
+
+          environment_key: Default
+
+          # Reliability settings
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: true
+          timeout_seconds: 1800
+
+          # Avoid alerting on intermediate retry failures
+          notification_settings:
+            alert_on_last_attempt: true
+
+      queue:
+        enabled: true
+
+      environments:
+        - environment_key: Default
+          spec:
+            environment_version: "5"
+
+      performance_target: PERFORMANCE_OPTIMIZED

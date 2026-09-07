@@ -1,0 +1,24 @@
+resources:
+  jobs:
+    instacart_recommendation_pipeline:
+      name: instacart-recommendation-pipeline
+
+      email_notifications:
+        no_alert_for_skipped_runs: false
+
+      trigger:
+        pause_status: UNPAUSED
+        file_arrival:
+          url: /Volumes/workspace/streaming_data/streaming_files/incoming_orders/
+
+      tasks:
+        - task_key: stream_new_orders
+          notebook_task:
+            notebook_path: ../13_streaming_ingestion.ipynb
+            base_parameters:
+              run_demo_data: "false"
+
+      queue:
+        enabled: true
+
+      performance_target: PERFORMANCE_OPTIMIZED
