@@ -10,9 +10,17 @@ resources:
 
       tasks:
         - task_key: export_recommendations_to_neon
+
           notebook_task:
             notebook_path: ../14_export_recommendations_to_neon.ipynb
+
           environment_key: Default
+
+          # Reliability settings
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: true
+          timeout_seconds: 1800
 
       queue:
         enabled: true
