@@ -1,0 +1,5488 @@
+/* ========================================================================
+   INSTACART INTELLIGENCE — "LIVING COMMERCE" INTERFACE
+   Smart Shopping Assistant + Next-Basket Intelligence
+   ======================================================================== */
+
+
+/* ========================================================================
+   01. DESIGN SYSTEM
+   ======================================================================== */
+
+:root {
+  --forest-1000: #04150d;
+  --forest-950: #071d12;
+  --forest-900: #09291a;
+  --forest-850: #0b3620;
+  --forest-800: #0d4528;
+  --forest-700: #0d6735;
+
+  --green-700: #09863f;
+  --green-600: #0aa94f;
+  --green-500: #18c765;
+  --green-400: #47dc88;
+  --green-300: #7deba8;
+  --green-200: #b6f5ce;
+  --green-100: #dcfbea;
+  --green-50: #f1fcf5;
+
+  --lime-400: #a4f84c;
+  --mint-300: #6ff1ce;
+  --aqua-300: #70e7e8;
+
+  --amber-500: #efab28;
+  --amber-300: #ffd978;
+
+  --bronze-500: #b66c38;
+  --bronze-300: #f0bb8e;
+
+  --silver-500: #7f9199;
+  --silver-300: #d8e2e5;
+
+  --violet-400: #a47bf4;
+  --blue-400: #5ca2ff;
+
+  --ink-950: #08150e;
+  --ink-900: #101d16;
+  --ink-800: #1c2b22;
+  --ink-700: #34453a;
+  --ink-600: #56665b;
+  --ink-500: #76837a;
+  --ink-400: #929d96;
+  --ink-300: #b8c1bb;
+  --ink-200: #d7ded9;
+  --ink-100: #e9eeeb;
+  --ink-50: #f5f7f5;
+
+  --paper: #ffffff;
+  --canvas: #f4f8f4;
+
+  --error: #c53e48;
+  --error-soft: #fff1f2;
+
+  --glass:
+    rgba(255, 255, 255, 0.72);
+
+  --glass-heavy:
+    rgba(255, 255, 255, 0.89);
+
+  --border:
+    rgba(8, 74, 37, 0.10);
+
+  --border-strong:
+    rgba(10, 169, 79, 0.22);
+
+  --shadow-tiny:
+    0 2px 5px rgba(6, 31, 17, 0.04);
+
+  --shadow-soft:
+    0 10px 34px rgba(6, 31, 17, 0.07);
+
+  --shadow-medium:
+    0 20px 60px rgba(5, 32, 17, 0.10);
+
+  --shadow-large:
+    0 35px 100px rgba(4, 29, 15, 0.14);
+
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 26px;
+  --radius-xl: 34px;
+}
+
+
+/* ========================================================================
+   02. GLOBAL FOUNDATION
+   ======================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+
+  min-width: 320px;
+  min-height: 100vh;
+
+  color: var(--ink-900);
+
+  background:
+    radial-gradient(
+      circle at 12% 0%,
+      rgba(24, 199, 101, 0.10),
+      transparent 25rem
+    ),
+    radial-gradient(
+      circle at 90% 14%,
+      rgba(111, 241, 206, 0.09),
+      transparent 30rem
+    ),
+    linear-gradient(
+      180deg,
+      #fbfdfb 0%,
+      #f4f8f5 48%,
+      #f1f6f2 100%
+    );
+
+  font-family:
+    Inter,
+    "SF Pro Display",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+select {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--green-200);
+  color: var(--forest-900);
+}
+
+
+/* ========================================================================
+   03. APP — DIGITAL INTELLIGENCE FIELD
+   ======================================================================== */
+
+.app {
+  position: relative;
+
+  min-height: 100vh;
+
+  overflow-x: clip;
+
+  isolation: isolate;
+}
+
+
+/* Fine intelligence grid */
+
+.app::before {
+  content: "";
+
+  position: fixed;
+  inset: 0;
+
+  z-index: -5;
+
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(
+      rgba(14, 95, 48, 0.022) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(14, 95, 48, 0.022) 1px,
+      transparent 1px
+    );
+
+  background-size:
+    44px 44px;
+
+  mask-image:
+    linear-gradient(
+      to bottom,
+      transparent,
+      black 17%,
+      black 86%,
+      transparent
+    );
+}
+
+
+/* Ambient intelligence aura */
+
+.app::after {
+  content: "";
+
+  position: fixed;
+
+  z-index: -4;
+
+  width: 860px;
+  height: 860px;
+
+  right: -430px;
+  top: 35vh;
+
+  pointer-events: none;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(24, 199, 101, 0.08),
+      rgba(111, 241, 206, 0.035) 38%,
+      transparent 68%
+    );
+
+  filter: blur(5px);
+
+  animation:
+    atmosphereFloat
+    12s
+    ease-in-out
+    infinite alternate;
+}
+
+@keyframes atmosphereFloat {
+  from {
+    transform:
+      translate3d(0, -20px, 0)
+      scale(0.95);
+  }
+
+  to {
+    transform:
+      translate3d(-45px, 35px, 0)
+      scale(1.08);
+  }
+}
+
+
+/* ========================================================================
+   04. HERO — NOT A NORMAL WEBSITE HEADER
+   ======================================================================== */
+
+.header {
+  position: relative;
+
+  overflow: hidden;
+
+  border-bottom:
+    1px solid
+    rgba(11, 100, 50, 0.07);
+
+  background:
+    linear-gradient(
+      122deg,
+      rgba(255, 255, 255, 0.98) 0%,
+      rgba(249, 255, 251, 0.96) 52%,
+      rgba(239, 252, 244, 0.93) 100%
+    );
+}
+
+
+/* Giant orbital intelligence field */
+
+.header::before {
+  content: "";
+
+  position: absolute;
+
+  width: 730px;
+  height: 730px;
+
+  right: -180px;
+  top: -520px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(24, 199, 101, 0.11);
+
+  background:
+    radial-gradient(
+      circle at 42% 57%,
+      rgba(125, 235, 168, 0.23),
+      rgba(111, 241, 206, 0.08) 27%,
+      transparent 61%
+    );
+
+  box-shadow:
+    inset 0 0 90px
+      rgba(24, 199, 101, 0.05);
+
+  animation:
+    orbitBreath
+    9s
+    ease-in-out
+    infinite alternate;
+}
+
+@keyframes orbitBreath {
+  from {
+    transform:
+      scale(0.96)
+      rotate(-4deg);
+  }
+
+  to {
+    transform:
+      scale(1.04)
+      rotate(4deg);
+  }
+}
+
+
+/* Secondary orb */
+
+.header::after {
+  content: "";
+
+  position: absolute;
+
+  width: 280px;
+  height: 280px;
+
+  left: 3%;
+  bottom: -215px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 217, 120, 0.16),
+      rgba(255, 217, 120, 0.04) 45%,
+      transparent 70%
+    );
+}
+
+.header-content {
+  position: relative;
+
+  z-index: 2;
+
+  width:
+    min(
+      1180px,
+      calc(100% - 52px)
+    );
+
+  margin: 0 auto;
+
+  padding:
+    72px 0 66px;
+}
+
+
+/* Micro AI identity */
+
+.eyebrow {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin:
+    0 0 17px;
+
+  color: var(--green-700);
+
+  font-size: 0.74rem;
+  font-weight: 850;
+
+  letter-spacing: 0.17em;
+
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  content: "";
+
+  width: 8px;
+  height: 8px;
+
+  flex: 0 0 auto;
+
+  border-radius: 50%;
+
+  background:
+    var(--green-500);
+
+  box-shadow:
+    0 0 0 5px
+      rgba(24, 199, 101, 0.10),
+    0 0 20px
+      rgba(24, 199, 101, 0.32);
+
+  animation:
+    intelligencePulse
+    2.4s
+    ease-out
+    infinite;
+}
+
+@keyframes intelligencePulse {
+  0% {
+    box-shadow:
+      0 0 0 0
+        rgba(24, 199, 101, 0.24);
+  }
+
+  75% {
+    box-shadow:
+      0 0 0 9px
+        rgba(24, 199, 101, 0);
+  }
+
+  100% {
+    box-shadow:
+      0 0 0 0
+        rgba(24, 199, 101, 0);
+  }
+}
+
+
+.header h1 {
+  position: relative;
+
+  width: fit-content;
+  max-width: 1000px;
+
+  margin: 0;
+
+  color: var(--ink-950);
+
+  font-size:
+    clamp(
+      3rem,
+      6vw,
+      5.4rem
+    );
+
+  font-weight: 860;
+
+  line-height: 0.93;
+
+  letter-spacing:
+    -0.065em;
+}
+
+
+/* Living intelligence point */
+
+.header h1::after {
+  content: "";
+
+  display: inline-block;
+
+  width: 0.17em;
+  height: 0.17em;
+
+  margin-left: 0.04em;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--green-400),
+      var(--green-700)
+    );
+
+  box-shadow:
+    0 0 18px
+      rgba(24, 199, 101, 0.35);
+}
+
+
+/* Accent line under title */
+
+.header h1::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: -15px;
+
+  width: 88px;
+  height: 3px;
+
+  border-radius: 99px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--green-600),
+      var(--mint-300),
+      transparent
+    );
+}
+
+.subtitle {
+  max-width: 760px;
+
+  margin:
+    31px 0 0;
+
+  color: var(--ink-600);
+
+  font-size: 1.08rem;
+
+  line-height: 1.7;
+
+  letter-spacing: -0.012em;
+}
+
+
+/* ========================================================================
+   05. MAIN INTELLIGENCE CANVAS
+   ======================================================================== */
+
+.container {
+  position: relative;
+
+  width:
+    min(
+      1140px,
+      calc(100% - 52px)
+    );
+
+  margin: 0 auto;
+
+  padding:
+    44px 0 110px;
+}
+
+
+/* ========================================================================
+   06. CUSTOMER COMMAND PANEL
+   ======================================================================== */
+
+.customer-panel {
+  position: relative;
+
+  isolation: isolate;
+
+  margin-bottom: 25px;
+
+  padding:
+    28px 30px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(11, 100, 50, 0.10);
+
+  border-radius:
+    var(--radius-lg);
+
+  background:
+    linear-gradient(
+      126deg,
+      rgba(255, 255, 255, 0.92),
+      rgba(248, 255, 250, 0.76)
+    );
+
+  backdrop-filter:
+    blur(22px)
+    saturate(135%);
+
+  box-shadow:
+    var(--shadow-soft);
+}
+
+
+/* Unique luminous corner */
+
+.customer-panel::before {
+  content: "";
+
+  position: absolute;
+
+  z-index: -1;
+
+  width: 270px;
+  height: 270px;
+
+  right: -110px;
+  top: -150px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(71, 220, 136, 0.20),
+      rgba(111, 241, 206, 0.05) 45%,
+      transparent 70%
+    );
+}
+
+
+/* Thin scan line */
+
+.customer-panel::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 36%;
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--green-400),
+      transparent
+    );
+
+  opacity: 0.55;
+}
+
+.customer-panel label {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin-bottom: 13px;
+
+  color: var(--ink-800);
+
+  font-size: 0.87rem;
+  font-weight: 780;
+}
+
+.customer-panel label::before {
+  content: "";
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 2px;
+
+  background: var(--green-500);
+
+  transform: rotate(45deg);
+}
+
+.customer-panel select {
+  position: relative;
+
+  width:
+    min(
+      430px,
+      100%
+    );
+
+  height: 54px;
+
+  padding:
+    0 47px
+    0 17px;
+
+  border:
+    1px solid
+    rgba(28, 83, 48, 0.15);
+
+  border-radius:
+    14px;
+
+  outline: none;
+
+  color: var(--ink-900);
+
+  background:
+    rgba(255, 255, 255, 0.91);
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.95),
+    0 4px 13px
+      rgba(8, 43, 23, 0.025);
+
+  font-size: 0.98rem;
+  font-weight: 550;
+
+  cursor: pointer;
+
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    background 200ms ease;
+}
+
+.customer-panel select:hover {
+  transform:
+    translateY(-1px);
+
+  border-color:
+    rgba(10, 169, 79, 0.37);
+
+  background:
+    #ffffff;
+}
+
+.customer-panel select:focus {
+  transform:
+    translateY(-1px);
+
+  border-color:
+    var(--green-500);
+
+  box-shadow:
+    0 0 0 4px
+      rgba(24, 199, 101, 0.09),
+    0 8px 26px
+      rgba(7, 76, 35, 0.06);
+}
+
+
+/* ========================================================================
+   07. NAVIGATION — FLOATING INTELLIGENCE SWITCHER
+   ======================================================================== */
+
+.intelligence-tabs {
+  position: relative;
+
+  display: inline-grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 5px;
+
+  margin:
+    0 0 27px;
+
+  padding: 6px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(14, 98, 48, 0.10);
+
+  border-radius:
+    16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(225, 235, 228, 0.82),
+      rgba(234, 244, 236, 0.70)
+    );
+
+  backdrop-filter:
+    blur(14px);
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.55);
+}
+
+
+/* Ambient highlight moving through nav */
+
+.intelligence-tabs::before {
+  content: "";
+
+  position: absolute;
+
+  width: 130px;
+  height: 70px;
+
+  top: -33px;
+  left: 15%;
+
+  border-radius: 50%;
+
+  background:
+    rgba(71, 220, 136, 0.12);
+
+  filter:
+    blur(15px);
+
+  pointer-events: none;
+
+  animation:
+    navGlow
+    5s
+    ease-in-out
+    infinite alternate;
+}
+
+@keyframes navGlow {
+  from {
+    transform:
+      translateX(0);
+  }
+
+  to {
+    transform:
+      translateX(210px);
+  }
+}
+
+.tab-button {
+  position: relative;
+
+  z-index: 2;
+
+  min-width: 195px;
+
+  padding:
+    13px 19px;
+
+  border: 0;
+
+  border-radius:
+    11px;
+
+  background:
+    transparent;
+
+  color:
+    var(--ink-600);
+
+  font-size:
+    0.9rem;
+
+  font-weight:
+    740;
+
+  cursor: pointer;
+
+  transition:
+    color 190ms ease,
+    background 190ms ease,
+    transform 190ms ease,
+    box-shadow 190ms ease;
+}
+
+.tab-button:hover {
+  color:
+    var(--ink-900);
+
+  transform:
+    translateY(-1px);
+}
+
+.tab-button.active {
+  color:
+    var(--green-700);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.98),
+      rgba(248, 255, 251, 0.94)
+    );
+
+  box-shadow:
+    0 5px 18px
+      rgba(8, 71, 34, 0.08),
+    inset 0 0 0 1px
+      rgba(24, 199, 101, 0.09);
+}
+
+
+/* ========================================================================
+   08. ASSISTANT INTELLIGENCE HEADER
+   ======================================================================== */
+
+.assistant-summary,
+.next-basket-header {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 32px;
+
+  margin-bottom: 21px;
+
+  padding:
+    31px 33px;
+
+  overflow: hidden;
+
+  isolation: isolate;
+
+  border:
+    1px solid
+    rgba(10, 88, 43, 0.10);
+
+  border-radius:
+    var(--radius-lg);
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(251, 255, 252, 0.91) 58%,
+      rgba(235, 253, 242, 0.79) 100%
+    );
+
+  backdrop-filter:
+    blur(22px);
+
+  box-shadow:
+    var(--shadow-medium);
+
+  animation:
+    intelligenceEnter
+    480ms
+    cubic-bezier(
+      0.2,
+      0.8,
+      0.2,
+      1
+    )
+    both;
+}
+
+@keyframes intelligenceEnter {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(13px)
+      scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* Decorative neural orbit */
+
+.assistant-summary::before,
+.next-basket-header::before {
+  content: "";
+
+  position: absolute;
+
+  z-index: -1;
+
+  width: 310px;
+  height: 310px;
+
+  right: -105px;
+  top: -145px;
+
+  border:
+    1px solid
+    rgba(24, 199, 101, 0.08);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(125, 235, 168, 0.14),
+      rgba(111, 241, 206, 0.03) 44%,
+      transparent 67%
+    );
+
+  animation:
+    slowOrbit
+    13s
+    linear
+    infinite;
+}
+
+@keyframes slowOrbit {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+
+/* Left signal */
+
+.assistant-summary::after,
+.next-basket-header::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 29px;
+  bottom: 29px;
+
+  width: 3px;
+
+  border-radius:
+    0 10px 10px 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      var(--green-500),
+      var(--mint-300),
+      transparent
+    );
+
+  opacity: 0.7;
+}
+
+.summary-text,
+.next-basket-header > div:first-child {
+  position: relative;
+
+  z-index: 2;
+}
+
+.summary-text h2,
+.next-basket-header h2 {
+  margin:
+    2px 0 9px;
+
+  color:
+    var(--ink-950);
+
+  font-size:
+    1.7rem;
+
+  font-weight:
+    830;
+
+  letter-spacing:
+    -0.04em;
+}
+
+.shopping-summary {
+  max-width: 710px;
+
+  margin: 0;
+
+  color:
+    var(--ink-600);
+
+  font-size:
+    0.96rem;
+
+  line-height: 1.68;
+}
+
+
+/* ========================================================================
+   09. RECOMMENDATION / PREDICTION COUNTER — MINI DATA CORE
+   ======================================================================== */
+
+.recommendation-count {
+  position: relative;
+
+  z-index: 3;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  align-items: center;
+
+  flex: 0 0 auto;
+
+  min-width: 154px;
+  min-height: 112px;
+
+  padding:
+    19px 21px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(24, 199, 101, 0.12);
+
+  border-radius:
+    18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(240, 253, 245, 0.95),
+      rgba(232, 249, 238, 0.83)
+    );
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.9),
+    0 8px 25px
+      rgba(12, 98, 47, 0.055);
+}
+
+
+/* Data core rings */
+
+.recommendation-count::before {
+  content: "";
+
+  position: absolute;
+
+  width: 110px;
+  height: 110px;
+
+  right: -48px;
+  top: -55px;
+
+  border:
+    1px solid
+    rgba(24, 199, 101, 0.13);
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 0 14px
+      rgba(24, 199, 101, 0.025);
+}
+
+.recommendation-count strong {
+  position: relative;
+
+  z-index: 2;
+
+  display: block;
+
+  color:
+    var(--green-700);
+
+  font-size:
+    2.35rem;
+
+  font-weight:
+    880;
+
+  line-height: 0.95;
+
+  letter-spacing:
+    -0.065em;
+}
+
+.recommendation-count span {
+  position: relative;
+
+  z-index: 2;
+
+  display: block;
+
+  margin-top: 11px;
+
+  color:
+    var(--ink-500);
+
+  font-size:
+    0.78rem;
+
+  font-weight:
+    520;
+}
+
+
+/* ========================================================================
+   10. ASSISTANT STAT CARDS — FIVE INTELLIGENCE CELLS
+   ======================================================================== */
+
+.stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      5,
+      minmax(0, 1fr)
+    );
+
+  gap: 14px;
+}
+
+.stat-card {
+  position: relative;
+
+  min-height: 126px;
+
+  padding:
+    22px;
+
+  overflow: hidden;
+
+  isolation: isolate;
+
+  border:
+    1px solid
+    rgba(13, 83, 42, 0.09);
+
+  border-radius:
+    var(--radius-md);
+
+  background:
+    rgba(255, 255, 255, 0.89);
+
+  backdrop-filter:
+    blur(15px);
+
+  box-shadow:
+    var(--shadow-tiny);
+
+  transition:
+    transform 250ms
+      cubic-bezier(
+        0.2,
+        0.8,
+        0.2,
+        1
+      ),
+    box-shadow 250ms ease,
+    border-color 250ms ease;
+}
+
+
+/* Each card becomes its own "intelligence species" */
+
+.stat-card:nth-child(1)::before {
+  background:
+    linear-gradient(
+      135deg,
+      var(--green-500),
+      var(--mint-300)
+    );
+}
+
+.stat-card:nth-child(2)::before {
+  background:
+    linear-gradient(
+      135deg,
+      var(--blue-400),
+      var(--aqua-300)
+    );
+}
+
+.stat-card:nth-child(3)::before {
+  background:
+    linear-gradient(
+      135deg,
+      var(--amber-500),
+      var(--amber-300)
+    );
+}
+
+.stat-card:nth-child(4)::before {
+  background:
+    linear-gradient(
+      135deg,
+      var(--violet-400),
+      #c5a8ff
+    );
+}
+
+.stat-card:nth-child(5)::before {
+  background:
+    linear-gradient(
+      135deg,
+      #718079,
+      #c0ccc5
+    );
+}
+
+.stat-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 20px;
+
+  width: 38px;
+  height: 3px;
+
+  border-radius:
+    0 0 10px 10px;
+}
+
+.stat-card::after {
+  content: "";
+
+  position: absolute;
+
+  z-index: -1;
+
+  width: 100px;
+  height: 100px;
+
+  right: -45px;
+  top: -45px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(24, 199, 101, 0.09),
+      transparent 65%
+    );
+
+  transition:
+    transform 280ms ease;
+}
+
+.stat-card:hover {
+  transform:
+    translateY(-7px);
+
+  border-color:
+    rgba(24, 199, 101, 0.20);
+
+  box-shadow:
+    0 20px 45px
+      rgba(7, 44, 23, 0.09);
+}
+
+.stat-card:hover::after {
+  transform:
+    scale(1.4);
+}
+
+.stat-card strong {
+  display: block;
+
+  margin-bottom: 17px;
+
+  color:
+    var(--ink-950);
+
+  font-size:
+    1.95rem;
+
+  font-weight:
+    850;
+
+  line-height: 1;
+
+  letter-spacing:
+    -0.055em;
+}
+
+.stat-card span {
+  color:
+    var(--ink-600);
+
+  font-size:
+    0.82rem;
+
+  line-height: 1.35;
+}
+
+
+/* ========================================================================
+   11. NEXT BASKET — PREDICTION MATRIX
+   ======================================================================== */
+
+.next-basket-section {
+  position: relative;
+
+  animation:
+    matrixReveal
+    480ms
+    cubic-bezier(
+      0.2,
+      0.8,
+      0.2,
+      1
+    )
+    both;
+}
+
+@keyframes matrixReveal {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(13px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+.prediction-list {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 16px;
+}
+
+
+/* ========================================================================
+   12. PREDICTION CARD — "COMMERCE SIGNAL CAPSULE"
+   ======================================================================== */
+
+.prediction-card {
+  position: relative;
+
+  display: flex;
+
+  gap: 18px;
+
+  min-width: 0;
+
+  padding:
+    22px;
+
+  overflow: hidden;
+
+  isolation: isolate;
+
+  border:
+    1px solid
+    rgba(11, 85, 42, 0.095);
+
+  border-radius:
+    20px;
+
+  background:
+    linear-gradient(
+      128deg,
+      rgba(255, 255, 255, 0.94),
+      rgba(250, 254, 251, 0.88)
+    );
+
+  backdrop-filter:
+    blur(18px);
+
+  box-shadow:
+    0 4px 15px
+      rgba(9, 46, 26, 0.028);
+
+  transform:
+    translateZ(0);
+
+  transition:
+    transform 260ms
+      cubic-bezier(
+        0.15,
+        0.85,
+        0.25,
+        1
+      ),
+    box-shadow 260ms ease,
+    border-color 260ms ease;
+}
+
+
+/* Dynamic edge */
+
+.prediction-card::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 22px;
+  bottom: 22px;
+
+  width: 3px;
+
+  border-radius:
+    0 99px 99px 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--green-600),
+      var(--green-400),
+      var(--mint-300)
+    );
+
+  opacity: 0;
+
+  transform:
+    scaleY(0.45);
+
+  transition:
+    opacity 240ms ease,
+    transform 240ms ease;
+}
+
+
+/* Holographic scan glow */
+
+.prediction-card::after {
+  content: "";
+
+  position: absolute;
+
+  z-index: -1;
+
+  width: 280px;
+  height: 140px;
+
+  left: -210px;
+  top: -35px;
+
+  transform:
+    rotate(-16deg);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(71, 220, 136, 0.075),
+      rgba(111, 241, 206, 0.05),
+      transparent
+    );
+
+  transition:
+    left 650ms
+      cubic-bezier(
+        0.15,
+        0.75,
+        0.2,
+        1
+      );
+}
+
+.prediction-card:hover {
+  transform:
+    translateY(-7px)
+    scale(1.008);
+
+  border-color:
+    rgba(24, 199, 101, 0.22);
+
+  box-shadow:
+    0 22px 50px
+      rgba(6, 48, 24, 0.10);
+}
+
+.prediction-card:hover::before {
+  opacity: 1;
+
+  transform:
+    scaleY(1);
+}
+
+.prediction-card:hover::after {
+  left: 105%;
+}
+
+
+/* ========================================================================
+   13. RANK BADGES — PODIUM SYSTEM
+   ======================================================================== */
+
+.prediction-rank {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex:
+    0 0 49px;
+
+  width: 49px;
+  height: 49px;
+
+  border:
+    1px solid
+    rgba(24, 199, 101, 0.10);
+
+  border-radius:
+    14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #e9fbef,
+      #f6fff8
+    );
+
+  color:
+    var(--green-700);
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.9);
+
+  font-size:
+    0.79rem;
+
+  font-weight:
+    880;
+}
+
+
+/* #1 — gold intelligence core */
+
+.prediction-card:nth-child(1)
+.prediction-rank {
+  border-color:
+    rgba(218, 165, 37, 0.20);
+
+  color:
+    #996600;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff7d7,
+      #ffe59b
+    );
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.8),
+    0 5px 18px
+      rgba(221, 170, 42, 0.13);
+}
+
+
+/* #2 — silver intelligence core */
+
+.prediction-card:nth-child(2)
+.prediction-rank {
+  border-color:
+    rgba(125, 145, 153, 0.20);
+
+  color:
+    #64747b;
+
+  background:
+    linear-gradient(
+      145deg,
+      #f4f7f8,
+      #dbe5e8
+    );
+}
+
+
+/* #3 — bronze */
+
+.prediction-card:nth-child(3)
+.prediction-rank {
+  border-color:
+    rgba(182, 108, 56, 0.20);
+
+  color:
+    #93562d;
+
+  background:
+    linear-gradient(
+      145deg,
+      #f9e5d5,
+      #efc29f
+    );
+}
+
+
+/* Top five subtle ranking intelligence */
+
+.prediction-card:nth-child(4)
+.prediction-rank,
+.prediction-card:nth-child(5)
+.prediction-rank {
+  background:
+    linear-gradient(
+      145deg,
+      #e3faec,
+      #f1fdf5
+    );
+}
+
+
+/* ========================================================================
+   14. PREDICTION INFORMATION
+   ======================================================================== */
+
+.prediction-content {
+  min-width: 0;
+
+  flex: 1;
+}
+
+.prediction-top {
+  display: flex;
+
+  align-items:
+    flex-start;
+
+  justify-content:
+    space-between;
+
+  gap: 18px;
+}
+
+.prediction-top h3 {
+  margin:
+    2px 0 7px;
+
+  color:
+    var(--ink-950);
+
+  font-size:
+    1rem;
+
+  font-weight:
+    780;
+
+  line-height: 1.34;
+
+  letter-spacing:
+    -0.018em;
+}
+
+.prediction-category {
+  margin: 0;
+
+  color:
+    var(--ink-500);
+
+  font-size:
+    0.77rem;
+
+  line-height: 1.5;
+
+  text-transform:
+    capitalize;
+}
+
+
+/* Percentage capsule */
+
+.prediction-percentage {
+  position: relative;
+
+  flex: 0 0 auto;
+
+  min-width: 61px;
+
+  padding:
+    7px 10px;
+
+  border:
+    1px solid
+    rgba(24, 199, 101, 0.07);
+
+  border-radius:
+    10px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(235, 252, 242, 0.96),
+      rgba(247, 255, 250, 0.96)
+    );
+
+  color:
+    var(--green-700);
+
+  font-size:
+    0.98rem;
+
+  font-weight:
+    880;
+
+  text-align: center;
+
+  letter-spacing:
+    -0.035em;
+}
+
+
+/* ========================================================================
+   15. PROBABILITY — ENERGY SIGNAL
+   ======================================================================== */
+
+.probability-track {
+  position: relative;
+
+  width: 100%;
+  height: 9px;
+
+  margin:
+    18px 0 11px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(9, 75, 36, 0.025);
+
+  border-radius:
+    999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #e9eeea,
+      #f1f4f2
+    );
+
+  box-shadow:
+    inset 0 1px 2px
+      rgba(4, 31, 15, 0.045);
+}
+
+
+/* Internal grid ticks */
+
+.probability-track::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  z-index: 2;
+
+  pointer-events: none;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent calc(20% - 1px),
+      rgba(255, 255, 255, 0.55)
+        calc(20% - 1px),
+      rgba(255, 255, 255, 0.55)
+        20%
+    );
+
+  opacity: 0.5;
+}
+
+.probability-fill {
+  position: relative;
+
+  z-index: 1;
+
+  height: 100%;
+
+  overflow: hidden;
+
+  border-radius:
+    999px;
+
+  transform-origin: left;
+
+  background:
+    linear-gradient(
+      90deg,
+      #07883c 0%,
+      #10b957 48%,
+      #49df88 78%,
+      #85efae 100%
+    );
+
+  box-shadow:
+    0 0 13px
+      rgba(24, 199, 101, 0.24);
+
+  animation:
+    signalLoad
+    950ms
+    cubic-bezier(
+      0.16,
+      1,
+      0.3,
+      1
+    )
+    both;
+}
+
+
+/* Moving energy pulse */
+
+.probability-fill::after {
+  content: "";
+
+  position: absolute;
+
+  width: 54px;
+  height: 100%;
+
+  left: -58px;
+  top: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.60),
+      transparent
+    );
+
+  transform:
+    skewX(-20deg);
+
+  animation:
+    energySweep
+    3.8s
+    ease-in-out
+    infinite 1.2s;
+}
+
+@keyframes signalLoad {
+  from {
+    transform:
+      scaleX(0);
+  }
+
+  to {
+    transform:
+      scaleX(1);
+  }
+}
+
+@keyframes energySweep {
+  0% {
+    left: -60px;
+  }
+
+  40%,
+  100% {
+    left: 110%;
+  }
+}
+
+
+/* ========================================================================
+   16. PREDICTION FOOTER
+   ======================================================================== */
+
+.prediction-meta {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 12px;
+
+  color:
+    var(--ink-500);
+
+  font-size:
+    0.71rem;
+}
+
+.prediction-meta > span:first-child {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+.prediction-meta > span:first-child::before {
+  content: "";
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background:
+    var(--green-400);
+
+  box-shadow:
+    0 0 7px
+      rgba(24, 199, 101, 0.5);
+}
+
+
+/* Model signal badge */
+
+.prediction-meta span:last-child {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding:
+    5px 9px;
+
+  border:
+    1px solid
+    rgba(10, 169, 79, 0.11);
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(239, 252, 244, 0.78);
+
+  color:
+    var(--green-700);
+
+  font-size:
+    0.63rem;
+
+  font-weight:
+    850;
+
+  letter-spacing:
+    0.075em;
+
+  text-transform:
+    uppercase;
+}
+
+.prediction-meta span:last-child::before {
+  content: "";
+
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  background:
+    currentColor;
+}
+
+
+/* ========================================================================
+   17. FIRST PREDICTION — HERO SIGNAL
+   ======================================================================== */
+
+.prediction-card:nth-child(1) {
+  background:
+    radial-gradient(
+      circle at 5% 0%,
+      rgba(255, 217, 120, 0.10),
+      transparent 170px
+    ),
+    linear-gradient(
+      128deg,
+      rgba(255, 255, 255, 0.97),
+      rgba(253, 255, 253, 0.93)
+    );
+}
+
+
+/* ========================================================================
+   18. MESSAGE / LOADING — ACTIVE INTELLIGENCE STATE
+   ======================================================================== */
+
+.message {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  margin:
+    20px 0;
+
+  padding:
+    18px 20px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(24, 199, 101, 0.15);
+
+  border-radius:
+    15px;
+
+  background:
+    rgba(239, 252, 244, 0.86);
+
+  color:
+    var(--green-700);
+
+  box-shadow:
+    var(--shadow-tiny);
+
+  font-size:
+    0.88rem;
+
+  font-weight: 580;
+}
+
+.message::before {
+  content: "";
+
+  width: 17px;
+  height: 17px;
+
+  flex: 0 0 auto;
+
+  border:
+    2px solid
+    rgba(24, 199, 101, 0.17);
+
+  border-top-color:
+    var(--green-600);
+
+  border-radius: 50%;
+
+  animation:
+    intelligenceSpin
+    0.7s
+    linear
+    infinite;
+}
+
+.message::after {
+  content: "";
+
+  position: absolute;
+
+  left: -130px;
+  bottom: 0;
+
+  width: 130px;
+  height: 2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--green-400),
+      transparent
+    );
+
+  animation:
+    loadingScan
+    1.8s
+    linear
+    infinite;
+}
+
+@keyframes intelligenceSpin {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+@keyframes loadingScan {
+  to {
+    left: 100%;
+  }
+}
+
+
+/* ========================================================================
+   19. ERROR
+   ======================================================================== */
+
+.error {
+  margin:
+    20px 0;
+
+  padding:
+    17px 19px;
+
+  border:
+    1px solid
+    rgba(197, 62, 72, 0.15);
+
+  border-radius:
+    15px;
+
+  color:
+    #9d3039;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--error-soft),
+      #fff8f8
+    );
+
+  box-shadow:
+    var(--shadow-tiny);
+
+  font-size:
+    0.88rem;
+}
+
+
+/* ========================================================================
+   20. HIGH-END SCROLLBAR
+   ======================================================================== */
+
+::-webkit-scrollbar {
+  width: 11px;
+}
+
+::-webkit-scrollbar-track {
+  background:
+    #f1f5f2;
+}
+
+::-webkit-scrollbar-thumb {
+  border:
+    3px solid
+    #f1f5f2;
+
+  border-radius:
+    999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #9fb1a6,
+      #7e9587
+    );
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(
+      180deg,
+      var(--green-500),
+      var(--green-700)
+    );
+}
+
+
+/* ========================================================================
+   21. TABLET
+   ======================================================================== */
+
+@media (max-width: 980px) {
+  .stats {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+  }
+
+  .prediction-list {
+    grid-template-columns:
+      1fr;
+  }
+
+  .header h1 {
+    max-width:
+      760px;
+  }
+}
+
+
+/* ========================================================================
+   22. SMALL TABLET
+   ======================================================================== */
+
+@media (max-width: 760px) {
+  .assistant-summary,
+  .next-basket-header {
+    align-items:
+      flex-start;
+  }
+
+  .recommendation-count {
+    min-width:
+      130px;
+  }
+
+  .stats {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+}
+
+
+/* ========================================================================
+   23. MOBILE — STILL FEELS PREMIUM
+   ======================================================================== */
+
+@media (max-width: 650px) {
+  .header-content,
+  .container {
+    width:
+      calc(100% - 28px);
+  }
+
+  .header-content {
+    padding:
+      47px 0 43px;
+  }
+
+  .header h1 {
+    font-size:
+      clamp(
+        2.5rem,
+        12vw,
+        3.8rem
+      );
+  }
+
+  .subtitle {
+    margin-top:
+      29px;
+
+    font-size:
+      0.94rem;
+  }
+
+  .container {
+    padding:
+      27px 0 75px;
+  }
+
+  .customer-panel {
+    padding:
+      21px;
+  }
+
+  .intelligence-tabs {
+    width: 100%;
+  }
+
+  .tab-button {
+    min-width: 0;
+
+    padding:
+      12px 7px;
+
+    font-size:
+      0.76rem;
+  }
+
+  .assistant-summary,
+  .next-basket-header {
+    flex-direction:
+      column;
+
+    align-items:
+      stretch;
+
+    gap: 22px;
+
+    padding:
+      24px;
+  }
+
+  .recommendation-count {
+    width: 100%;
+
+    min-height: 90px;
+
+    flex-direction: row;
+
+    gap: 11px;
+  }
+
+  .recommendation-count span {
+    margin-top: 0;
+  }
+
+  .prediction-card {
+    padding:
+      18px;
+
+    gap: 14px;
+  }
+
+  .prediction-rank {
+    flex-basis:
+      42px;
+
+    width: 42px;
+    height: 42px;
+
+    border-radius:
+      12px;
+  }
+
+  .prediction-top {
+    gap: 10px;
+  }
+
+  .prediction-top h3 {
+    font-size:
+      0.92rem;
+  }
+
+  .prediction-percentage {
+    min-width:
+      auto;
+
+    padding:
+      6px 7px;
+
+    font-size:
+      0.88rem;
+  }
+
+  .prediction-meta {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+  }
+}
+
+
+/* ========================================================================
+   24. VERY SMALL MOBILE
+   ======================================================================== */
+
+@media (max-width: 430px) {
+  .stats {
+    grid-template-columns:
+      1fr;
+  }
+
+  .prediction-card {
+    display: block;
+  }
+
+  .prediction-rank {
+    margin-bottom:
+      14px;
+  }
+
+  .prediction-top {
+    align-items:
+      flex-start;
+  }
+
+  .intelligence-tabs {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+
+/* ========================================================================
+   25. MOTION ACCESSIBILITY
+   ======================================================================== */
+
+@media (
+  prefers-reduced-motion:
+    reduce
+) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:
+      0.001ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    scroll-behavior:
+      auto !important;
+
+    transition-duration:
+      0.001ms !important;
+  }
+}
+
+/* ========================================================================
+   26. SHOPPING ASSISTANT — AI ACTION PLAN
+   ======================================================================== */
+
+.assistant-view {
+  position: relative;
+}
+
+.assistant-story {
+  position: relative;
+  margin-top: 42px;
+  padding-bottom: 40px;
+}
+
+
+/* ========================================================================
+   STORY INTRO
+   ======================================================================== */
+
+.story-intro {
+  position: relative;
+
+  max-width: 760px;
+
+  margin-bottom: 36px;
+
+  padding-left: 22px;
+}
+
+.story-intro::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 3px;
+  bottom: 3px;
+
+  width: 3px;
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--green-500),
+      var(--mint-300),
+      transparent
+    );
+}
+
+.story-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin: 0 0 9px;
+
+  color: var(--green-700);
+
+  font-size: 0.7rem;
+  font-weight: 850;
+
+  letter-spacing: 0.17em;
+
+  text-transform: uppercase;
+}
+
+.story-kicker::before {
+  content: "✦";
+
+  font-size: 0.78rem;
+
+  color: var(--green-500);
+}
+
+.story-intro h2 {
+  margin: 0 0 10px;
+
+  color: var(--ink-950);
+
+  font-size:
+    clamp(
+      1.8rem,
+      3vw,
+      2.45rem
+    );
+
+  font-weight: 850;
+
+  letter-spacing: -0.05em;
+}
+
+.story-intro > p:last-child {
+  margin: 0;
+
+  color: var(--ink-600);
+
+  font-size: 0.95rem;
+
+  line-height: 1.7;
+}
+
+
+/* ========================================================================
+   27. RECOMMENDATION SECTION
+   ======================================================================== */
+
+.recommendation-section {
+  position: relative;
+
+  margin-bottom: 28px;
+
+  padding: 27px;
+
+  overflow: hidden;
+
+  isolation: isolate;
+
+  border:
+    1px solid
+    rgba(10, 83, 41, 0.10);
+
+  border-radius:
+    26px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.90),
+      rgba(250, 255, 251, 0.75)
+    );
+
+  backdrop-filter:
+    blur(20px);
+
+  box-shadow:
+    0 13px 40px
+    rgba(5, 38, 19, 0.055);
+
+  animation:
+    assistantSectionEnter
+    500ms
+    cubic-bezier(
+      0.2,
+      0.8,
+      0.2,
+      1
+    )
+    both;
+}
+
+@keyframes assistantSectionEnter {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* Ambient section aura */
+
+.recommendation-section::before {
+  content: "";
+
+  position: absolute;
+
+  z-index: -1;
+
+  width: 300px;
+  height: 300px;
+
+  right: -150px;
+  top: -170px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(24, 199, 101, 0.11),
+      rgba(24, 199, 101, 0.025) 45%,
+      transparent 70%
+    );
+}
+
+
+/* Different identity for each assistant category */
+
+.recommendation-section.urgent {
+  --section-accent: #12a851;
+  --section-soft: rgba(18, 168, 81, 0.10);
+}
+
+.recommendation-section.coming {
+  --section-accent: #4c92ff;
+  --section-soft: rgba(76, 146, 255, 0.10);
+}
+
+.recommendation-section.favorite {
+  --section-accent: #e4a127;
+  --section-soft: rgba(228, 161, 39, 0.11);
+}
+
+.recommendation-section.discover {
+  --section-accent: #9970ef;
+  --section-soft: rgba(153, 112, 239, 0.10);
+}
+
+.recommendation-section.other {
+  --section-accent: #73837a;
+  --section-soft: rgba(115, 131, 122, 0.10);
+}
+
+
+/* ========================================================================
+   SECTION HEADER
+   ======================================================================== */
+
+.recommendation-section-header {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 16px;
+
+  margin-bottom: 24px;
+}
+
+.section-icon {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 46px;
+
+  width: 46px;
+  height: 46px;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--section-accent) 22%,
+      transparent
+    );
+
+  border-radius: 14px;
+
+  background:
+    var(--section-soft);
+
+  color:
+    var(--section-accent);
+
+  font-size: 1.25rem;
+  font-weight: 850;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.75);
+}
+
+.section-title-row {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.section-title-row h3 {
+  margin: 0;
+
+  color: var(--ink-950);
+
+  font-size: 1.2rem;
+  font-weight: 820;
+
+  letter-spacing: -0.035em;
+}
+
+.section-count {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-width: 25px;
+  height: 25px;
+
+  padding: 0 8px;
+
+  border-radius: 999px;
+
+  background:
+    var(--section-soft);
+
+  color:
+    var(--section-accent);
+
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.recommendation-section-header p {
+  max-width: 650px;
+
+  margin: 5px 0 0;
+
+  color: var(--ink-500);
+
+  font-size: 0.82rem;
+
+  line-height: 1.55;
+}
+
+
+/* ========================================================================
+   28. RECOMMENDATION GRID
+   ======================================================================== */
+
+.recommendation-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 16px;
+}
+
+
+/* ========================================================================
+   29. RECOMMENDATION CARD — AI DECISION OBJECT
+   ======================================================================== */
+
+.recommendation-card {
+  position: relative;
+
+  min-width: 0;
+
+  padding: 22px;
+
+  overflow: hidden;
+
+  isolation: isolate;
+
+  border:
+    1px solid
+    rgba(8, 73, 35, 0.095);
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.97),
+      rgba(250, 253, 251, 0.91)
+    );
+
+  box-shadow:
+    0 4px 14px
+    rgba(5, 43, 22, 0.025);
+
+  transition:
+    transform 260ms
+    cubic-bezier(
+      0.15,
+      0.8,
+      0.2,
+      1
+    ),
+    box-shadow 260ms ease,
+    border-color 260ms ease;
+}
+
+
+/* Intelligent active edge */
+
+.recommendation-card::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 22px;
+  bottom: 22px;
+
+  width: 3px;
+
+  border-radius:
+    0 99px 99px 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--section-accent),
+      transparent
+    );
+
+  opacity: 0;
+
+  transform: scaleY(0.35);
+
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+
+/* Hover data scan */
+
+.recommendation-card::after {
+  content: "";
+
+  position: absolute;
+
+  z-index: -1;
+
+  width: 170px;
+  height: 350px;
+
+  left: -220px;
+  top: -120px;
+
+  transform:
+    rotate(24deg);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(80, 226, 139, 0.05),
+      transparent
+    );
+
+  transition:
+    left 650ms ease;
+}
+
+.recommendation-card:hover {
+  transform:
+    translateY(-7px);
+
+  border-color:
+    rgba(24, 199, 101, 0.19);
+
+  box-shadow:
+    0 23px 50px
+    rgba(5, 44, 23, 0.09);
+}
+
+.recommendation-card:hover::before {
+  opacity: 1;
+
+  transform:
+    scaleY(1);
+}
+
+.recommendation-card:hover::after {
+  left: 115%;
+}
+
+
+/* ========================================================================
+   30. RECOMMENDATION TOP
+   ======================================================================== */
+
+.recommendation-top {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 14px;
+}
+
+.recommendation-rank {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 43px;
+
+  width: 43px;
+  height: 43px;
+
+  border-radius: 13px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #e9faef,
+      #f8fef9
+    );
+
+  border:
+    1px solid
+    rgba(24, 199, 101, 0.10);
+
+  color:
+    var(--green-700);
+
+  font-size: 0.75rem;
+  font-weight: 850;
+}
+
+.recommendation-main {
+  min-width: 0;
+
+  flex: 1;
+}
+
+.product-context {
+  margin: 1px 0 6px;
+
+  color: var(--ink-500);
+
+  font-size: 0.72rem;
+
+  line-height: 1.4;
+
+  text-transform: capitalize;
+}
+
+.recommendation-main h4 {
+  margin: 0;
+
+  color: var(--ink-950);
+
+  font-size: 1rem;
+  font-weight: 780;
+
+  line-height: 1.35;
+
+  letter-spacing: -0.02em;
+}
+
+
+/* ========================================================================
+   31. ASSISTANT PROBABILITY
+   ======================================================================== */
+
+.assistant-probability {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  flex: 0 0 auto;
+}
+
+.assistant-probability strong {
+  color:
+    var(--section-accent);
+
+  font-size: 1.12rem;
+
+  font-weight: 880;
+
+  letter-spacing: -0.04em;
+}
+
+.assistant-probability span {
+  margin-top: 2px;
+
+  color: var(--ink-400);
+
+  font-size: 0.62rem;
+}
+
+
+/* ========================================================================
+   32. ASSISTANT SIGNAL
+   ======================================================================== */
+
+.assistant-signal {
+  margin:
+    18px 0;
+}
+
+.assistant-signal-track {
+  width: 100%;
+  height: 6px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background:
+    #edf1ee;
+}
+
+.assistant-signal-fill {
+  position: relative;
+
+  height: 100%;
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--section-accent),
+      #61e39a
+    );
+
+  box-shadow:
+    0 0 12px
+    rgba(24, 199, 101, 0.16);
+
+  animation:
+    assistantSignalLoad
+    900ms
+    cubic-bezier(
+      0.16,
+      1,
+      0.3,
+      1
+    )
+    both;
+}
+
+@keyframes assistantSignalLoad {
+  from {
+    transform: scaleX(0);
+
+    transform-origin: left;
+  }
+
+  to {
+    transform: scaleX(1);
+
+    transform-origin: left;
+  }
+}
+
+
+/* ========================================================================
+   33. WHY PANEL — EXPLAINABLE AI
+   ======================================================================== */
+
+.why-panel {
+  position: relative;
+
+  display: flex;
+
+  gap: 12px;
+
+  margin-top: 4px;
+
+  padding:
+    15px 16px;
+
+  border:
+    1px solid
+    rgba(8, 76, 36, 0.07);
+
+  border-radius:
+    14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(245, 250, 247, 0.86),
+      rgba(251, 254, 252, 0.95)
+    );
+}
+
+.why-icon {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 28px;
+
+  width: 28px;
+  height: 28px;
+
+  border-radius: 9px;
+
+  color:
+    var(--section-accent);
+
+  background:
+    var(--section-soft);
+
+  font-size: 0.75rem;
+}
+
+.why-label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color:
+    var(--green-700);
+
+  font-size: 0.61rem;
+  font-weight: 850;
+
+  letter-spacing: 0.14em;
+
+  text-transform: uppercase;
+}
+
+.why-panel p {
+  margin: 0;
+
+  color:
+    var(--ink-600);
+
+  font-size: 0.78rem;
+
+  line-height: 1.58;
+}
+
+
+/* ========================================================================
+   34. RECOMMENDATION FOOTER
+   ======================================================================== */
+
+.recommendation-footer {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 15px;
+
+  margin-top: 17px;
+}
+
+.recommendation-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color:
+    var(--ink-500);
+
+  font-size: 0.7rem;
+
+  font-weight: 650;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background:
+    var(--section-accent);
+
+  box-shadow:
+    0 0 0 4px
+    var(--section-soft);
+}
+
+
+/* ========================================================================
+   35. ACTION BUTTON — THE HUMAN DECISION
+   ======================================================================== */
+
+.action-button {
+  position: relative;
+
+  min-width: 113px;
+
+  padding:
+    10px 15px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(11, 142, 67, 0.16);
+
+  border-radius:
+    11px;
+
+  outline: none;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--green-700),
+      var(--green-500)
+    );
+
+  color: white;
+
+  box-shadow:
+    0 6px 16px
+    rgba(11, 142, 67, 0.15);
+
+  font-size: 0.75rem;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform 190ms ease,
+    box-shadow 190ms ease,
+    opacity 190ms ease;
+}
+
+
+/* Button light sweep */
+
+.action-button::before {
+  content: "";
+
+  position: absolute;
+
+  width: 45px;
+  height: 150%;
+
+  top: -25%;
+  left: -70px;
+
+  transform:
+    skewX(-19deg);
+
+  background:
+    rgba(255, 255, 255, 0.22);
+
+  transition:
+    left 450ms ease;
+}
+
+.action-button:hover {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 10px 25px
+    rgba(11, 142, 67, 0.22);
+}
+
+.action-button:hover::before {
+  left: 125%;
+}
+
+.action-button:active {
+  transform:
+    translateY(0)
+    scale(0.98);
+}
+
+
+/* Completed state */
+
+.action-button.completed {
+  border-color:
+    rgba(24, 199, 101, 0.09);
+
+  color:
+    var(--green-700);
+
+  background:
+    var(--green-100);
+
+  box-shadow: none;
+
+  cursor: default;
+}
+
+.action-button.completed::before {
+  display: none;
+}
+
+
+/* ========================================================================
+   36. URGENCY-SPECIFIC BUTTON PERSONALITY
+   ======================================================================== */
+
+.recommendation-section.favorite
+.action-button {
+  border-color:
+    rgba(217, 153, 34, 0.15);
+
+  background:
+    linear-gradient(
+      135deg,
+      #c88918,
+      #eab03d
+    );
+
+  box-shadow:
+    0 6px 18px
+    rgba(190, 131, 25, 0.14);
+}
+
+.recommendation-section.discover
+.action-button {
+  border-color:
+    rgba(148, 100, 235, 0.15);
+
+  background:
+    linear-gradient(
+      135deg,
+      #7655cd,
+      #a67ef5
+    );
+
+  box-shadow:
+    0 6px 18px
+    rgba(115, 80, 201, 0.14);
+}
+
+.recommendation-section.other
+.action-button {
+  border-color:
+    rgba(90, 109, 98, 0.14);
+
+  background:
+    linear-gradient(
+      135deg,
+      #53665b,
+      #7d9185
+    );
+
+  box-shadow:
+    0 6px 18px
+    rgba(66, 87, 74, 0.12);
+}
+
+
+/* ========================================================================
+   37. EMPTY / SUBTLE SECTION TRANSITIONS
+   ======================================================================== */
+
+.recommendation-section:nth-of-type(2) {
+  animation-delay: 40ms;
+}
+
+.recommendation-section:nth-of-type(3) {
+  animation-delay: 80ms;
+}
+
+.recommendation-section:nth-of-type(4) {
+  animation-delay: 120ms;
+}
+
+.recommendation-section:nth-of-type(5) {
+  animation-delay: 160ms;
+}
+
+
+/* ========================================================================
+   38. RESPONSIVE SHOPPING ASSISTANT
+   ======================================================================== */
+
+@media (max-width: 900px) {
+  .recommendation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 650px) {
+  .assistant-story {
+    margin-top: 30px;
+  }
+
+  .recommendation-section {
+    padding: 20px;
+
+    border-radius: 21px;
+  }
+
+  .recommendation-section-header {
+    gap: 12px;
+  }
+
+  .section-icon {
+    flex-basis: 40px;
+
+    width: 40px;
+    height: 40px;
+  }
+
+  .recommendation-card {
+    padding: 18px;
+  }
+
+  .recommendation-top {
+    flex-wrap: wrap;
+  }
+
+  .assistant-probability {
+    margin-left: 57px;
+
+    align-items: flex-start;
+  }
+
+  .recommendation-footer {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .action-button {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   SHOPPING DNA — BEHAVIORAL INTELLIGENCE EXPERIENCE
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   THREE INTELLIGENCE TABS
+   ------------------------------------------------------------ */
+
+.intelligence-tabs {
+  width: min(760px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+
+  padding: 7px;
+  margin: 28px 0;
+
+  border: 1px solid rgba(16, 100, 62, 0.1);
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(232, 244, 236, 0.94),
+      rgba(242, 249, 245, 0.9)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.8),
+    0 12px 30px rgba(15, 60, 40, 0.05);
+}
+
+
+.tab-button {
+  min-width: 0;
+  border: 0;
+
+  padding: 14px 16px;
+
+  border-radius: 16px;
+
+  background: transparent;
+
+  color: #69736c;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition:
+    background .22s ease,
+    color .22s ease,
+    box-shadow .22s ease,
+    transform .22s ease;
+}
+
+
+.tab-button:hover {
+  color: #0e8d4d;
+  background: rgba(255,255,255,.5);
+}
+
+
+.tab-button.active {
+  color: #078b48;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.98),
+      rgba(247,255,250,.98)
+    );
+
+  box-shadow:
+    0 5px 18px rgba(28, 110, 69, .12),
+    inset 0 0 0 1px rgba(21, 137, 79, .06);
+}
+
+
+
+/* ============================================================
+   SHOPPING DNA ROOT
+   ============================================================ */
+
+.shopping-dna-view {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  padding-bottom: 90px;
+
+  animation: dnaAppear .45s ease both;
+}
+
+
+@keyframes dnaAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+/* ============================================================
+   DNA HERO
+   ============================================================ */
+
+.dna-hero {
+  position: relative;
+  isolation: isolate;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(280px, .7fr);
+  gap: 30px;
+
+  overflow: hidden;
+
+  padding: 38px;
+
+  border: 1px solid rgba(22, 116, 69, .1);
+  border-radius: 34px;
+
+  background:
+    radial-gradient(
+      circle at 92% 10%,
+      rgba(20, 220, 112, .16),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 5% 100%,
+      rgba(73, 170, 255, .08),
+      transparent 33%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.98),
+      rgba(247,253,249,.96)
+    );
+
+  box-shadow:
+    0 28px 70px rgba(24, 64, 44, .08),
+    inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+
+.dna-hero::before {
+  content: "";
+
+  position: absolute;
+  z-index: -1;
+
+  width: 380px;
+  height: 380px;
+
+  right: -190px;
+  top: -210px;
+
+  border: 1px solid rgba(23, 196, 102, .14);
+  border-radius: 50%;
+}
+
+
+.dna-hero::after {
+  content: "";
+
+  position: absolute;
+  z-index: -1;
+
+  width: 250px;
+  height: 250px;
+
+  right: -90px;
+  top: -120px;
+
+  border: 1px solid rgba(23, 196, 102, .17);
+  border-radius: 50%;
+}
+
+
+.dna-hero-copy {
+  min-width: 0;
+}
+
+
+.dna-label {
+  display: inline-flex;
+
+  margin: 18px 0 8px;
+
+  color: #69736d;
+
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+
+.dna-hero h2 {
+  max-width: 760px;
+
+  margin: 0 0 18px;
+
+  color: #101d17;
+
+  font-size: clamp(29px, 3.5vw, 46px);
+  line-height: 1.02;
+  letter-spacing: -.045em;
+}
+
+
+.dna-summary {
+  max-width: 850px;
+
+  margin: 0;
+
+  color: #5d6962;
+
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+
+.dna-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 25px;
+}
+
+
+.dna-persona-chip,
+.dna-trait-chip {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 38px;
+
+  padding: 8px 14px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+
+.dna-persona-chip {
+  color: #087a42;
+
+  border: 1px solid rgba(15, 166, 84, .15);
+
+  background: rgba(23, 198, 103, .08);
+}
+
+
+.dna-trait-chip {
+  color: #536159;
+
+  border: 1px solid rgba(40, 70, 55, .08);
+
+  background: rgba(255,255,255,.72);
+}
+
+
+
+/* ------------------------------------------------------------
+   DNA IDENTITY CODE
+   ------------------------------------------------------------ */
+
+.dna-identity {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  min-height: 230px;
+
+  padding: 27px;
+
+  border-radius: 26px;
+
+  border: 1px solid rgba(18, 171, 86, .12);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(8, 30, 20, .98),
+      rgba(9, 54, 31, .97)
+    );
+
+  box-shadow:
+    0 22px 45px rgba(9, 48, 28, .18);
+
+  overflow: hidden;
+}
+
+
+.dna-identity::before {
+  content: "";
+
+  position: absolute;
+
+  width: 220px;
+  height: 220px;
+
+  right: -90px;
+  top: -100px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(32, 241, 126, .22),
+      transparent 68%
+    );
+}
+
+
+.dna-identity-label {
+  position: relative;
+  z-index: 1;
+
+  margin-bottom: 14px;
+
+  color: rgba(218, 255, 232, .55);
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+
+.dna-code {
+  position: relative;
+  z-index: 1;
+
+  color: #ffffff;
+
+  font-size: clamp(20px, 2.3vw, 30px);
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: .02em;
+}
+
+
+.dna-dominant-score {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 15px;
+
+  margin-top: 27px;
+  padding-top: 19px;
+
+  border-top: 1px solid rgba(255,255,255,.11);
+}
+
+
+.dna-dominant-score span {
+  max-width: 120px;
+
+  color: rgba(221, 255, 233, .58);
+
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+
+.dna-dominant-score strong {
+  color: #43e98a;
+
+  font-size: 27px;
+  letter-spacing: -.04em;
+}
+
+
+
+/* ============================================================
+   GLOBAL DNA SECTION HEADER
+   ============================================================ */
+
+.dna-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+
+  margin-bottom: 21px;
+}
+
+
+.dna-section-heading h2 {
+  margin: 5px 0 0;
+
+  color: #14221b;
+
+  font-size: clamp(24px, 2.5vw, 32px);
+  letter-spacing: -.035em;
+}
+
+
+.dna-section-heading > p {
+  max-width: 460px;
+  margin: 0;
+
+  color: #77817b;
+
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+
+
+/* ============================================================
+   FIVE-SIGNAL DNA FINGERPRINT
+   ============================================================ */
+
+.dna-fingerprint-section {
+  padding: 34px;
+
+  border: 1px solid rgba(19, 88, 56, .08);
+  border-radius: 32px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.9),
+      rgba(247,252,249,.88)
+    );
+
+  box-shadow:
+    0 20px 55px rgba(17, 54, 36, .055);
+}
+
+
+.dna-fingerprint {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 13px;
+}
+
+
+.dna-dimension-card {
+  position: relative;
+
+  min-width: 0;
+
+  padding: 22px 18px 17px;
+
+  border: 1px solid rgba(27, 94, 61, .08);
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.97),
+      rgba(250,253,251,.91)
+    );
+
+  overflow: hidden;
+
+  transition:
+    transform .28s cubic-bezier(.2,.8,.2,1),
+    box-shadow .28s ease,
+    border-color .28s ease;
+}
+
+
+.dna-dimension-card::before {
+  content: "";
+
+  position: absolute;
+
+  width: 100px;
+  height: 100px;
+
+  top: -55px;
+  right: -45px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(30, 213, 112, .11),
+      transparent 67%
+    );
+}
+
+
+.dna-dimension-card:hover {
+  transform: translateY(-5px);
+
+  border-color: rgba(24, 185, 92, .17);
+
+  box-shadow:
+    0 20px 32px rgba(18, 67, 40, .09);
+}
+
+
+.dna-dimension-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+}
+
+
+.dna-dimension-letter {
+  display: grid;
+  place-items: center;
+
+  width: 38px;
+  height: 38px;
+
+  border-radius: 13px;
+
+  color: #067b40;
+
+  background:
+    linear-gradient(
+      145deg,
+      #e8fff1,
+      #f5fff8
+    );
+
+  border: 1px solid rgba(20, 182, 87, .14);
+
+  font-size: 16px;
+  font-weight: 900;
+}
+
+
+.dna-dimension-value {
+  color: #109452;
+
+  font-size: 21px;
+  font-weight: 850;
+  letter-spacing: -.04em;
+}
+
+
+.dna-dimension-card h3 {
+  margin: 0 0 8px;
+
+  color: #1b2821;
+
+  font-size: 15px;
+}
+
+
+.dna-dimension-card p {
+  min-height: 42px;
+
+  margin: 0 0 18px;
+
+  color: #7b857f;
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+
+.dna-score-track {
+  width: 100%;
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #edf2ef;
+}
+
+
+.dna-score-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #078d4b,
+      #24d477,
+      #7becaa
+    );
+
+  box-shadow:
+    0 0 10px rgba(30, 206, 109, .27);
+
+  transition: width .8s cubic-bezier(.2,.8,.2,1);
+}
+
+
+.dna-scale {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 7px;
+
+  color: #a1aaa5;
+
+  font-size: 9px;
+}
+
+
+
+/* ============================================================
+   RHYTHM + HISTORY
+   ============================================================ */
+
+.dna-profile-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, .75fr);
+  gap: 18px;
+}
+
+
+.dna-panel {
+  padding: 30px;
+
+  border: 1px solid rgba(20, 83, 53, .08);
+  border-radius: 29px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.96),
+      rgba(249,253,251,.91)
+    );
+
+  box-shadow:
+    0 18px 45px rgba(20, 61, 40, .055);
+}
+
+
+.dna-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  margin-bottom: 26px;
+}
+
+
+.dna-panel-icon {
+  display: grid;
+  place-items: center;
+
+  width: 45px;
+  height: 45px;
+
+  flex-shrink: 0;
+
+  border-radius: 15px;
+
+  color: #078a49;
+
+  border: 1px solid rgba(19, 173, 84, .13);
+
+  background:
+    linear-gradient(
+      145deg,
+      #ecfff3,
+      #f8fffa
+    );
+
+  font-size: 20px;
+}
+
+
+.dna-panel-kicker {
+  margin: 0 0 4px;
+
+  color: #0b8950;
+
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+
+.dna-panel-heading h3 {
+  margin: 0;
+
+  color: #18271f;
+
+  font-size: 18px;
+  letter-spacing: -.02em;
+}
+
+
+.dna-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+}
+
+
+.dna-metric {
+  min-width: 0;
+
+  padding: 17px;
+
+  border-radius: 17px;
+
+  border: 1px solid rgba(24, 83, 54, .065);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(247,251,249,.9),
+      rgba(255,255,255,.98)
+    );
+}
+
+
+.dna-metric span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #929b95;
+
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+
+.dna-metric strong {
+  display: block;
+
+  color: #1a2b22;
+
+  font-size: 14px;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+
+
+/* ------------------------------------------------------------
+   HISTORY
+   ------------------------------------------------------------ */
+
+.history-core {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+
+.history-number {
+  padding: 20px 12px;
+
+  text-align: center;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(235, 250, 241, .82),
+      rgba(249, 255, 251, .98)
+    );
+
+  border: 1px solid rgba(13, 154, 72, .08);
+}
+
+
+.history-number strong {
+  display: block;
+
+  color: #0b8c4b;
+
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -.05em;
+}
+
+
+.history-number span {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #79827d;
+
+  font-size: 10px;
+}
+
+
+.loyalty-profile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+
+  margin-top: 13px;
+  padding: 15px 17px;
+
+  border-radius: 16px;
+
+  background: #f7faf8;
+}
+
+
+.loyalty-profile span {
+  color: #87908a;
+  font-size: 10px;
+}
+
+
+.loyalty-profile strong {
+  color: #243129;
+
+  font-size: 11px;
+  text-align: right;
+}
+
+
+
+/* ============================================================
+   CATEGORY SIGNATURE
+   ============================================================ */
+
+.dna-category-section {
+  padding: 34px;
+
+  border: 1px solid rgba(17, 91, 53, .08);
+  border-radius: 32px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.96),
+      rgba(246,252,248,.9)
+    );
+
+  box-shadow:
+    0 20px 55px rgba(14, 56, 34, .05);
+}
+
+
+.category-signature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+
+.affinity-panel {
+  padding: 25px;
+
+  border-radius: 23px;
+
+  border: 1px solid rgba(20, 85, 54, .07);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(251,253,252,.97),
+      rgba(255,255,255,.96)
+    );
+}
+
+
+.affinity-panel-header {
+  margin-bottom: 21px;
+}
+
+
+.affinity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
+}
+
+
+.affinity-item {
+  min-width: 0;
+}
+
+
+.affinity-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+
+  margin-bottom: 10px;
+}
+
+
+.affinity-top > div {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.affinity-rank {
+  display: grid;
+  place-items: center;
+
+  width: 29px;
+  height: 29px;
+
+  flex-shrink: 0;
+
+  border-radius: 10px;
+
+  color: #0e8d4d;
+  background: #eafaf1;
+
+  font-size: 9px;
+  font-weight: 850;
+}
+
+
+.affinity-top strong {
+  color: #26352d;
+
+  font-size: 12px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.affinity-value {
+  color: #0d9150;
+
+  font-size: 13px;
+  font-weight: 850;
+}
+
+
+.affinity-track {
+  width: 100%;
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #edf2ef;
+}
+
+
+.affinity-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #078b49,
+      #35d77f,
+      #8bebad
+    );
+}
+
+
+
+/* ============================================================
+   AI INSIGHTS
+   ============================================================ */
+
+.dna-insights-section {
+  padding: 34px;
+
+  border-radius: 32px;
+
+  border: 1px solid rgba(15, 98, 56, .08);
+
+  background:
+    radial-gradient(
+      circle at 100% 0,
+      rgba(26, 215, 110, .09),
+      transparent 33%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.97),
+      rgba(246,252,248,.91)
+    );
+
+  box-shadow:
+    0 20px 55px rgba(15, 54, 34, .05);
+}
+
+
+.dna-insight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+
+.dna-insight-card {
+  position: relative;
+
+  display: grid;
+  grid-template-columns: 43px minmax(0, 1fr);
+  gap: 14px;
+
+  padding: 20px;
+
+  border-radius: 20px;
+
+  border: 1px solid rgba(18, 81, 51, .07);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.95),
+      rgba(249,252,250,.95)
+    );
+
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease;
+}
+
+
+.dna-insight-card:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(11, 162, 77, .14);
+
+  box-shadow:
+    0 16px 30px rgba(16, 67, 40, .07);
+}
+
+
+.dna-insight-card.featured {
+  grid-column: 1 / -1;
+
+  color: white;
+
+  border-color: transparent;
+
+  background:
+    linear-gradient(
+      125deg,
+      #071f14,
+      #0a4428 55%,
+      #0d6e3b
+    );
+
+  box-shadow:
+    0 20px 40px rgba(8, 67, 36, .15);
+}
+
+
+.dna-insight-icon {
+  display: grid;
+  place-items: center;
+
+  width: 43px;
+  height: 43px;
+
+  border-radius: 14px;
+
+  color: #0b8e4d;
+  background: #eafff1;
+
+  font-size: 17px;
+}
+
+
+.dna-insight-card.featured
+.dna-insight-icon {
+  color: #9affc0;
+  background: rgba(255,255,255,.1);
+}
+
+
+.dna-insight-label {
+  margin: 2px 0 7px;
+
+  color: #0b8a4c;
+
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+
+.dna-insight-card.featured
+.dna-insight-label {
+  color: #81f0ad;
+}
+
+
+.dna-insight-text {
+  margin: 0;
+
+  color: #6c7770;
+
+  font-size: 12px;
+  line-height: 1.62;
+}
+
+
+.dna-insight-card.featured
+.dna-insight-text {
+  color: rgba(235,255,242,.8);
+}
+
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1050px) {
+
+  .dna-hero {
+    grid-template-columns: 1fr;
+  }
+
+
+  .dna-identity {
+    min-height: auto;
+  }
+
+
+  .dna-fingerprint {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+
+  .dna-profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+@media (max-width: 760px) {
+
+  .intelligence-tabs {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+
+  .tab-button {
+    white-space: normal;
+  }
+
+
+  .dna-hero,
+  .dna-fingerprint-section,
+  .dna-category-section,
+  .dna-insights-section {
+    padding: 23px;
+    border-radius: 25px;
+  }
+
+
+  .dna-fingerprint {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  .dna-metric-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  .category-signature-grid,
+  .dna-insight-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .dna-section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+
+  .dna-section-heading > p {
+    max-width: none;
+  }
+}
+
+
+
+@media (max-width: 480px) {
+
+  .dna-fingerprint,
+  .dna-metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .history-core {
+    grid-template-columns: 1fr;
+  }
+
+
+  .dna-meta-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+
+  .dna-hero h2 {
+    font-size: 30px;
+  }
+}
+
+/* ============================================================
+   SHOPPING DNA MAP
+============================================================ */
+
+.dna-map-section {
+  position: relative;
+
+  padding: 36px;
+
+  overflow: hidden;
+
+  border-radius: 34px;
+
+  border: 1px solid rgba(18, 97, 58, .09);
+
+  background:
+    radial-gradient(
+      circle at 12% 12%,
+      rgba(61, 231, 137, .09),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 90% 90%,
+      rgba(11, 126, 70, .06),
+      transparent 28%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.97),
+      rgba(245,252,248,.94)
+    );
+
+  box-shadow:
+    0 25px 65px rgba(10, 61, 34, .06);
+}
+
+
+.dna-map-heading {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+
+  margin-bottom: 20px;
+}
+
+
+.dna-map-heading h2 {
+  margin: 5px 0 8px;
+
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.05;
+
+  letter-spacing: -.045em;
+
+  color: #0c1d14;
+}
+
+
+.dna-map-heading p:not(.story-kicker) {
+  margin: 0;
+
+  color: #6f7b73;
+
+  font-size: 13px;
+}
+
+
+.dna-map-legend {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: #79847d;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+.dna-map-legend-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #22d977;
+
+  box-shadow:
+    0 0 0 5px rgba(34,217,119,.12),
+    0 0 20px rgba(34,217,119,.35);
+}
+
+
+
+/* ------------------------------------------------------------
+   MAP LAYOUT
+------------------------------------------------------------ */
+
+.dna-map-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.65fr)
+    minmax(260px, .65fr);
+
+  gap: 24px;
+
+  align-items: stretch;
+}
+
+
+
+/* ------------------------------------------------------------
+   VISUAL MAP
+------------------------------------------------------------ */
+
+.dna-map-shell {
+  position: relative;
+
+  min-height: 520px;
+
+  overflow: hidden;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 29px;
+
+  border:
+    1px solid
+    rgba(20, 103, 61, .08);
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(30, 216, 111, .09),
+      transparent 48%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(249,253,251,.9),
+      rgba(255,255,255,.98)
+    );
+}
+
+
+.dna-map-shell::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  opacity: .26;
+
+  background-image:
+    linear-gradient(
+      rgba(17, 104, 61, .05)
+      1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(17, 104, 61, .05)
+      1px,
+      transparent 1px
+    );
+
+  background-size: 34px 34px;
+
+  mask-image:
+    radial-gradient(
+      circle at center,
+      black,
+      transparent 75%
+    );
+}
+
+
+.dna-map-glow {
+  position: absolute;
+
+  width: 280px;
+  height: 280px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(32, 220, 118, .08);
+
+  filter: blur(70px);
+
+  animation:
+    dnaGlowPulse
+    4s ease-in-out infinite;
+}
+
+
+@keyframes dnaGlowPulse {
+
+  0%,
+  100% {
+    transform: scale(.9);
+    opacity: .5;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+
+.dna-map-svg {
+  position: relative;
+  z-index: 2;
+
+  width: min(100%, 600px);
+  height: auto;
+
+  overflow: visible;
+}
+
+
+
+/* ------------------------------------------------------------
+   GRID
+------------------------------------------------------------ */
+
+.dna-map-grid {
+  fill: transparent;
+
+  stroke: rgba(17, 105, 61, .11);
+
+  stroke-width: 1;
+}
+
+
+.dna-map-grid-outer {
+  stroke:
+    rgba(9, 124, 67, .18);
+
+  stroke-width: 1.3;
+}
+
+
+.dna-map-axis {
+  stroke:
+    rgba(24, 97, 62, .08);
+
+  stroke-width: 1;
+}
+
+
+
+/* ------------------------------------------------------------
+   DYNAMIC CUSTOMER SHAPE
+------------------------------------------------------------ */
+
+.dna-map-customer-shape {
+  fill:
+    url(#dnaPolygonGradient);
+
+  fill-opacity: .17;
+
+  stroke: #12b866;
+
+  stroke-width: 3;
+
+  stroke-linejoin: round;
+
+  filter:
+    drop-shadow(
+      0 8px 15px
+      rgba(19, 190, 103, .16)
+    );
+
+  animation:
+    dnaPolygonReveal
+    .9s
+    cubic-bezier(.16,.84,.32,1)
+    both;
+
+  transform-origin: center;
+}
+
+
+@keyframes dnaPolygonReveal {
+
+  from {
+    opacity: 0;
+    transform: scale(.3);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+
+/* ------------------------------------------------------------
+   NODES
+------------------------------------------------------------ */
+
+.dna-map-node {
+  fill: #ffffff;
+
+  stroke: #16ba68;
+
+  stroke-width: 3;
+
+  filter:
+    drop-shadow(
+      0 3px 5px
+      rgba(10, 127, 67, .18)
+    );
+}
+
+
+.dna-map-node.dominant {
+  fill: #43ed94;
+
+  stroke: #08713d;
+
+  stroke-width: 3;
+}
+
+
+.dna-map-dominant-halo {
+  fill:
+    rgba(34, 229, 124, .13);
+
+  stroke:
+    rgba(28, 216, 116, .2);
+
+  stroke-width: 1;
+
+  animation:
+    dnaDominantPulse
+    2.2s ease-in-out infinite;
+}
+
+
+@keyframes dnaDominantPulse {
+
+  0%,
+  100% {
+    transform:
+      scale(.8);
+
+    transform-origin:
+      center;
+
+    opacity: .3;
+  }
+
+  50% {
+    transform:
+      scale(1.4);
+
+    transform-origin:
+      center;
+
+    opacity: 1;
+  }
+}
+
+
+.dna-map-center {
+  fill: #0f8d4e;
+
+  filter:
+    drop-shadow(
+      0 0 6px
+      rgba(18, 191, 102, .5)
+    );
+}
+
+
+
+/* ------------------------------------------------------------
+   LABELS
+------------------------------------------------------------ */
+
+.dna-map-label {
+  fill: #637069;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  letter-spacing: .02em;
+}
+
+
+.dna-map-label.dominant {
+  fill: #078b4a;
+
+  font-weight: 900;
+}
+
+
+.dna-map-score {
+  fill: #26342d;
+
+  font-size: 16px;
+
+  font-weight: 900;
+}
+
+
+.dna-map-score.dominant {
+  fill: #08a356;
+}
+
+
+
+/* ============================================================
+   SIDE ANALYSIS
+============================================================ */
+
+.dna-map-analysis {
+  position: relative;
+
+  overflow: hidden;
+
+  padding: 29px;
+
+  border-radius: 27px;
+
+  color: white;
+
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(54, 235, 137, .18),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      #071d13,
+      #0a3722 60%,
+      #0a4d2b
+    );
+
+  box-shadow:
+    0 24px 45px
+    rgba(6, 53, 30, .16);
+}
+
+
+.dna-map-analysis::after {
+  content: "";
+
+  position: absolute;
+
+  width: 160px;
+  height: 160px;
+
+  right: -90px;
+  bottom: -100px;
+
+  border:
+    1px solid
+    rgba(121, 255, 178, .1);
+
+  border-radius: 50%;
+}
+
+
+.dna-map-analysis h3 {
+  margin:
+    5px 0 25px;
+
+  color: white;
+
+  font-size: 21px;
+
+  letter-spacing: -.035em;
+}
+
+
+.dna-map-analysis
+.dna-panel-kicker {
+  color: #74eaa5;
+}
+
+
+
+/* ------------------------------------------------------------
+   ANALYSIS ITEMS
+------------------------------------------------------------ */
+
+.dna-map-analysis-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+
+.dna-map-analysis-item {
+  position: relative;
+
+  padding-bottom: 16px;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.08);
+}
+
+
+.dna-map-analysis-item:last-child {
+  border-bottom: 0;
+}
+
+
+.dna-map-analysis-item.strongest {
+  padding:
+    14px;
+
+  border:
+    1px solid
+    rgba(70, 239, 144, .15);
+
+  border-radius: 15px;
+
+  background:
+    rgba(77, 234, 143, .07);
+}
+
+
+.dna-map-analysis-top {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 9px;
+}
+
+
+.dna-map-analysis-top > div {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  color:
+    rgba(241,255,246,.78);
+
+  font-size: 11px;
+
+  font-weight: 650;
+}
+
+
+.dna-map-analysis-top strong {
+  color: #57ed99;
+
+  font-size: 17px;
+}
+
+
+.dna-map-rank {
+  color:
+    rgba(153,255,197,.55);
+
+  font-size: 9px;
+
+  font-weight: 850;
+
+  letter-spacing: .1em;
+}
+
+
+.dna-map-mini-track {
+  width: 100%;
+
+  height: 4px;
+
+  overflow: hidden;
+
+  border-radius: 99px;
+
+  background:
+    rgba(255,255,255,.09);
+}
+
+
+.dna-map-mini-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #1dce70,
+      #65f2a2
+    );
+
+  box-shadow:
+    0 0 10px
+    rgba(64,234,145,.25);
+}
+
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 980px) {
+
+  .dna-map-layout {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .dna-map-analysis {
+    display: grid;
+
+    grid-template-columns:
+      auto 1fr;
+
+    gap: 0 30px;
+  }
+
+
+  .dna-map-analysis-list {
+    grid-column: 1 / -1;
+  }
+}
+
+
+@media (max-width: 650px) {
+
+  .dna-map-section {
+    padding: 22px;
+  }
+
+
+  .dna-map-heading {
+    flex-direction:
+      column;
+
+    align-items:
+      flex-start;
+  }
+
+
+  .dna-map-shell {
+    min-height: 430px;
+  }
+
+
+  .dna-map-svg {
+    width: 110%;
+  }
+
+
+  .dna-map-label {
+    font-size: 10px;
+  }
+
+
+  .dna-map-score {
+    font-size: 13px;
+  }
+}
