@@ -188,3 +188,66 @@ def get_customer_shopping_dna(user_id: int):
             row = cursor.fetchone()
 
     return row
+
+    # ============================================================
+# Reorder Planner
+# ============================================================
+
+def get_customer_reorder_planner(user_id: int):
+    """
+    Retrieve reorder-cycle intelligence for one customer.
+
+    This powers the Reorder Planner experience using existing
+    purchase-cycle features generated in Databricks.
+    """
+
+    query = """
+        SELECT
+            user_id,
+            target_order_id,
+            product_id,
+            recommendation_rank,
+
+            product_name,
+            aisle,
+            department,
+
+            purchase_probability,
+
+            reorder_status,
+            shopping_section,
+            client_action,
+            why_recommended,
+
+            orders_since_last_product_purchase,
+            user_product_avg_order_gap,
+            user_product_due_score,
+            user_product_reorder_rate,
+
+            customer_aisle_affinity,
+            customer_department_affinity
+
+        FROM shopping_assistant_recommendations
+
+        WHERE user_id = %s
+          AND recommendation_type = 'REORDER'
+
+        ORDER BY
+            CASE reorder_status
+                WHEN 'OVERDUE' THEN 1
+                WHEN 'DUE_NOW' THEN 2
+                WHEN 'DUE_SOON' THEN 3
+                WHEN 'EARLY' THEN 4
+                WHEN 'NO_ESTABLISHED_CYCLE' THEN 5
+                ELSE 6
+            END,
+            user_product_due_score DESC,
+            purchase_probability DESC;
+    """
+
+    with get_connection() as connection:
+        with connection.cursor(row_factory=dict_row) as cursor:
+            cursor.execute(query, (user_id,))
+            rows = cursor.fetchall()
+
+    return rows

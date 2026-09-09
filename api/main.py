@@ -8,6 +8,7 @@ from api.repository import (
     get_customers,
     get_next_basket_predictions,
     get_customer_shopping_dna,
+    get_customer_reorder_planner,
 )
 
 
@@ -193,7 +194,152 @@ def customer_next_basket(user_id: int):
         "predictions": predicted_products,
     }
 
+# ============================================================
+# Reorder Planner
+# ============================================================
 
+@app.get("/api/customers/{user_id}/reorder-planner")
+def customer_reorder_planner(user_id: int):
+    """
+    Return reorder-cycle intelligence for one customer.
+    """
+
+    items = get_customer_reorder_planner(user_id)
+
+    if not items:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No reorder-planner data found for customer {user_id}",
+        )
+
+    sections = {
+        "overdue": [],
+        "due_now": [],
+        "due_soon": [],
+        "early": [],
+        "no_established_cycle": [],
+        "other": [],
+    }
+
+    status_mapping = {
+        "OVERDUE": "overdue",
+        "DUE_NOW": "due_now",
+        "DUE_SOON": "due_soon",
+        "EARLY": "early",
+        "NO_ESTABLISHED_CYCLE": "no_established_cycle",
+    }
+
+    for item in items:
+        status = item["reorder_status"]
+
+        section = status_mapping.get(
+            status,
+            "other",
+        )
+
+        avg_gap = item["user_product_avg_order_gap"]
+        orders_since = item[
+            "orders_since_last_product_purchase"
+        ]
+
+        reorder_rate = item["user_product_reorder_rate"]
+
+        sections[section].append(
+            {
+                "product_id": item["product_id"],
+                "rank": item["recommendation_rank"],
+
+                "product_name": item["product_name"],
+                "aisle": item["aisle"],
+                "department": item["department"],
+
+                "purchase_probability": round(
+                    float(item["purchase_probability"]),
+                    4,
+                ),
+
+                "purchase_probability_pct": round(
+                    float(item["purchase_probability"]) * 100,
+                    1,
+                ),
+
+                "reorder_status": status,
+
+                "orders_since_last_purchase": orders_since,
+
+                "usual_order_gap": (
+                    round(float(avg_gap), 1)
+                    if avg_gap is not None
+                    else None
+                ),
+
+                "due_score": (
+                    round(
+                        float(item["user_product_due_score"]),
+                        2,
+                    )
+                    if item["user_product_due_score"] is not None
+                    else None
+                ),
+
+                "historical_reorder_rate_pct": (
+                    round(float(reorder_rate) * 100, 1)
+                    if reorder_rate is not None
+                    else None
+                ),
+
+                "action": item["client_action"],
+
+                "why": item["why_recommended"],
+            }
+        )
+
+    counts = {
+        name: len(values)
+        for name, values in sections.items()
+    }
+
+    attention_count = (
+        counts["overdue"]
+        + counts["due_now"]
+    )
+
+    upcoming_count = counts["due_soon"]
+
+    if attention_count > 0:
+        planner_summary = (
+            f"{attention_count} "
+            f"{'product needs' if attention_count == 1 else 'products need'} "
+            "your attention now."
+        )
+
+    elif upcoming_count > 0:
+        planner_summary = (
+            f"{upcoming_count} "
+            f"{'product is' if upcoming_count == 1 else 'products are'} "
+            "approaching the usual reorder window."
+        )
+
+    else:
+        planner_summary = (
+            "Nothing appears urgently due right now."
+        )
+
+    return {
+        "user_id": user_id,
+        "target_order_id": items[0]["target_order_id"],
+
+        "total_reorder_products": len(items),
+
+        "attention_count": attention_count,
+        "upcoming_count": upcoming_count,
+
+        "planner_summary": planner_summary,
+
+        "status_counts": counts,
+
+        "sections": sections,
+    }
 # ============================================================
 # Smart Shopping Assistant
 # ============================================================

@@ -14,6 +14,8 @@ function App() {
 
   const [assistant, setAssistant] = useState(null);
   const [nextBasket, setNextBasket] = useState(null);
+  const [reorderPlanner, setReorderPlanner] = useState(null);
+
   const [shoppingDna, setShoppingDna] = useState(null);
 
   const [activeTab, setActiveTab] = useState("assistant");
@@ -68,6 +70,7 @@ function App() {
 
     setAssistant(null);
     setNextBasket(null);
+    setReorderPlanner(null);
     setShoppingDna(null);
 
     setCompletedActions({});
@@ -83,6 +86,7 @@ function App() {
       const [
         assistantResponse,
         predictionResponse,
+        reorderPlannerResponse,
         shoppingDnaResponse,
       ] = await Promise.all([
         fetch(
@@ -92,6 +96,9 @@ function App() {
         fetch(
           `${API_URL}/api/customers/${userId}/next-basket`
         ),
+          fetch(
+    `${API_URL}/api/customers/${userId}/reorder-planner`
+  ),
 
         fetch(
           `${API_URL}/api/customers/${userId}/shopping-dna`
@@ -112,6 +119,15 @@ function App() {
         );
       }
 
+      if (
+  !reorderPlannerResponse.ok &&
+  reorderPlannerResponse.status !== 404
+) {
+  throw new Error(
+    `Unable to load Reorder Planner for customer ${userId}.`
+  );
+}
+
 
       if (!shoppingDnaResponse.ok) {
         throw new Error(
@@ -123,16 +139,22 @@ function App() {
       const [
         assistantData,
         predictionData,
+        reorderPlannerData,
         shoppingDnaData,
       ] = await Promise.all([
         assistantResponse.json(),
         predictionResponse.json(),
+
+  reorderPlannerResponse.ok
+    ? reorderPlannerResponse.json()
+    : null,
         shoppingDnaResponse.json(),
       ]);
 
 
       setAssistant(assistantData);
       setNextBasket(predictionData);
+      setReorderPlanner(reorderPlannerData);
       setShoppingDna(shoppingDnaData);
 
     } catch (err) {
@@ -298,7 +320,20 @@ function App() {
                   }
                 >
                   Next Basket Prediction
-                </button>
+              </button>
+              <button
+  type="button"
+  className={
+    activeTab === "reorder"
+      ? "tab-button active"
+      : "tab-button"
+  }
+  onClick={() =>
+    setActiveTab("reorder")
+  }
+>
+  Reorder Planner
+</button>
 
 
                 <button
@@ -312,7 +347,7 @@ function App() {
                     setActiveTab("dna")
                   }
                 >
-                  Shopping DNA
+                  My Insights
                 </button>
 
               </div>
@@ -339,7 +374,18 @@ function App() {
                 <NextBasket
                   nextBasket={nextBasket}
                 />
-              )}
+            )}
+            {/* ==================================================
+    REORDER PLANNER
+================================================== */}
+
+{activeTab === "reorder" && (
+  <ReorderPlanner
+    planner={reorderPlanner}
+    completedActions={completedActions}
+    onAction={handleRecommendationAction}
+  />
+)}
 
 
               {/* ==================================================
@@ -915,7 +961,556 @@ function PredictionCard({ prediction }) {
 }
 
 
+/* ============================================================
+   REORDER PLANNER VIEW
+============================================================ */
 
+function ReorderPlanner({
+  planner,
+  completedActions,
+  onAction,
+}) {
+
+  if (!planner) {
+    return (
+      <section className="reorder-planner-view">
+
+        <section className="reorder-planner-empty">
+
+          <p className="eyebrow">
+            REORDER PLANNER
+          </p>
+
+          <h2>
+            No established reorder plan yet
+          </h2>
+
+          <p>
+            This customer does not currently have enough
+            reorder-cycle information among the surfaced
+            products.
+          </p>
+
+        </section>
+
+      </section>
+    );
+  }
+
+
+  const sections = [
+    {
+      key: "overdue",
+      title: "Overdue",
+      subtitle:
+        "These products are already past their usual reorder window.",
+      icon: "!",
+      tone: "overdue",
+    },
+    {
+      key: "due_now",
+      title: "Due now",
+      subtitle:
+        "These products are around their usual reorder time.",
+      icon: "↻",
+      tone: "due-now",
+    },
+    {
+      key: "due_soon",
+      title: "Due soon",
+      subtitle:
+        "These products are approaching their usual reorder window.",
+      icon: "◷",
+      tone: "due-soon",
+    },
+    {
+      key: "early",
+      title: "Coming later",
+      subtitle:
+        "Frequent products that are still earlier than their usual cycle.",
+      icon: "→",
+      tone: "early",
+    },
+    {
+      key: "no_established_cycle",
+      title: "Still learning",
+      subtitle:
+        "Previously purchased products without a reliable reorder cycle yet.",
+      icon: "◇",
+      tone: "learning",
+    },
+  ];
+
+
+  return (
+    <section className="reorder-planner-view">
+
+      {/* ========================================================
+          PLANNER HERO
+      ======================================================== */}
+
+      <section className="reorder-planner-hero">
+
+        <div>
+
+          <p className="eyebrow">
+            PURCHASE-CYCLE INTELLIGENCE
+          </p>
+
+          <p className="planner-label">
+            REORDER PLANNER
+          </p>
+
+          <h2>
+            Stay ahead of your repeat purchases
+          </h2>
+
+          <p className="shopping-summary">
+            {planner.planner_summary}
+          </p>
+
+        </div>
+
+
+        <div className="planner-attention-card">
+
+          <strong>
+            {planner.attention_count ?? 0}
+          </strong>
+
+          <span>
+            need attention now
+          </span>
+
+        </div>
+
+      </section>
+
+
+      {/* ========================================================
+          PLANNER STATS
+      ======================================================== */}
+
+      <section className="stats reorder-planner-stats">
+
+        <Stat
+          value={
+            planner.status_counts?.overdue ?? 0
+          }
+          label="Overdue"
+        />
+
+        <Stat
+          value={
+            planner.status_counts?.due_now ?? 0
+          }
+          label="Due now"
+        />
+
+        <Stat
+          value={
+            planner.status_counts?.due_soon ?? 0
+          }
+          label="Due soon"
+        />
+
+        <Stat
+          value={
+            planner.status_counts?.early ?? 0
+          }
+          label="Coming later"
+        />
+
+        <Stat
+          value={
+            planner.status_counts
+              ?.no_established_cycle ?? 0
+          }
+          label="Learning cycle"
+        />
+
+      </section>
+
+
+      {/* ========================================================
+          REORDER TIMELINE
+      ======================================================== */}
+
+      <div className="reorder-planner-story">
+
+        <div className="story-intro">
+
+          <p className="story-kicker">
+            YOUR REORDER TIMELINE
+          </p>
+
+          <h2>
+            What needs attention?
+          </h2>
+
+          <p>
+            Products are organized by their normal purchase
+            cycle rather than only by prediction probability.
+          </p>
+
+        </div>
+
+
+        {sections.map((section) => (
+
+          <ReorderPlannerSection
+
+            key={section.key}
+
+            title={section.title}
+
+            subtitle={section.subtitle}
+
+            icon={section.icon}
+
+            tone={section.tone}
+
+            items={
+              planner.sections?.[section.key] || []
+            }
+
+            completedActions={completedActions}
+
+            onAction={onAction}
+
+          />
+
+        ))}
+
+      </div>
+
+    </section>
+  );
+}
+
+
+
+/* ============================================================
+   REORDER PLANNER SECTION
+============================================================ */
+
+function ReorderPlannerSection({
+  title,
+  subtitle,
+  icon,
+  tone,
+  items,
+  completedActions,
+  onAction,
+}) {
+
+  if (!items || items.length === 0) {
+    return null;
+  }
+
+
+  return (
+    <section
+      className={`planner-section ${tone}`}
+    >
+
+      <div className="planner-section-header">
+
+        <div className="planner-section-icon">
+          {icon}
+        </div>
+
+
+        <div>
+
+          <div className="section-title-row">
+
+            <h3>
+              {title}
+            </h3>
+
+            <span className="section-count">
+              {items.length}
+            </span>
+
+          </div>
+
+
+          <p>
+            {subtitle}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div className="planner-grid">
+
+        {items.map((product) => (
+
+          <ReorderPlannerCard
+
+            key={product.product_id}
+
+            product={product}
+
+            completed={
+              completedActions[
+                product.product_id
+              ]
+            }
+
+            onAction={onAction}
+
+          />
+
+        ))}
+
+      </div>
+
+    </section>
+  );
+}
+
+
+
+/* ============================================================
+   REORDER PLANNER CARD
+============================================================ */
+
+function ReorderPlannerCard({
+  product,
+  completed,
+  onAction,
+}) {
+
+  const usualGap =
+    product.usual_order_gap != null
+      ? Number(product.usual_order_gap)
+      : null;
+
+
+  const ordersSince =
+    product.orders_since_last_purchase != null
+      ? Number(
+          product.orders_since_last_purchase
+        )
+      : null;
+
+
+  const reorderRate =
+    product.historical_reorder_rate_pct != null
+      ? Number(
+          product.historical_reorder_rate_pct
+        )
+      : null;
+
+
+  const probability =
+    product.purchase_probability_pct != null
+      ? Number(
+          product.purchase_probability_pct
+        )
+      : 0;
+
+
+  const hasCycle =
+    usualGap !== null &&
+    usualGap > 0 &&
+    ordersSince !== null;
+
+
+  const cycleProgress =
+    hasCycle
+      ? (ordersSince / usualGap) * 100
+      : null;
+
+
+  const visualCycleProgress =
+    cycleProgress !== null
+      ? Math.min(
+          Math.max(cycleProgress, 0),
+          100
+        )
+      : 0;
+
+
+  return (
+    <article className="planner-card">
+
+      <div className="planner-card-top">
+
+        <span
+          className={`planner-status-badge ${String(
+            product.reorder_status || ""
+          )
+            .toLowerCase()
+            .replaceAll("_", "-")}`}
+        >
+          {formatStatus(
+            product.reorder_status
+          )}
+        </span>
+
+
+        <div className="planner-likelihood">
+
+          <strong>
+            {probability.toFixed(1)}%
+          </strong>
+
+          <span>
+            next-basket likelihood
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <p className="product-context">
+        {product.department} · {product.aisle}
+      </p>
+
+
+      <h3 className="planner-product-name">
+        {product.product_name}
+      </h3>
+
+
+      <div className="planner-cycle-metrics">
+
+        <div className="planner-cycle-metric">
+
+          <span>
+            Usually every
+          </span>
+
+          <strong>
+            {usualGap !== null && usualGap > 0
+              ? `${usualGap.toFixed(1)} orders`
+              : "Learning"}
+          </strong>
+
+        </div>
+
+
+        <div className="planner-cycle-metric">
+
+          <span>
+            Last purchased
+          </span>
+
+          <strong>
+            {ordersSince !== null
+              ? `${ordersSince} ${
+                  ordersSince === 1
+                    ? "order"
+                    : "orders"
+                } ago`
+              : "—"}
+          </strong>
+
+        </div>
+
+
+        <div className="planner-cycle-metric">
+
+          <span>
+            Historical reorder rate
+          </span>
+
+          <strong>
+            {reorderRate !== null
+              ? `${reorderRate.toFixed(1)}%`
+              : "—"}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      {hasCycle && (
+
+        <div className="planner-cycle-progress">
+
+          <div className="planner-cycle-progress-top">
+
+            <span>
+              Reorder cycle progress
+            </span>
+
+            <strong>
+              {Math.round(cycleProgress)}%
+            </strong>
+
+          </div>
+
+
+          <div className="planner-cycle-track">
+
+            <div
+              className="planner-cycle-fill"
+              style={{
+                width: `${visualCycleProgress}%`,
+              }}
+            />
+
+          </div>
+
+        </div>
+
+      )}
+
+
+      <div className="planner-why">
+
+        <span className="why-label">
+          WHY THIS TIMING?
+        </span>
+
+        <p>
+          {product.why}
+        </p>
+
+      </div>
+
+
+      <div className="planner-card-footer">
+
+        <span className="planner-rank">
+          Prediction #{product.rank}
+        </span>
+
+
+        <button
+          type="button"
+          className={
+            completed
+              ? "action-button completed"
+              : "action-button"
+          }
+          disabled={Boolean(completed)}
+          onClick={() =>
+            onAction(product)
+          }
+        >
+
+          {completed
+            ? completedLabel(
+                product.action
+              )
+            : product.action}
+
+        </button>
+
+      </div>
+
+    </article>
+  );
+}
 /* ============================================================
    SHOPPING DNA VIEW
 ============================================================ */
