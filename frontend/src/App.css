@@ -5486,3 +5486,799 @@ button {
     font-size: 13px;
   }
 }
+
+/* ============================================================
+   REORDER PLANNER
+============================================================ */
+
+.reorder-planner-view {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  animation: plannerFadeIn 0.45s ease both;
+}
+
+
+/* ============================================================
+   FOUR-TAB NAVIGATION
+============================================================ */
+
+.intelligence-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+}
+
+.intelligence-tabs .tab-button {
+  width: 100%;
+  white-space: nowrap;
+}
+
+
+/* ============================================================
+   PLANNER HERO
+============================================================ */
+
+.reorder-planner-hero {
+  position: relative;
+  overflow: hidden;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 210px;
+  gap: 34px;
+  align-items: center;
+
+  padding: 38px 40px;
+
+  border: 1px solid rgba(8, 112, 64, 0.12);
+  border-radius: 30px;
+
+  background:
+    radial-gradient(
+      circle at 90% 20%,
+      rgba(52, 211, 125, 0.14),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.98),
+      rgba(241, 252, 247, 0.96)
+    );
+
+  box-shadow:
+    0 22px 65px rgba(19, 85, 54, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.reorder-planner-hero::after {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  right: -90px;
+  top: -110px;
+  border-radius: 50%;
+  background: rgba(30, 208, 112, 0.07);
+  pointer-events: none;
+}
+
+.reorder-planner-hero h2 {
+  margin: 8px 0 10px;
+  max-width: 700px;
+
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+
+  color: #10251b;
+}
+
+.reorder-planner-hero .shopping-summary {
+  max-width: 700px;
+  margin-top: 14px;
+  color: #5c6f64;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.planner-label {
+  margin: 14px 0 0;
+
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+
+  color: #15945a;
+}
+
+
+/* ============================================================
+   ATTENTION CARD
+============================================================ */
+
+.planner-attention-card {
+  position: relative;
+  z-index: 1;
+
+  min-height: 160px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #073f29,
+      #0a6841
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 20px 38px rgba(4, 77, 44, 0.22);
+}
+
+.planner-attention-card strong {
+  display: block;
+
+  font-size: 58px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.planner-attention-card span {
+  margin-top: 10px;
+
+  max-width: 120px;
+
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.35;
+
+  color: rgba(255, 255, 255, 0.78);
+}
+
+
+/* ============================================================
+   PLANNER STATS
+============================================================ */
+
+.reorder-planner-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.reorder-planner-stats .stat-card {
+  min-height: 125px;
+}
+
+
+/* ============================================================
+   PLANNER STORY
+============================================================ */
+
+.reorder-planner-story {
+  display: flex;
+  flex-direction: column;
+  gap: 38px;
+}
+
+.reorder-planner-story .story-intro {
+  margin-bottom: 4px;
+}
+
+
+/* ============================================================
+   PLANNER SECTION
+============================================================ */
+
+.planner-section {
+  position: relative;
+
+  padding: 30px;
+
+  border: 1px solid rgba(19, 86, 53, 0.09);
+  border-radius: 28px;
+
+  background: rgba(255, 255, 255, 0.68);
+
+  box-shadow:
+    0 14px 40px rgba(25, 80, 54, 0.055);
+}
+
+.planner-section.overdue {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 248, 248, 0.96),
+      rgba(255, 255, 255, 0.98)
+    );
+}
+
+.planner-section.due-now {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(241, 253, 247, 0.96),
+      rgba(255, 255, 255, 0.98)
+    );
+}
+
+.planner-section.due-soon {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 252, 241, 0.97),
+      rgba(255, 255, 255, 0.98)
+    );
+}
+
+.planner-section.early {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(248, 247, 255, 0.96),
+      rgba(255, 255, 255, 0.98)
+    );
+}
+
+.planner-section.learning {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(247, 250, 248, 0.98),
+      rgba(255, 255, 255, 0.98)
+    );
+}
+
+
+/* ============================================================
+   SECTION HEADER
+============================================================ */
+
+.planner-section-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+
+  margin-bottom: 24px;
+}
+
+.planner-section-icon {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background: #edf9f2;
+  color: #087c48;
+
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.planner-section.overdue .planner-section-icon {
+  background: #fff0f0;
+  color: #c74b4b;
+}
+
+.planner-section.due-soon .planner-section-icon {
+  background: #fff7df;
+  color: #b27b08;
+}
+
+.planner-section.early .planner-section-icon {
+  background: #f2efff;
+  color: #755fc1;
+}
+
+.planner-section-header h3 {
+  margin: 0;
+
+  color: #14251c;
+
+  font-size: 23px;
+  letter-spacing: -0.025em;
+}
+
+.planner-section-header p {
+  margin: 7px 0 0;
+
+  color: #6a786f;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+
+/* ============================================================
+   PRODUCT GRID
+============================================================ */
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+
+/* ============================================================
+   PLANNER CARD
+============================================================ */
+
+.planner-card {
+  position: relative;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 25px;
+
+  border: 1px solid rgba(11, 83, 49, 0.1);
+  border-radius: 24px;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  box-shadow:
+    0 12px 34px rgba(21, 77, 51, 0.06);
+
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.planner-card:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(11, 135, 73, 0.2);
+
+  box-shadow:
+    0 20px 45px rgba(20, 85, 54, 0.1);
+}
+
+.planner-card::before {
+  content: "";
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  top: 0;
+
+  height: 4px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #0d9a58,
+      #2ed27d
+    );
+}
+
+
+/* ============================================================
+   CARD HEADER
+============================================================ */
+
+.planner-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+
+  margin-bottom: 18px;
+}
+
+.planner-status-badge {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 30px;
+  padding: 6px 11px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  background: #edf8f2;
+  color: #087a47;
+}
+
+.planner-status-badge.overdue {
+  background: #fff0f0;
+  color: #c24141;
+}
+
+.planner-status-badge.due-now {
+  background: #e9f9f0;
+  color: #087b46;
+}
+
+.planner-status-badge.due-soon {
+  background: #fff6da;
+  color: #a76d00;
+}
+
+.planner-status-badge.early {
+  background: #f1edff;
+  color: #7256bb;
+}
+
+.planner-status-badge.no-established-cycle {
+  background: #eef2ef;
+  color: #627067;
+}
+
+
+/* ============================================================
+   LIKELIHOOD
+============================================================ */
+
+.planner-likelihood {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.planner-likelihood strong {
+  color: #0c7143;
+
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.planner-likelihood span {
+  margin-top: 5px;
+
+  color: #819087;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+
+/* ============================================================
+   PRODUCT IDENTITY
+============================================================ */
+
+.planner-card .product-context {
+  margin: 0 0 7px;
+
+  color: #7c8b82;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.planner-product-name {
+  margin: 0 0 22px;
+
+  color: #13241b;
+
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+
+/* ============================================================
+   CYCLE METRICS
+============================================================ */
+
+.planner-cycle-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+
+  margin-bottom: 22px;
+}
+
+.planner-cycle-metric {
+  min-height: 84px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 13px;
+
+  border: 1px solid rgba(16, 90, 54, 0.075);
+  border-radius: 16px;
+
+  background: #f8fbf9;
+}
+
+.planner-cycle-metric span {
+  color: #7a8980;
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.planner-cycle-metric strong {
+  margin-top: 6px;
+
+  color: #173025;
+
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+
+/* ============================================================
+   CYCLE PROGRESS
+============================================================ */
+
+.planner-cycle-progress {
+  margin-bottom: 21px;
+}
+
+.planner-cycle-progress-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 9px;
+}
+
+.planner-cycle-progress-top span {
+  color: #66766c;
+  font-size: 12px;
+}
+
+.planner-cycle-progress-top strong {
+  color: #0a7c48;
+  font-size: 13px;
+}
+
+.planner-cycle-track {
+  width: 100%;
+  height: 9px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #e7eee9;
+}
+
+.planner-cycle-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #14a45f,
+      #39d98a
+    );
+
+  transition: width 0.6s ease;
+}
+
+
+/* ============================================================
+   WHY THIS TIMING
+============================================================ */
+
+.planner-why {
+  margin-top: auto;
+  padding: 17px 18px;
+
+  border: 1px solid rgba(26, 155, 88, 0.11);
+  border-radius: 17px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(235, 250, 242, 0.82),
+      rgba(248, 253, 250, 0.94)
+    );
+}
+
+.planner-why .why-label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #0a8a4e;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.planner-why p {
+  margin: 0;
+
+  color: #52635a;
+
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+
+/* ============================================================
+   CARD FOOTER
+============================================================ */
+
+.planner-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-top: 20px;
+  padding-top: 17px;
+
+  border-top: 1px solid rgba(25, 79, 50, 0.08);
+}
+
+.planner-rank {
+  color: #8a978f;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+/* ============================================================
+   EMPTY STATE
+============================================================ */
+
+.reorder-planner-empty {
+  padding: 58px 40px;
+
+  border: 1px solid rgba(15, 110, 65, 0.1);
+  border-radius: 28px;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #f2fbf6
+    );
+
+  box-shadow:
+    0 20px 50px rgba(22, 82, 53, 0.06);
+}
+
+.reorder-planner-empty h2 {
+  margin: 12px 0;
+
+  color: #14291e;
+
+  font-size: 30px;
+  letter-spacing: -0.035em;
+}
+
+.reorder-planner-empty p:last-child {
+  max-width: 560px;
+  margin: 0 auto;
+
+  color: #697a70;
+  line-height: 1.65;
+}
+
+
+/* ============================================================
+   ANIMATION
+============================================================ */
+
+@keyframes plannerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 1100px) {
+
+  .reorder-planner-stats {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .planner-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 850px) {
+
+  .intelligence-tabs {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .reorder-planner-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-attention-card {
+    min-height: 120px;
+  }
+
+  .planner-cycle-metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 600px) {
+
+  .intelligence-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .reorder-planner-hero {
+    padding: 28px 22px;
+  }
+
+  .reorder-planner-stats {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .planner-section {
+    padding: 21px 16px;
+  }
+
+  .planner-card {
+    padding: 20px;
+  }
+
+  .planner-card-top {
+    flex-direction: column;
+  }
+
+  .planner-likelihood {
+    align-items: flex-start;
+  }
+
+  .planner-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .planner-card-footer .action-button {
+    width: 100%;
+  }
+}
