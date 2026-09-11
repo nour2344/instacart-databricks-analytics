@@ -9,7 +9,6 @@ const API_URL = "http://127.0.0.1:8000";
 ============================================================ */
 
 function App() {
-  
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState("");
 
@@ -21,17 +20,55 @@ function App() {
 
   const [activeTab, setActiveTab] = useState("assistant");
 
+  const [theme, setTheme] = useState(() => {
+  const savedTheme =
+    localStorage.getItem("instacart-theme");
+
+  if (
+    savedTheme === "light" ||
+    savedTheme === "dark"
+  ) {
+    return savedTheme;
+  }
+
+  return window.matchMedia(
+    "(prefers-color-scheme: dark)"
+  ).matches
+    ? "dark"
+    : "light";
+  });
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const [completedActions, setCompletedActions] = useState({});
   const [cartItems, setCartItems] = useState([]);
-const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
-const [selectedPredictions, setSelectedPredictions] =
-  useState({});
+  const [selectedPredictions, setSelectedPredictions] = useState({});
 
 
+  useEffect(() => {
+  document.documentElement.setAttribute(
+    "data-theme",
+    theme
+  );
+
+  localStorage.setItem(
+    "instacart-theme",
+    theme
+  );
+}, [theme]);
+
+
+function toggleTheme() {
+  setTheme((currentTheme) =>
+    currentTheme === "dark"
+      ? "light"
+      : "dark"
+  );
+  }
+  
   /* ============================================================
      LOAD CUSTOMERS
   ============================================================ */
@@ -41,9 +78,7 @@ const [selectedPredictions, setSelectedPredictions] =
       try {
         setError("");
 
-        const response = await fetch(
-          `${API_URL}/api/customers?limit=100`
-        );
+        const response = await fetch(`${API_URL}/api/customers?limit=100`);
 
         if (!response.ok) {
           throw new Error("Unable to load customers.");
@@ -56,14 +91,13 @@ const [selectedPredictions, setSelectedPredictions] =
         console.error(err);
 
         setError(
-          "Unable to load customers. Make sure the FastAPI backend is running."
+          "Unable to load customers. Make sure the FastAPI backend is running.",
         );
       }
     }
 
     loadCustomers();
   }, []);
-
 
   /* ============================================================
      LOAD CUSTOMER INTELLIGENCE
@@ -80,10 +114,10 @@ const [selectedPredictions, setSelectedPredictions] =
     setShoppingDna(null);
 
     setCompletedActions({});
-setCartItems([]);
-setIsCartOpen(false);
-setSelectedPredictions({});
-setError("");
+    setCartItems([]);
+    setIsCartOpen(false);
+    setSelectedPredictions({});
+    setError("");
 
     if (!userId) {
       return;
@@ -98,52 +132,35 @@ setError("");
         reorderPlannerResponse,
         shoppingDnaResponse,
       ] = await Promise.all([
-        fetch(
-          `${API_URL}/api/customers/${userId}/assistant`
-        ),
+        fetch(`${API_URL}/api/customers/${userId}/assistant`),
 
-        fetch(
-          `${API_URL}/api/customers/${userId}/next-basket`
-        ),
-          fetch(
-    `${API_URL}/api/customers/${userId}/reorder-planner`
-  ),
+        fetch(`${API_URL}/api/customers/${userId}/next-basket`),
+        fetch(`${API_URL}/api/customers/${userId}/reorder-planner`),
 
-        fetch(
-          `${API_URL}/api/customers/${userId}/shopping-dna`
-        ),
+        fetch(`${API_URL}/api/customers/${userId}/shopping-dna`),
       ]);
-
 
       if (!assistantResponse.ok) {
         throw new Error(
-          `Unable to load Shopping Assistant for customer ${userId}.`
+          `Unable to load Shopping Assistant for customer ${userId}.`,
         );
       }
-
 
       if (!predictionResponse.ok) {
         throw new Error(
-          `Unable to load Next Basket Prediction for customer ${userId}.`
+          `Unable to load Next Basket Prediction for customer ${userId}.`,
         );
       }
 
-      if (
-  !reorderPlannerResponse.ok &&
-  reorderPlannerResponse.status !== 404
-) {
-  throw new Error(
-    `Unable to load Reorder Planner for customer ${userId}.`
-  );
-}
-
+      if (!reorderPlannerResponse.ok && reorderPlannerResponse.status !== 404) {
+        throw new Error(
+          `Unable to load Reorder Planner for customer ${userId}.`,
+        );
+      }
 
       if (!shoppingDnaResponse.ok) {
-        throw new Error(
-          `Unable to load Shopping DNA for customer ${userId}.`
-        );
+        throw new Error(`Unable to load Shopping DNA for customer ${userId}.`);
       }
-
 
       const [
         assistantData,
@@ -154,248 +171,140 @@ setError("");
         assistantResponse.json(),
         predictionResponse.json(),
 
-  reorderPlannerResponse.ok
-    ? reorderPlannerResponse.json()
-    : null,
+        reorderPlannerResponse.ok ? reorderPlannerResponse.json() : null,
         shoppingDnaResponse.json(),
       ]);
 
-
       const defaultPredictionSelection = {};
 
-(predictionData.predictions || [])
-  .slice(0, 4)
-  .forEach((prediction) => {
-    defaultPredictionSelection[
-      prediction.product_id
-    ] = true;
-  });
+      (predictionData.predictions || []).slice(0, 4).forEach((prediction) => {
+        defaultPredictionSelection[prediction.product_id] = true;
+      });
 
-setSelectedPredictions(
-  defaultPredictionSelection
-);
+      setSelectedPredictions(defaultPredictionSelection);
       setAssistant(assistantData);
       setNextBasket(predictionData);
       setReorderPlanner(reorderPlannerData);
       setShoppingDna(shoppingDnaData);
-
     } catch (err) {
       console.error(err);
 
-      setError(
-        err.message ||
-          "Unable to load customer intelligence."
-      );
+      setError(err.message || "Unable to load customer intelligence.");
     } finally {
       setLoading(false);
     }
   }
 
-
   /* ============================================================
      CLIENT ACTIONS
   ============================================================ */
 
- function normalizeCartItem(
-  product,
-  source = "shopping-assistant"
-) {
-  const probabilityPct = Number(
-    product.predicted_probability_pct ??
-      product.purchase_probability_pct ??
-      (
-        Number(
-          product.purchase_probability || 0
-        ) * 100
-      )
-  );
-
-  return {
-    product_id: product.product_id,
-    product_name: product.product_name,
-    aisle: product.aisle,
-    department: product.department,
-
-    source,
-
-    probability_pct:
-      Number.isFinite(probabilityPct)
-        ? probabilityPct
-        : 0,
-  };
-}
-
-
-function addToCart(
-  product,
-  source = "shopping-assistant"
-) {
-  const cartItem =
-    normalizeCartItem(
-      product,
-      source
+  function normalizeCartItem(product, source = "shopping-assistant") {
+    const probabilityPct = Number(
+      product.predicted_probability_pct ??
+        product.purchase_probability_pct ??
+        Number(product.purchase_probability || 0) * 100,
     );
 
-  setCartItems((previous) => {
+    return {
+      product_id: product.product_id,
+      product_name: product.product_name,
+      aisle: product.aisle,
+      department: product.department,
 
-    const alreadyExists =
-      previous.some(
-        (item) =>
-          item.product_id ===
-          cartItem.product_id
+      source,
+
+      probability_pct: Number.isFinite(probabilityPct) ? probabilityPct : 0,
+    };
+  }
+
+  function addToCart(product, source = "shopping-assistant") {
+    const cartItem = normalizeCartItem(product, source);
+
+    setCartItems((previous) => {
+      const alreadyExists = previous.some(
+        (item) => item.product_id === cartItem.product_id,
       );
 
-    if (alreadyExists) {
-      return previous;
-    }
+      if (alreadyExists) {
+        return previous;
+      }
 
-    return [
-      ...previous,
-      cartItem,
-    ];
-  });
-}
+      return [...previous, cartItem];
+    });
+  }
 
+  function removeFromCart(productId) {
+    setCartItems((previous) =>
+      previous.filter((item) => item.product_id !== productId),
+    );
 
-function removeFromCart(productId) {
+    setCompletedActions((previous) => {
+      const next = {
+        ...previous,
+      };
 
-  setCartItems((previous) =>
-    previous.filter(
-      (item) =>
-        item.product_id !== productId
-    )
-  );
+      if (next[productId] === "Add again" || next[productId] === "Try it") {
+        delete next[productId];
+      }
 
-  setCompletedActions((previous) => {
+      return next;
+    });
+  }
 
-    const next = {
-      ...previous,
-    };
+  function clearCart() {
+    setCartItems([]);
 
-    if (
-      next[productId] === "Add again" ||
-      next[productId] === "Try it"
-    ) {
-      delete next[productId];
-    }
+    setCompletedActions((previous) => {
+      const next = {
+        ...previous,
+      };
 
-    return next;
-  });
-}
-
-
-function clearCart() {
-
-  setCartItems([]);
-
-  setCompletedActions((previous) => {
-
-    const next = {
-      ...previous,
-    };
-
-    Object.keys(next).forEach(
-      (productId) => {
-
-        if (
-          next[productId] ===
-            "Add again" ||
-          next[productId] ===
-            "Try it"
-        ) {
+      Object.keys(next).forEach((productId) => {
+        if (next[productId] === "Add again" || next[productId] === "Try it") {
           delete next[productId];
         }
+      });
 
-      }
-    );
-
-    return next;
-  });
-}
-
-
-function handleRecommendationAction(
-  product,
-  source = "shopping-assistant"
-) {
-
-  setCompletedActions((previous) => ({
-    ...previous,
-    [product.product_id]:
-      product.action,
-  }));
-
-  if (
-    product.action === "Add again" ||
-    product.action === "Try it"
-  ) {
-    addToCart(
-      product,
-      source
-    );
+      return next;
+    });
   }
-}
 
-
-function togglePredictionSelection(
-  productId
-) {
-
-  setSelectedPredictions(
-    (previous) => ({
+  function handleRecommendationAction(product, source = "shopping-assistant") {
+    setCompletedActions((previous) => ({
       ...previous,
-      [productId]:
-        !previous[productId],
-    })
-  );
-}
+      [product.product_id]: product.action,
+    }));
 
+    if (product.action === "Add again" || product.action === "Try it") {
+      addToCart(product, source);
+    }
+  }
 
-function addSelectedPredictionsToCart() {
-
-  const selectedProducts =
-    (nextBasket?.predictions || [])
-      .filter(
-        (prediction) =>
-          selectedPredictions[
-            prediction.product_id
-          ]
-      );
-
-  setCartItems((previous) => {
-
-    const existingIds =
-      new Set(
-        previous.map(
-          (item) =>
-            item.product_id
-        )
-      );
-
-    const newItems =
-      selectedProducts
-        .filter(
-          (prediction) =>
-            !existingIds.has(
-              prediction.product_id
-            )
-        )
-        .map(
-          (prediction) =>
-            normalizeCartItem(
-              prediction,
-              "next-basket"
-            )
-        );
-
-    return [
+  function togglePredictionSelection(productId) {
+    setSelectedPredictions((previous) => ({
       ...previous,
-      ...newItems,
-    ];
-  });
+      [productId]: !previous[productId],
+    }));
+  }
 
-  setIsCartOpen(true);
-}
+  function addSelectedPredictionsToCart() {
+    const selectedProducts = (nextBasket?.predictions || []).filter(
+      (prediction) => selectedPredictions[prediction.product_id],
+    );
+
+    setCartItems((previous) => {
+      const existingIds = new Set(previous.map((item) => item.product_id));
+
+      const newItems = selectedProducts
+        .filter((prediction) => !existingIds.has(prediction.product_id))
+        .map((prediction) => normalizeCartItem(prediction, "next-basket"));
+
+      return [...previous, ...newItems];
+    });
+
+    setIsCartOpen(true);
+  }
 
   /* ============================================================
      UI
@@ -403,93 +312,178 @@ function addSelectedPredictionsToCart() {
 
   return (
     <div className="app">
-
       {/* ========================================================
           HERO
       ======================================================== */}
 
       <header className="header">
         <div className="header-content">
+          <div className="header-topbar">
 
-          <p className="eyebrow">
-            INSTACART INTELLIGENCE
-          </p>
+  <p className="eyebrow">
+    INSTACART INTELLIGENCE
+  </p>
 
-          <h1>
-            Smart Shopping Assistant
-          </h1>
+
+  <button
+    type="button"
+    className="theme-toggle"
+    onClick={toggleTheme}
+    aria-label={
+      theme === "dark"
+        ? "Switch to light mode"
+        : "Switch to dark mode"
+    }
+  >
+
+    <span className="theme-toggle-icon">
+      {theme === "dark" ? "☀" : "☾"}
+    </span>
+
+    <span>
+      {theme === "dark"
+        ? "Light mode"
+        : "Dark mode"}
+    </span>
+
+  </button>
+
+</div>
+
+          <h1>Smart Shopping Assistant</h1>
 
           <p className="subtitle">
-            Personalized predictions, recommendations and
-            behavioral intelligence powered by your shopping
-            history.
+             Predict what comes next, plan repeat purchases,
+  discover relevant products and understand each
+  customer's shopping behavior.
           </p>
-
         </div>
       </header>
-
 
       {/* ========================================================
           MAIN
       ======================================================== */}
 
       <main className="container">
-
         {/* ======================================================
             CUSTOMER SELECTOR
         ====================================================== */}
 
         <section className="customer-panel">
-
-          <label htmlFor="customer">
-            Select customer
-          </label>
+          <label htmlFor="customer">Select customer</label>
 
           <select
             id="customer"
             value={selectedCustomer}
             onChange={handleCustomerChange}
           >
-
-            <option value="">
-              Choose a customer
-            </option>
+            <option value="">Choose a customer</option>
 
             {customers.map((customer) => (
-              <option
-                key={customer.user_id}
-                value={customer.user_id}
-              >
+              <option key={customer.user_id} value={customer.user_id}>
                 Customer {customer.user_id}
               </option>
             ))}
-
           </select>
-
         </section>
 
+        {/* ======================================================
+    WELCOME STATE
+====================================================== */}
 
+{!selectedCustomer && !loading && !error && (
+  <section className="welcome-state">
+
+    <div className="welcome-state-icon">
+      ✦
+    </div>
+
+    <p className="eyebrow">
+      CUSTOMER INTELLIGENCE
+    </p>
+
+    <h2>
+      Select a customer to begin
+    </h2>
+
+    <p>
+      Explore personalized recommendations,
+      next-basket predictions, reorder timing
+      and behavioral insights in one place.
+    </p>
+
+    <div className="welcome-capabilities">
+
+      <span>
+        AI recommendations
+      </span>
+
+      <span>
+        Next-basket prediction
+      </span>
+
+      <span>
+        Reorder intelligence
+      </span>
+
+      <span>
+        Shopping DNA
+      </span>
+
+    </div>
+
+  </section>
+)}
         {/* ======================================================
             LOADING
         ====================================================== */}
 
-        {loading && (
-          <div className="message">
-            Building customer shopping intelligence...
-          </div>
-        )}
+     {loading && (
+  <section className="loading-state">
 
+    <div className="loading-spinner" />
+
+    <div>
+
+      <strong>
+        Building customer intelligence
+      </strong>
+
+      <p>
+        Loading predictions, recommendations,
+        reorder timing and shopping behavior...
+      </p>
+
+    </div>
+
+  </section>
+)}
 
         {/* ======================================================
             ERROR
         ====================================================== */}
 
         {error && (
-          <div className="error">
-            {error}
-          </div>
-        )}
+  <section className="app-error-state">
 
+    <span className="app-error-icon">
+      !
+    </span>
+
+    <div>
+
+      <strong>
+        We couldn't load this customer
+      </strong>
+
+      <p>
+        {error}
+      </p>
+
+    </div>
+
+  </section>
+)}
 
         {/* ======================================================
             INTELLIGENCE EXPERIENCE
@@ -501,13 +495,11 @@ function addSelectedPredictionsToCart() {
           nextBasket &&
           shoppingDna && (
             <>
-
               {/* ==================================================
                   TABS
               ================================================== */}
 
               <div className="intelligence-tabs">
-
                 <button
                   type="button"
                   className={
@@ -515,13 +507,10 @@ function addSelectedPredictionsToCart() {
                       ? "tab-button active"
                       : "tab-button"
                   }
-                  onClick={() =>
-                    setActiveTab("assistant")
-                  }
+                  onClick={() => setActiveTab("assistant")}
                 >
                   Shopping Assistant
                 </button>
-
 
                 <button
                   type="button"
@@ -530,43 +519,30 @@ function addSelectedPredictionsToCart() {
                       ? "tab-button active"
                       : "tab-button"
                   }
-                  onClick={() =>
-                    setActiveTab("prediction")
-                  }
+                  onClick={() => setActiveTab("prediction")}
                 >
                   Next Basket Prediction
-              </button>
-              <button
-  type="button"
-  className={
-    activeTab === "reorder"
-      ? "tab-button active"
-      : "tab-button"
-  }
-  onClick={() =>
-    setActiveTab("reorder")
-  }
->
-  Reorder Planner
-</button>
-
+                </button>
+                <button
+                  type="button"
+                  className={
+                    activeTab === "reorder" ? "tab-button active" : "tab-button"
+                  }
+                  onClick={() => setActiveTab("reorder")}
+                >
+                  Reorder Planner
+                </button>
 
                 <button
                   type="button"
                   className={
-                    activeTab === "dna"
-                      ? "tab-button active"
-                      : "tab-button"
+                    activeTab === "dna" ? "tab-button active" : "tab-button"
                   }
-                  onClick={() =>
-                    setActiveTab("dna")
-                  }
+                  onClick={() => setActiveTab("dna")}
                 >
                   My Insights
                 </button>
-
               </div>
-
 
               {/* ==================================================
                   SHOPPING ASSISTANT
@@ -577,67 +553,49 @@ function addSelectedPredictionsToCart() {
                   assistant={assistant}
                   completedActions={completedActions}
                   onAction={(product) =>
-  handleRecommendationAction(
-    product,
-    "shopping-assistant"
-  )
-}
+                    handleRecommendationAction(product, "shopping-assistant")
+                  }
                 />
               )}
-
 
               {/* ==================================================
                   NEXT BASKET
               ================================================== */}
 
               {activeTab === "prediction" && (
-               <NextBasket
-  nextBasket={nextBasket}
-  selectedPredictions={selectedPredictions}
-  onTogglePrediction={togglePredictionSelection}
-  onAddSelected={addSelectedPredictionsToCart}
-  cartItems={cartItems}
-  onAddPrediction={(prediction) =>
-    addToCart(
-      prediction,
-      "next-basket"
-    )
-  }
-/>
-            )}
-            {/* ==================================================
+                <NextBasket
+                  nextBasket={nextBasket}
+                  selectedPredictions={selectedPredictions}
+                  onTogglePrediction={togglePredictionSelection}
+                  onAddSelected={addSelectedPredictionsToCart}
+                  cartItems={cartItems}
+                  onAddPrediction={(prediction) =>
+                    addToCart(prediction, "next-basket")
+                  }
+                />
+              )}
+              {/* ==================================================
     REORDER PLANNER
 ================================================== */}
 
-{activeTab === "reorder" && (
-  <ReorderPlanner
-    planner={reorderPlanner}
-    completedActions={completedActions}
-    onAction={(product) =>
-  handleRecommendationAction(
-    product,
-    "reorder-planner"
-  )
-}
-  />
-)}
-
+              {activeTab === "reorder" && (
+                <ReorderPlanner
+                  planner={reorderPlanner}
+                  completedActions={completedActions}
+                  onAction={(product) =>
+                    handleRecommendationAction(product, "reorder-planner")
+                  }
+                />
+              )}
 
               {/* ==================================================
                   SHOPPING DNA
               ================================================== */}
 
-              {activeTab === "dna" && (
-                <ShoppingDNA
-                  shoppingDna={shoppingDna}
-                />
-              )}
-
+              {activeTab === "dna" && <ShoppingDNA shoppingDna={shoppingDna} />}
             </>
           )}
-
-            </main>
-
+      </main>
 
       {/* ========================================================
           FLOATING SMART CART
@@ -645,43 +603,27 @@ function addSelectedPredictionsToCart() {
 
       {selectedCustomer && !loading && (
         <>
-
           <button
             type="button"
             className="cart-floating-button"
-            onClick={() =>
-              setIsCartOpen(true)
-            }
+            onClick={() => setIsCartOpen(true)}
           >
+            <span>🛒</span>
 
-            <span>
-              🛒
-            </span>
+            <span>Smart Basket</span>
 
-            <span>
-              Smart Basket
-            </span>
-
-            <strong>
-              {cartItems.length}
-            </strong>
-
+            <strong>{cartItems.length}</strong>
           </button>
-
 
           <CartDrawer
             open={isCartOpen}
             items={cartItems}
-            onClose={() =>
-              setIsCartOpen(false)
-            }
+            onClose={() => setIsCartOpen(false)}
             onRemove={removeFromCart}
             onClear={clearCart}
           />
-
         </>
       )}
-
     </div>
   );
 }
@@ -3470,4 +3412,5 @@ function formatCartSource(source) {
     "Smart Shopping"
   );
 }
+
 export default App;
