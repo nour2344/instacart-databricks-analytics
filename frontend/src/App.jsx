@@ -9,6 +9,7 @@ const API_URL = "http://127.0.0.1:8000";
 ============================================================ */
 
 function App() {
+  
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState("");
 
@@ -24,6 +25,11 @@ function App() {
   const [error, setError] = useState("");
 
   const [completedActions, setCompletedActions] = useState({});
+  const [cartItems, setCartItems] = useState([]);
+const [isCartOpen, setIsCartOpen] = useState(false);
+
+const [selectedPredictions, setSelectedPredictions] =
+  useState({});
 
 
   /* ============================================================
@@ -74,7 +80,10 @@ function App() {
     setShoppingDna(null);
 
     setCompletedActions({});
-    setError("");
+setCartItems([]);
+setIsCartOpen(false);
+setSelectedPredictions({});
+setError("");
 
     if (!userId) {
       return;
@@ -152,6 +161,19 @@ function App() {
       ]);
 
 
+      const defaultPredictionSelection = {};
+
+(predictionData.predictions || [])
+  .slice(0, 4)
+  .forEach((prediction) => {
+    defaultPredictionSelection[
+      prediction.product_id
+    ] = true;
+  });
+
+setSelectedPredictions(
+  defaultPredictionSelection
+);
       setAssistant(assistantData);
       setNextBasket(predictionData);
       setReorderPlanner(reorderPlannerData);
@@ -174,13 +196,206 @@ function App() {
      CLIENT ACTIONS
   ============================================================ */
 
-  function handleRecommendationAction(product) {
-    setCompletedActions((previous) => ({
-      ...previous,
-      [product.product_id]: product.action,
-    }));
-  }
+ function normalizeCartItem(
+  product,
+  source = "shopping-assistant"
+) {
+  const probabilityPct = Number(
+    product.predicted_probability_pct ??
+      product.purchase_probability_pct ??
+      (
+        Number(
+          product.purchase_probability || 0
+        ) * 100
+      )
+  );
 
+  return {
+    product_id: product.product_id,
+    product_name: product.product_name,
+    aisle: product.aisle,
+    department: product.department,
+
+    source,
+
+    probability_pct:
+      Number.isFinite(probabilityPct)
+        ? probabilityPct
+        : 0,
+  };
+}
+
+
+function addToCart(
+  product,
+  source = "shopping-assistant"
+) {
+  const cartItem =
+    normalizeCartItem(
+      product,
+      source
+    );
+
+  setCartItems((previous) => {
+
+    const alreadyExists =
+      previous.some(
+        (item) =>
+          item.product_id ===
+          cartItem.product_id
+      );
+
+    if (alreadyExists) {
+      return previous;
+    }
+
+    return [
+      ...previous,
+      cartItem,
+    ];
+  });
+}
+
+
+function removeFromCart(productId) {
+
+  setCartItems((previous) =>
+    previous.filter(
+      (item) =>
+        item.product_id !== productId
+    )
+  );
+
+  setCompletedActions((previous) => {
+
+    const next = {
+      ...previous,
+    };
+
+    if (
+      next[productId] === "Add again" ||
+      next[productId] === "Try it"
+    ) {
+      delete next[productId];
+    }
+
+    return next;
+  });
+}
+
+
+function clearCart() {
+
+  setCartItems([]);
+
+  setCompletedActions((previous) => {
+
+    const next = {
+      ...previous,
+    };
+
+    Object.keys(next).forEach(
+      (productId) => {
+
+        if (
+          next[productId] ===
+            "Add again" ||
+          next[productId] ===
+            "Try it"
+        ) {
+          delete next[productId];
+        }
+
+      }
+    );
+
+    return next;
+  });
+}
+
+
+function handleRecommendationAction(
+  product,
+  source = "shopping-assistant"
+) {
+
+  setCompletedActions((previous) => ({
+    ...previous,
+    [product.product_id]:
+      product.action,
+  }));
+
+  if (
+    product.action === "Add again" ||
+    product.action === "Try it"
+  ) {
+    addToCart(
+      product,
+      source
+    );
+  }
+}
+
+
+function togglePredictionSelection(
+  productId
+) {
+
+  setSelectedPredictions(
+    (previous) => ({
+      ...previous,
+      [productId]:
+        !previous[productId],
+    })
+  );
+}
+
+
+function addSelectedPredictionsToCart() {
+
+  const selectedProducts =
+    (nextBasket?.predictions || [])
+      .filter(
+        (prediction) =>
+          selectedPredictions[
+            prediction.product_id
+          ]
+      );
+
+  setCartItems((previous) => {
+
+    const existingIds =
+      new Set(
+        previous.map(
+          (item) =>
+            item.product_id
+        )
+      );
+
+    const newItems =
+      selectedProducts
+        .filter(
+          (prediction) =>
+            !existingIds.has(
+              prediction.product_id
+            )
+        )
+        .map(
+          (prediction) =>
+            normalizeCartItem(
+              prediction,
+              "next-basket"
+            )
+        );
+
+    return [
+      ...previous,
+      ...newItems,
+    ];
+  });
+
+  setIsCartOpen(true);
+}
 
   /* ============================================================
      UI
@@ -361,7 +576,12 @@ function App() {
                 <ShoppingAssistant
                   assistant={assistant}
                   completedActions={completedActions}
-                  onAction={handleRecommendationAction}
+                  onAction={(product) =>
+  handleRecommendationAction(
+    product,
+    "shopping-assistant"
+  )
+}
                 />
               )}
 
@@ -371,9 +591,19 @@ function App() {
               ================================================== */}
 
               {activeTab === "prediction" && (
-                <NextBasket
-                  nextBasket={nextBasket}
-                />
+               <NextBasket
+  nextBasket={nextBasket}
+  selectedPredictions={selectedPredictions}
+  onTogglePrediction={togglePredictionSelection}
+  onAddSelected={addSelectedPredictionsToCart}
+  cartItems={cartItems}
+  onAddPrediction={(prediction) =>
+    addToCart(
+      prediction,
+      "next-basket"
+    )
+  }
+/>
             )}
             {/* ==================================================
     REORDER PLANNER
@@ -383,7 +613,12 @@ function App() {
   <ReorderPlanner
     planner={reorderPlanner}
     completedActions={completedActions}
-    onAction={handleRecommendationAction}
+    onAction={(product) =>
+  handleRecommendationAction(
+    product,
+    "reorder-planner"
+  )
+}
   />
 )}
 
@@ -401,12 +636,239 @@ function App() {
             </>
           )}
 
-      </main>
+            </main>
+
+
+      {/* ========================================================
+          FLOATING SMART CART
+      ======================================================== */}
+
+      {selectedCustomer && !loading && (
+        <>
+
+          <button
+            type="button"
+            className="cart-floating-button"
+            onClick={() =>
+              setIsCartOpen(true)
+            }
+          >
+
+            <span>
+              🛒
+            </span>
+
+            <span>
+              Smart Basket
+            </span>
+
+            <strong>
+              {cartItems.length}
+            </strong>
+
+          </button>
+
+
+          <CartDrawer
+            open={isCartOpen}
+            items={cartItems}
+            onClose={() =>
+              setIsCartOpen(false)
+            }
+            onRemove={removeFromCart}
+            onClear={clearCart}
+          />
+
+        </>
+      )}
+
     </div>
   );
 }
 
+/* ============================================================
+   SMART CART
+============================================================ */
 
+function CartDrawer({
+  open,
+  items,
+  onClose,
+  onRemove,
+  onClear,
+}) {
+
+  if (!open) {
+    return null;
+  }
+
+
+  return (
+    <>
+
+      <button
+        type="button"
+        className="cart-backdrop"
+        aria-label="Close cart"
+        onClick={onClose}
+      />
+
+
+      <aside className="cart-drawer">
+
+        <div className="cart-drawer-header">
+
+          <div>
+
+            <p className="story-kicker">
+              SMART BASKET
+            </p>
+
+            <h2>
+              Your cart
+            </h2>
+
+            <p>
+              {items.length}{" "}
+              {items.length === 1
+                ? "product"
+                : "products"}
+            </p>
+
+          </div>
+
+
+          <button
+            type="button"
+            className="cart-close-button"
+            onClick={onClose}
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        {items.length === 0 ? (
+
+          <div className="cart-empty">
+
+            <span>
+              🛒
+            </span>
+
+            <h3>
+              Your basket is empty
+            </h3>
+
+            <p>
+              Add products from your
+              predictions, assistant or
+              reorder planner.
+            </p>
+
+          </div>
+
+        ) : (
+
+          <>
+
+            <div className="cart-items">
+
+              {items.map((item) => (
+
+                <article
+                  className="cart-item"
+                  key={item.product_id}
+                >
+
+                  <div className="cart-item-copy">
+
+                    <span className="cart-item-source">
+                      {formatCartSource(
+                        item.source
+                      )}
+                    </span>
+
+                    <strong>
+                      {item.product_name}
+                    </strong>
+
+                    <small>
+                      {item.department}
+                      {" · "}
+                      {item.aisle}
+                    </small>
+
+                  </div>
+
+
+                  <div className="cart-item-side">
+
+                    {item.probability_pct > 0 && (
+                      <span>
+                        {item.probability_pct.toFixed(1)}
+                        %
+                      </span>
+                    )}
+
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onRemove(
+                          item.product_id
+                        )
+                      }
+                    >
+                      Remove
+                    </button>
+
+                  </div>
+
+                </article>
+
+              ))}
+
+            </div>
+
+
+            <div className="cart-drawer-footer">
+
+              <div>
+
+                <strong>
+                  {items.length}
+                </strong>
+
+                <span>
+                  {" "}
+                  products in your
+                  smart basket
+                </span>
+
+              </div>
+
+
+              <button
+                type="button"
+                className="cart-clear-button"
+                onClick={onClear}
+              >
+                Clear basket
+              </button>
+
+            </div>
+
+          </>
+
+        )}
+
+      </aside>
+
+    </>
+  );
+}
 
 /* ============================================================
    SHOPPING ASSISTANT VIEW
@@ -822,9 +1284,40 @@ function RecommendationCard({
    NEXT BASKET VIEW
 ============================================================ */
 
-function NextBasket({ nextBasket }) {
+function NextBasket({
+  nextBasket,
+  selectedPredictions,
+  onTogglePrediction,
+  onAddSelected,
+  cartItems,
+  onAddPrediction,
+}) {
+
+  const predictions =
+    nextBasket.predictions || [];
+
+  const selectedProducts =
+    predictions.filter(
+      (prediction) =>
+        selectedPredictions[
+          prediction.product_id
+        ]
+    );
+
+  const cartProductIds =
+    new Set(
+      cartItems.map(
+        (item) => item.product_id
+      )
+    );
+
+
   return (
     <section className="next-basket-section">
+
+      {/* ========================================================
+          NEXT BASKET HEADER
+      ======================================================== */}
 
       <section className="next-basket-header">
 
@@ -861,14 +1354,179 @@ function NextBasket({ nextBasket }) {
       </section>
 
 
+      {/* ========================================================
+          SMART BASKET BUILDER
+      ======================================================== */}
+
+      <section className="smart-basket-builder">
+
+        <div className="smart-basket-builder-heading">
+
+          <div>
+
+            <p className="story-kicker">
+              SMART BASKET BUILDER
+            </p>
+
+            <h2>
+              Build my predicted basket
+            </h2>
+
+            <p>
+              Start with the products the model
+              believes are most likely to appear
+              in your next order.
+            </p>
+
+          </div>
+
+
+          <div className="smart-basket-selected-count">
+
+            <strong>
+              {selectedProducts.length}
+            </strong>
+
+            <span>
+              selected
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div className="smart-basket-options">
+
+          {predictions
+            .slice(0, 6)
+            .map((prediction) => {
+
+              const percentage =
+                Number(
+                  prediction
+                    .predicted_probability_pct ??
+                  (
+                    prediction
+                      .purchase_probability *
+                    100
+                  )
+                );
+
+              const checked =
+                Boolean(
+                  selectedPredictions[
+                    prediction.product_id
+                  ]
+                );
+
+
+              return (
+
+                <label
+                  className={
+                    checked
+                      ? "smart-basket-option selected"
+                      : "smart-basket-option"
+                  }
+                  key={prediction.product_id}
+                >
+
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() =>
+                      onTogglePrediction(
+                        prediction.product_id
+                      )
+                    }
+                  />
+
+
+                  <div className="smart-basket-option-copy">
+
+                    <strong>
+                      {prediction.product_name}
+                    </strong>
+
+                    <span>
+                      {prediction.department}
+                      {" · "}
+                      {prediction.aisle}
+                    </span>
+
+                  </div>
+
+
+                  <span className="smart-basket-option-score">
+                    {percentage.toFixed(1)}%
+                  </span>
+
+                </label>
+
+              );
+            })}
+
+        </div>
+
+
+        <div className="smart-basket-builder-footer">
+
+          <div>
+
+            <strong>
+              {selectedProducts.length}
+            </strong>
+
+            <span>
+              {" "}suggested products ready
+            </span>
+
+          </div>
+
+
+          <button
+            type="button"
+            className="smart-basket-add-button"
+            disabled={
+              selectedProducts.length === 0
+            }
+            onClick={onAddSelected}
+          >
+            Add selected basket
+          </button>
+
+        </div>
+
+      </section>
+
+
+      {/* ========================================================
+          PREDICTION LIST
+      ======================================================== */}
+
       <div className="prediction-list">
 
-        {(nextBasket.predictions || []).map(
+        {predictions.map(
           (prediction) => (
+
             <PredictionCard
               key={prediction.product_id}
               prediction={prediction}
+
+              inCart={
+                cartProductIds.has(
+                  prediction.product_id
+                )
+              }
+
+              onAdd={() =>
+                onAddPrediction(
+                  prediction
+                )
+              }
             />
+
           )
         )}
 
@@ -879,18 +1537,20 @@ function NextBasket({ nextBasket }) {
 }
 
 
-
 /* ============================================================
    PREDICTION CARD
 ============================================================ */
 
-function PredictionCard({ prediction }) {
+function PredictionCard({
+  prediction,
+  inCart,
+  onAdd,
+}) {
 
   const percentage =
     Number(
       prediction.predicted_probability_pct ??
-        prediction.purchase_probability *
-          100
+        prediction.purchase_probability * 100
     );
 
   return (
@@ -954,13 +1614,33 @@ function PredictionCard({ prediction }) {
 
         </div>
 
+
+        <div className="prediction-actions">
+
+          <button
+            type="button"
+            className={
+              inCart
+                ? "action-button completed"
+                : "action-button"
+            }
+            disabled={inCart}
+            onClick={onAdd}
+          >
+
+            {inCart
+              ? "In cart ✓"
+              : "Add to cart"}
+
+          </button>
+
+        </div>
+
       </div>
 
     </article>
   );
 }
-
-
 /* ============================================================
    REORDER PLANNER VIEW
 ============================================================ */
@@ -2772,5 +3452,22 @@ function formatScore(value) {
   return `${Number(value).toFixed(1)}%`;
 }
 
+function formatCartSource(source) {
 
+  const labels = {
+    "shopping-assistant":
+      "Shopping Assistant",
+
+    "next-basket":
+      "Next Basket",
+
+    "reorder-planner":
+      "Reorder Planner",
+  };
+
+  return (
+    labels[source] ||
+    "Smart Shopping"
+  );
+}
 export default App;
