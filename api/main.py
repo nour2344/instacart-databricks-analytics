@@ -1,4 +1,10 @@
-from fastapi import FastAPI, HTTPException
+import json
+import logging
+from time import perf_counter
+from uuid import uuid4
+from collections import defaultdict
+from threading import Lock
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -11,7 +17,71 @@ from api.repository import (
     get_customer_reorder_planner,
 )
 
+# ============================================================
+# Logging
+# ============================================================
 
+logger = logging.getLogger("instacart_api")
+
+if not logger.handlers:
+    handler = logging.StreamHandler()
+
+    handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s | %(levelname)s | %(message)s"
+        )
+    )
+
+    logger.addHandler(handler)
+
+logger.setLevel(logging.INFO)
+
+# ============================================================
+# In-memory application metrics
+# ============================================================
+
+metrics_lock = Lock()
+
+metrics = {
+    "total_requests": 0,
+    "total_errors": 0,
+    "total_latency_ms": 0.0,
+    "status_codes": defaultdict(int),
+    "endpoints": defaultdict(
+        lambda: {
+            "requests": 0,
+            "errors": 0,
+            "total_latency_ms": 0.0,
+        }
+    ),
+}
+
+
+def record_request_metric(
+    path: str,
+    status_code: int,
+    duration_ms: float,
+):
+    """
+    Record lightweight process-level API metrics.
+    """
+
+    with metrics_lock:
+        metrics["total_requests"] += 1
+        metrics["total_latency_ms"] += duration_ms
+
+        metrics["status_codes"][
+            str(status_code)
+        ] += 1
+
+        endpoint = metrics["endpoints"][path]
+
+        endpoint["requests"] += 1
+        endpoint["total_latency_ms"] += duration_ms
+
+        if status_code >= 400:
+            metrics["total_errors"] += 1
+            endpoint["errors"] += 1
 # ============================================================
 # FastAPI application
 # ============================================================
@@ -38,12 +108,95 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
     ],
+    expose_headers=["X-Request-ID"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ============================================================
+# Request observability
+# ============================================================
 
+@app.middleware("http")
+async def request_observability(
+    request: Request,
+    call_next,
+):
+    """
+    Add a request ID and structured request telemetry
+    to every API request.
+    """
+
+    request_id = str(uuid4())
+    start_time = perf_counter()
+
+    status_code = 500
+
+    try:
+        response = await call_next(request)
+
+        status_code = response.status_code
+
+        response.headers[
+            "X-Request-ID"
+        ] = request_id
+
+        return response
+
+    except Exception:
+        logger.exception(
+            json.dumps(
+                {
+                    "event": "request_failed",
+                    "request_id": request_id,
+                    "method": request.method,
+                    "path": request.url.path,
+                }
+            )
+        )
+
+        raise
+
+    finally:
+        duration_ms = round(
+            (
+                perf_counter()
+                - start_time
+            )
+            * 1000,
+            2,
+        )
+
+        record_request_metric(
+            path=request.url.path,
+            status_code=status_code,
+            duration_ms=duration_ms,
+        )
+
+        log_payload = {
+            "event": "http_request",
+            "request_id": request_id,
+            "method": request.method,
+            "path": request.url.path,
+            "status_code": status_code,
+            "duration_ms": duration_ms,
+        }
+
+        if status_code >= 500:
+            logger.error(
+                json.dumps(log_payload)
+            )
+
+        elif status_code >= 400:
+            logger.warning(
+                json.dumps(log_payload)
+            )
+
+        else:
+            logger.info(
+                json.dumps(log_payload)
+            )
 # ============================================================
 # Root
 # ============================================================
@@ -53,22 +206,50 @@ def root():
     return {
         "service": "Instacart Smart Shopping Assistant API",
         "status": "running",
-        "features": [
-            "next_basket_prediction",
-            "smart_shopping_assistant",
-        ],
+       "features": [
+    "smart_shopping_assistant",
+    "next_basket_prediction",
+    "reorder_planner",
+    "shopping_dna",
+],
+"endpoints": {
+    "health": "/health",
+    "readiness": "/ready",
+    "docs": "/docs",
+},
     }
 
 
 # ============================================================
-# Health check
+# Liveness check
 # ============================================================
 
 @app.get("/health")
 def health():
     """
-    Verify API and Neon PostgreSQL connectivity.
+    Verify that the FastAPI process is running.
+
+    This endpoint intentionally does not depend on
+    external services such as Neon PostgreSQL.
     """
+
+    return {
+        "status": "healthy",
+        "service": "instacart-api",
+    }
+
+# ============================================================
+# Readiness check
+# ============================================================
+
+@app.get("/ready")
+def readiness():
+    """
+    Verify that the API is ready to serve requests,
+    including Neon PostgreSQL connectivity.
+    """
+
+    start_time = perf_counter()
 
     try:
         with get_connection() as connection:
@@ -76,27 +257,150 @@ def health():
                 cursor.execute("SELECT 1;")
                 result = cursor.fetchone()
 
+        database_latency_ms = round(
+            (
+                perf_counter()
+                - start_time
+            )
+            * 1000,
+            2,
+        )
+
         if result != (1,):
             raise RuntimeError(
-                "Unexpected database health-check result."
+                "Unexpected database readiness result."
             )
 
         return {
-            "status": "healthy",
-            "database": "connected",
+            "status": "ready",
+            "database": {
+                "status": "connected",
+                "latency_ms": database_latency_ms,
+            },
         }
 
-    except Exception as exc:
+    except Exception:
+        database_latency_ms = round(
+            (
+                perf_counter()
+                - start_time
+            )
+            * 1000,
+            2,
+        )
+
+        logger.exception(
+            json.dumps(
+                {
+                    "event": "readiness_failed",
+                    "database": "neon",
+                    "latency_ms": database_latency_ms,
+                }
+            )
+        )
+
         return JSONResponse(
             status_code=503,
             content={
-                "status": "unhealthy",
-                "database": "disconnected",
-                "error": str(exc),
+                "status": "not_ready",
+                "database": {
+                    "status": "disconnected",
+                    "latency_ms": database_latency_ms,
+                },
             },
         )
 
+    # ============================================================
+# Application metrics
+# ============================================================
 
+@app.get("/metrics")
+def application_metrics():
+    """
+    Return lightweight process-level API metrics.
+    """
+
+    with metrics_lock:
+        total_requests = metrics[
+            "total_requests"
+        ]
+
+        average_latency_ms = (
+            round(
+                metrics[
+                    "total_latency_ms"
+                ]
+                / total_requests,
+                2,
+            )
+            if total_requests > 0
+            else 0.0
+        )
+
+        endpoint_metrics = {}
+
+        for path, values in metrics[
+            "endpoints"
+        ].items():
+
+            requests = values["requests"]
+
+            endpoint_metrics[path] = {
+                "requests": requests,
+
+                "errors": values[
+                    "errors"
+                ],
+
+                "average_latency_ms": (
+                    round(
+                        values[
+                            "total_latency_ms"
+                        ]
+                        / requests,
+                        2,
+                    )
+                    if requests > 0
+                    else 0.0
+                ),
+            }
+
+        return {
+            "service":
+                "instacart-api",
+
+            "total_requests":
+                total_requests,
+
+            "total_errors":
+                metrics["total_errors"],
+
+            "error_rate_pct": (
+                round(
+                    metrics[
+                        "total_errors"
+                    ]
+                    / total_requests
+                    * 100,
+                    2,
+                )
+                if total_requests > 0
+                else 0.0
+            ),
+
+            "average_latency_ms":
+                average_latency_ms,
+
+            "status_codes":
+                dict(
+                    metrics[
+                        "status_codes"
+                    ]
+                ),
+
+            "endpoints":
+                endpoint_metrics,
+        }
 # ============================================================
 # Customer list
 # ============================================================
