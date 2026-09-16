@@ -7,7 +7,6 @@ import {
   getTopProducts,
   loadExecutiveOverview,
   loadProductIntelligence,
-  loadRecommendationIntelligence,
   loadCustomerIntelligence,
   getCustomers,
   getCustomer360,
@@ -22,60 +21,60 @@ const NAV_ITEMS = [
   },
   {
     id: "products",
-    label: "Product Intelligence",
-    shortLabel: "Products & assortment",
+    label: "Products",
+    shortLabel: "Sales & repeat buying",
     icon: "products",
   },
   {
     id: "recommendations",
-    label: "Recommendation Intelligence",
-    shortLabel: "ML recommendations",
+    label: "Recommendations",
+    shortLabel: "ML predictions & performance",
     icon: "recommendations",
   },
   {
     id: "customers",
-    label: "Customer Intelligence",
-    shortLabel: "Behavior & personas",
+    label: "Customer Insights",
+    shortLabel: "Shopping habits",
     icon: "customers",
   },
   {
     id: "customer360",
     label: "Customer 360",
-    shortLabel: "Unified customer view",
+    shortLabel: "One customer view",
     icon: "customer360",
   },
 ];
 
 const PAGE_META = {
   overview: {
-    eyebrow: "EXECUTIVE VIEW",
-    title: "Retail Intelligence Overview",
+    eyebrow: "STORE OVERVIEW",
+    title: "Store Overview",
     description:
-      "A single operating view across assortment performance, recommendation intelligence and customer behavior.",
+      "A quick view of products, recommendations and customer shopping in one place.",
   },
   products: {
-    eyebrow: "ASSORTMENT",
-    title: "Product Intelligence",
+    eyebrow: "PRODUCTS",
+    title: "Products",
     description:
-      "Understand demand, repeat behavior, portfolio segments and department performance.",
+      "See what sells, what customers buy again, and which products need attention.",
   },
   recommendations: {
-    eyebrow: "MACHINE LEARNING",
-    title: "Recommendation Intelligence",
+    eyebrow: "RECOMMENDATIONS",
+    title: "Recommendations",
     description:
-      "Monitor recommendation scale, candidate sources, ranking quality and category coverage.",
+      "See how the recommendation model is performing and where its suggestions come from.",
   },
   customers: {
-    eyebrow: "CUSTOMER ANALYTICS",
-    title: "Customer Intelligence",
+    eyebrow: "CUSTOMERS",
+    title: "Customer Insights",
     description:
-      "Explore shopping personas, behavioral signals, basket patterns and category affinities.",
+      "See common shopper types, shopping habits, basket patterns and favorite departments.",
   },
   customer360: {
-    eyebrow: "UNIFIED CUSTOMER VIEW",
+    eyebrow: "CUSTOMER VIEW",
     title: "Customer 360",
     description:
-      "Bring Shopping DNA, next-basket predictions, recommendation intelligence and reorder timing together for one customer.",
+      "Open one customer to see predicted next items, buy-again timing, shopping habits and suggested actions.",
   },
 };
 
@@ -164,9 +163,7 @@ function App() {
   }
 
   return (
-    <div
-      className={`retail-platform ${sidebarOpen ? "" : "sidebar-collapsed"}`}
-    >
+    <div className={`retail-platform ${sidebarOpen ? "" : "sidebar-collapsed"}`}>
       <aside className="platform-sidebar">
         <div className="brand-block">
           <div className="brand-mark" aria-hidden="true">
@@ -215,7 +212,9 @@ function App() {
 
             <div>
               <strong>{statusLabel}</strong>
-              <span>{readiness?.database?.provider || "Neon PostgreSQL"}</span>
+              <span>
+                {readiness?.database?.provider || "Neon PostgreSQL"}
+              </span>
             </div>
           </div>
 
@@ -224,7 +223,9 @@ function App() {
             className="theme-switch"
             onClick={toggleTheme}
             aria-label={
-              theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+              theme === "dark"
+                ? "Switch to light mode"
+                : "Switch to dark mode"
             }
           >
             <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
@@ -291,7 +292,7 @@ function App() {
               {activePage === "products" && <ProductIntelligencePage />}
 
               {activePage === "recommendations" && (
-                <RecommendationIntelligencePage />
+                <RecommendationIntelligencePage onNavigate={setActivePage} />
               )}
 
               {activePage === "customers" && <CustomerIntelligencePage />}
@@ -312,27 +313,27 @@ function ExecutiveOverview({ data }) {
 
   const kpis = [
     {
-      label: "Products analyzed",
+      label: "Products tracked",
       value: formatCompact(retail.products_analyzed),
       detail: `${formatNumber(retail.departments_analyzed)} departments`,
       tone: "green",
     },
     {
-      label: "Purchase events",
+      label: "Purchases",
       value: formatCompact(retail.total_purchase_events),
-      detail: `${formatNumber(retail.core_staples)} core staples`,
+      detail: "Observed purchase events",
       tone: "blue",
     },
     {
-      label: "Recommendations",
+      label: "Suggestions made",
       value: formatCompact(recommendations.recommendations_generated),
-      detail: `${formatNumber(recommendations.customers_served)} customers served`,
+      detail: `${formatNumber(recommendations.customers_served)} customers`,
       tone: "violet",
     },
     {
-      label: "Customers profiled",
+      label: "Customer profiles",
       value: formatCompact(customers.customers_profiled),
-      detail: "Shopping DNA coverage",
+      detail: "Customers with shopping profiles",
       tone: "amber",
     },
   ];
@@ -341,36 +342,29 @@ function ExecutiveOverview({ data }) {
     <div className="overview-page">
       <section className="overview-hero">
         <div className="overview-hero-copy">
-          <span className="hero-pill">Retail decision intelligence</span>
+          <span className="hero-pill">Store overview</span>
 
           <h2>
-            From transaction data to
-            <span> actionable retail decisions.</span>
+            One place to see
+            <span> how the store is doing.</span>
           </h2>
 
           <p>
-            The platform unifies Databricks Gold analytics, ML recommendation
-            signals and customer behavioral intelligence in one management
-            interface.
+            Start here for a quick summary. Open Products, Recommendations or
+            Customer Insights when you want more detail.
           </p>
         </div>
 
         <div className="overview-hero-highlight">
           <span>Top product</span>
           <strong>{retail.top_product?.name || "Banana"}</strong>
-          <p>
-            {formatCompact(retail.top_product?.purchase_count)} observed
-            purchases
-          </p>
+          <p>{formatCompact(retail.top_product?.purchase_count)} purchases</p>
 
           <div className="highlight-divider" />
 
           <span>Top department</span>
           <strong>{titleCase(retail.top_department?.name || "produce")}</strong>
-          <p>
-            {formatCompact(retail.top_department?.purchase_count)} purchase
-            events
-          </p>
+          <p>{formatCompact(retail.top_department?.purchase_count)} purchases</p>
         </div>
       </section>
 
@@ -387,93 +381,10 @@ function ExecutiveOverview({ data }) {
           </article>
         ))}
       </section>
-
-      <section className="overview-insight-grid">
-        <article className="overview-panel">
-          <div className="panel-heading">
-            <div>
-              <span className="panel-kicker">ASSORTMENT SIGNAL</span>
-              <h3>Core demand strength</h3>
-            </div>
-          </div>
-
-          <div className="metric-feature">
-            <strong>{formatPercent(retail.core_staple_repeat_rate_pct)}</strong>
-            <span>Core-staple repeat rate</span>
-          </div>
-
-          <div className="metric-progress">
-            <span
-              style={{
-                width: `${clampPercent(retail.core_staple_repeat_rate_pct)}%`,
-              }}
-            />
-          </div>
-
-          <p className="panel-note">
-            High-demand, high-repeat products form the strategic base of the
-            assortment.
-          </p>
-        </article>
-
-        <article className="overview-panel">
-          <div className="panel-heading">
-            <div>
-              <span className="panel-kicker">RECOMMENDATION SIGNAL</span>
-              <h3>Prediction confidence</h3>
-            </div>
-          </div>
-
-          <div className="metric-feature">
-            <strong>
-              {formatPercent(recommendations.avg_purchase_probability_pct)}
-            </strong>
-            <span>Average recommendation probability</span>
-          </div>
-
-          <div className="metric-progress">
-            <span
-              style={{
-                width: `${clampPercent(
-                  recommendations.avg_purchase_probability_pct,
-                )}%`,
-              }}
-            />
-          </div>
-
-          <p className="panel-note">
-            Ranking performance and candidate-source quality will be explored in
-            Recommendation Intelligence.
-          </p>
-        </article>
-
-        <article className="overview-panel">
-          <div className="panel-heading">
-            <div>
-              <span className="panel-kicker">CUSTOMER SIGNAL</span>
-              <h3>Shopping behavior</h3>
-            </div>
-          </div>
-
-          <div className="mini-stat-list">
-            <MiniStat
-              label="Average basket size"
-              value={formatNumber(customers.avg_basket_size, 1)}
-            />
-            <MiniStat
-              label="Days between orders"
-              value={formatNumber(customers.avg_days_between_orders, 1)}
-            />
-            <MiniStat
-              label="Loyalty score"
-              value={formatNumber(customers.behavior_scores?.loyalty, 1)}
-            />
-          </div>
-        </article>
-      </section>
     </div>
   );
 }
+
 
 function ProductIntelligencePage() {
   const [data, setData] = useState(null);
@@ -481,6 +392,7 @@ function ProductIntelligencePage() {
   const [error, setError] = useState("");
 
   const [departmentFilter, setDepartmentFilter] = useState("");
+  const [productQuery, setProductQuery] = useState("");
   const [topProducts, setTopProducts] = useState([]);
   const [topProductsLoading, setTopProductsLoading] = useState(false);
 
@@ -488,6 +400,12 @@ function ProductIntelligencePage() {
   const [productDetail, setProductDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState("");
+
+  const productDashboardUrl = String(
+    import.meta.env.VITE_DATABRICKS_PRODUCT_DASHBOARD_EMBED_URL ||
+      import.meta.env.VITE_DATABRICKS_DASHBOARD_EMBED_URL ||
+      "",
+  ).trim();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -498,7 +416,7 @@ function ProductIntelligencePage() {
         setError("");
 
         const result = await loadProductIntelligence({
-          limit: 10,
+          limit: 50,
           signal: controller.signal,
         });
 
@@ -519,7 +437,7 @@ function ProductIntelligencePage() {
         console.error(err);
         setError(
           err?.message ||
-            "Unable to load Product Intelligence from the Retail Gold serving layer.",
+            "Unable to load product data. Make sure the FastAPI backend is running.",
         );
       } finally {
         if (!controller.signal.aborted) {
@@ -529,7 +447,6 @@ function ProductIntelligencePage() {
     }
 
     loadPage();
-
     return () => controller.abort();
   }, []);
 
@@ -537,12 +454,13 @@ function ProductIntelligencePage() {
     const department = event.target.value;
 
     setDepartmentFilter(department);
+    setProductQuery("");
     setTopProductsLoading(true);
     setDetailError("");
 
     try {
       const result = await getTopProducts({
-        limit: 10,
+        limit: 50,
         department: department || undefined,
       });
 
@@ -558,17 +476,18 @@ function ProductIntelligencePage() {
       }
     } catch (err) {
       console.error(err);
-      setDetailError(
-        err?.message || "Unable to filter the top-product portfolio.",
-      );
+      setDetailError(err?.message || "Unable to filter products.");
     } finally {
       setTopProductsLoading(false);
     }
   }
 
   async function handleProductSelect(product) {
+    if (!product) return;
+
     setSelectedProductId(product.product_id);
     setProductDetail(product);
+    setProductQuery(product.product_name || "");
     setDetailLoading(true);
     setDetailError("");
 
@@ -577,7 +496,7 @@ function ProductIntelligencePage() {
       setProductDetail(detail);
     } catch (err) {
       console.error(err);
-      setDetailError(err?.message || "Unable to refresh product detail.");
+      setDetailError(err?.message || "Unable to load product details.");
     } finally {
       setDetailLoading(false);
     }
@@ -596,777 +515,527 @@ function ProductIntelligencePage() {
       <section className="platform-alert error product-page-alert">
         <div className="platform-alert-icon">!</div>
         <div>
-          <strong>Unable to load Product Intelligence</strong>
+          <strong>Unable to load products</strong>
           <p>{error}</p>
         </div>
       </section>
     );
   }
 
-  const overview = data?.overview || {};
-  const segments = data?.segments?.segments || [];
   const departments = data?.departments?.departments || [];
-
-  const coreSegment = segments.find(
-    (segment) => segment.product_segment === "CORE STAPLE",
-  );
-
-  const maxProductPurchases = Math.max(
-    1,
-    ...topProducts.map((product) => Number(product.total_purchase_count) || 0),
-  );
-
-  const maxDepartmentPurchases = Math.max(
-    1,
-    ...departments.map(
-      (department) => Number(department.total_purchase_count) || 0,
-    ),
-  );
-
-  const kpis = [
-    {
-      label: "Products analyzed",
-      value: formatCompact(overview.products_analyzed),
-      detail: `${formatNumber(overview.departments_analyzed)} departments`,
-      tone: "green",
-    },
-    {
-      label: "Core staples",
-      value: formatCompact(coreSegment?.product_count ?? overview.core_staples),
-      detail: `${formatPercent(
-        coreSegment?.avg_reorder_rate_pct ??
-          overview.core_staple_repeat_rate_pct,
-      )} avg reorder rate`,
-      tone: "blue",
-    },
-    {
-      label: "Highest customer reach",
-      value: formatPercent(overview.highest_customer_reach_pct),
-      detail: overview.top_product?.name || "Top-performing product",
-      tone: "violet",
-    },
-    {
-      label: "Core repeat rate",
-      value: formatPercent(overview.core_staple_repeat_rate_pct),
-      detail: "Strategic repeat-demand signal",
-      tone: "amber",
-    },
-  ];
+  const normalizedQuery = productQuery.trim().toLowerCase();
+  const matchingProducts = topProducts
+    .filter((product) => {
+      if (!normalizedQuery) return true;
+      return String(product.product_name || "")
+        .toLowerCase()
+        .includes(normalizedQuery);
+    })
+    .slice(0, 8);
 
   return (
-    <div className="product-intelligence-page">
-      <section className="product-intelligence-hero">
-        <div className="product-intelligence-hero-copy">
-          <span className="hero-pill">Product intelligence</span>
+    <div className="product-intelligence-page simplified-business-page">
+      <DatabricksDashboardSection
+        url={productDashboardUrl}
+        kicker="LIVE DATABRICKS DASHBOARD"
+        title="Product performance"
+        description="Use the dashboard for the store-wide picture: top products, repeat buying, product groups and department activity."
+        openLabel="Open product dashboard ↗"
+      />
 
-          <h2>
-            See where demand is concentrated and
-            <span> which products deserve action.</span>
-          </h2>
-
-          <p>
-            This view translates the Retail Gold product layer into assortment
-            decisions using observed demand, customer reach, repeat behavior,
-            portfolio segments and department performance.
-          </p>
-        </div>
-
-        <div className="product-hero-signal">
-          <span>Portfolio leader</span>
-          <strong>{overview.top_product?.name || "Banana"}</strong>
-          <p>
-            {formatCompact(overview.top_product?.purchase_count)} observed
-            purchases
-          </p>
-
-          <div className="highlight-divider" />
-
-          <span>Strategic segment</span>
-          <strong>Core Staple</strong>
-          <p>{formatCompact(coreSegment?.product_count)} products to protect</p>
-        </div>
-      </section>
-
-      <section className="executive-kpi-grid product-kpi-grid">
-        {kpis.map((kpi) => (
-          <article key={kpi.label} className={`executive-kpi-card ${kpi.tone}`}>
-            <div className="kpi-card-top">
-              <span>{kpi.label}</span>
-              <span className="kpi-mini-mark" />
-            </div>
-
-            <strong>{kpi.value}</strong>
-            <p>{kpi.detail}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="product-two-column-grid">
-        <article className="product-panel product-leaders-panel">
-          <div className="product-panel-heading product-panel-heading-with-control">
-            <div>
-              <span className="panel-kicker">DEMAND LEADERS</span>
-              <h3>Top products by purchase volume</h3>
-              <p>
-                Rank the products creating the largest observed demand and
-                compare their repeat behavior.
-              </p>
-            </div>
-
-            <label className="department-filter-control">
-              <span>Department</span>
-              <select
-                value={departmentFilter}
-                onChange={handleDepartmentChange}
-              >
-                <option value="">All top departments</option>
-                {departments.map((department) => (
-                  <option
-                    key={department.department}
-                    value={department.department}
-                  >
-                    {titleCase(department.department)}
-                  </option>
-                ))}
-              </select>
-            </label>
+      <section className="product-panel product-finder-panel">
+        <div className="product-panel-heading product-detail-heading">
+          <div>
+            <span className="panel-kicker">PRODUCT FINDER</span>
+            <h3>Find a product and open its details</h3>
+            <p>
+              The dashboard shows the overall picture. This tool lets you inspect one
+              product without repeating the dashboard charts.
+            </p>
           </div>
 
-          <div className="product-ranking-header" aria-hidden="true">
-            <span>Product</span>
-            <span>Purchases</span>
-            <span>Reach</span>
-            <span>Reorder</span>
-          </div>
+          {detailLoading && <span className="detail-loading-label">Loading…</span>}
+        </div>
 
-          <div
-            className={`product-ranking-list ${topProductsLoading ? "is-loading" : ""}`}
-          >
-            {topProducts.map((product) => {
-              const purchaseShare =
-                ((Number(product.total_purchase_count) || 0) /
-                  maxProductPurchases) *
-                100;
+        <div className="product-finder-layout">
+          <div className="product-finder-search-column">
+            <div className="product-finder-controls">
+              <label className="product-search-control">
+                <span>Search product</span>
+                <div className="product-search-box">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="11" cy="11" r="6.5" />
+                    <path d="m16 16 4 4" />
+                  </svg>
+                  <input
+                    type="search"
+                    value={productQuery}
+                    onChange={(event) => setProductQuery(event.target.value)}
+                    placeholder="Try banana, milk, avocado…"
+                    autoComplete="off"
+                  />
+                  {productQuery && (
+                    <button
+                      type="button"
+                      className="product-search-clear"
+                      onClick={() => setProductQuery("")}
+                      aria-label="Clear product search"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              </label>
 
-              return (
+              <label className="department-filter-control product-finder-department">
+                <span>Department</span>
+                <select value={departmentFilter} onChange={handleDepartmentChange}>
+                  <option value="">All departments</option>
+                  {departments.map((department) => (
+                    <option key={department.department} value={department.department}>
+                      {titleCase(department.department)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="product-search-results-header">
+              <span>{normalizedQuery ? "Search results" : "Quick picks"}</span>
+              <small>
+                {topProductsLoading
+                  ? "Updating…"
+                  : `${matchingProducts.length} shown`}
+              </small>
+            </div>
+
+            <div className={`product-search-results ${topProductsLoading ? "is-loading" : ""}`}>
+              {matchingProducts.map((product) => (
                 <button
                   type="button"
                   key={product.product_id}
                   className={
-                    selectedProductId === product.product_id
-                      ? "product-ranking-row selected"
-                      : "product-ranking-row"
+                    Number(selectedProductId) === Number(product.product_id)
+                      ? "product-search-result selected"
+                      : "product-search-result"
                   }
                   onClick={() => handleProductSelect(product)}
                 >
-                  <div className="product-ranking-identity">
-                    <span className="product-rank-badge">
-                      #{product.purchase_rank}
+                  <div>
+                    <strong>{product.product_name}</strong>
+                    <span>
+                      {titleCase(product.department)} · {formatSegment(product.product_segment)}
                     </span>
-                    <div>
-                      <strong>{product.product_name}</strong>
-                      <small>
-                        {titleCase(product.department)} ·{" "}
-                        {formatSegment(product.product_segment)}
-                      </small>
-                    </div>
                   </div>
-
-                  <div className="product-volume-cell">
-                    <strong>
-                      {formatCompact(product.total_purchase_count)}
-                    </strong>
-                    <div className="product-volume-track">
-                      <span style={{ width: `${purchaseShare}%` }} />
-                    </div>
+                  <div className="product-search-result-side">
+                    <strong>{formatCompact(product.total_purchase_count)}</strong>
+                    <span>purchases</span>
                   </div>
-
-                  <strong className="product-table-metric">
-                    {formatPercent(product.customer_penetration_pct)}
-                  </strong>
-
-                  <strong className="product-table-metric">
-                    {formatPercent(product.product_reorder_rate_pct)}
-                  </strong>
                 </button>
-              );
-            })}
+              ))}
+
+              {matchingProducts.length === 0 && (
+                <div className="product-search-empty">
+                  <strong>No matching product</strong>
+                  <p>Try another name or change the department.</p>
+                </div>
+              )}
+            </div>
           </div>
 
-          {topProducts.length === 0 && (
-            <div className="product-empty-state">
-              No ranked products are available for this department.
-            </div>
-          )}
-        </article>
-
-        <article className="product-panel product-explorer-panel">
-          <div className="product-panel-heading">
-            <div>
-              <span className="panel-kicker">PRODUCT EXPLORER</span>
-              <h3>Business profile</h3>
-              <p>
-                Click any ranked product to inspect its Gold-layer decision
-                signals.
-              </p>
-            </div>
-
-            {detailLoading && (
-              <span className="detail-loading-label">Refreshing…</span>
+          <div className="product-finder-detail-column">
+            {productDetail ? (
+              <ProductBusinessProfile product={productDetail} />
+            ) : (
+              <div className="product-empty-state">
+                Search for a product to see its details.
+              </div>
             )}
+
+            {detailError && <p className="product-inline-error">{detailError}</p>}
           </div>
-
-          {productDetail ? (
-            <ProductBusinessProfile product={productDetail} />
-          ) : (
-            <div className="product-empty-state">
-              Select a product to open its business profile.
-            </div>
-          )}
-
-          {detailError && <p className="product-inline-error">{detailError}</p>}
-        </article>
-      </section>
-
-      <section className="product-panel segment-panel">
-        <div className="product-panel-heading">
-          <div>
-            <span className="panel-kicker">PORTFOLIO STRATEGY</span>
-            <h3>Product segments and management focus</h3>
-            <p>
-              The segmentation separates strategic staples, growth
-              opportunities, low-traction products and items that still need
-              more history.
-            </p>
-          </div>
-        </div>
-
-        <div className="segment-card-grid">
-          {segments.map((segment) => (
-            <SegmentCard
-              key={segment.product_segment}
-              segment={segment}
-              totalProducts={overview.products_analyzed}
-            />
-          ))}
-        </div>
-      </section>
-
-      <section className="product-panel department-panel">
-        <div className="product-panel-heading">
-          <div>
-            <span className="panel-kicker">DEPARTMENT PERFORMANCE</span>
-            <h3>Where purchase volume sits across the assortment</h3>
-            <p>
-              Compare the leading departments using total demand, average
-              reorder behavior and average customer reach.
-            </p>
-          </div>
-        </div>
-
-        <div className="department-performance-list">
-          {departments.map((department, index) => {
-            const width =
-              ((Number(department.total_purchase_count) || 0) /
-                maxDepartmentPurchases) *
-              100;
-
-            return (
-              <article
-                className="department-performance-row"
-                key={department.department}
-              >
-                <div className="department-rank">
-                  {String(index + 1).padStart(2, "0")}
-                </div>
-
-                <div className="department-performance-main">
-                  <div className="department-performance-topline">
-                    <div>
-                      <strong>{titleCase(department.department)}</strong>
-                      <span>
-                        {formatNumber(department.product_count)} products
-                      </span>
-                    </div>
-
-                    <strong>
-                      {formatCompact(department.total_purchase_count)}
-                    </strong>
-                  </div>
-
-                  <div className="department-volume-track">
-                    <span style={{ width: `${width}%` }} />
-                  </div>
-                </div>
-
-                <div className="department-side-metric">
-                  <span>Avg reorder</span>
-                  <strong>
-                    {formatPercent(department.avg_reorder_rate_pct)}
-                  </strong>
-                </div>
-
-                <div className="department-side-metric">
-                  <span>Avg reach</span>
-                  <strong>
-                    {formatPercent(department.avg_customer_reach_pct)}
-                  </strong>
-                </div>
-              </article>
-            );
-          })}
         </div>
       </section>
     </div>
   );
 }
 
-function RecommendationIntelligencePage() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+
+function DatabricksDashboardSection({
+  url,
+  kicker,
+  title,
+  description,
+  openLabel = "Open in Databricks ↗",
+}) {
+  const [frameLoaded, setFrameLoaded] = useState(false);
+  const cleanUrl = String(url || "").trim();
+  const hasEmbed = /^https:\/\/[^\s]+\/embed\/dashboardsv3\//i.test(cleanUrl);
+
+  useEffect(() => {
+    setFrameLoaded(false);
+  }, [cleanUrl]);
+
+  return (
+    <section className="embedded-dashboard-section">
+      <div className="embedded-dashboard-heading">
+        <div>
+          <span className="panel-kicker">{kicker}</span>
+          <h3>{title}</h3>
+          <p>{description}</p>
+        </div>
+
+        {hasEmbed && (
+          <a
+            className="analytics-open-databricks"
+            href={cleanUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {openLabel}
+          </a>
+        )}
+      </div>
+
+      {hasEmbed ? (
+        <div className={`embedded-dashboard-frame-shell ${frameLoaded ? "is-loaded" : "is-loading"}`}>
+          {!frameLoaded && (
+            <div className="embedded-dashboard-loading" aria-live="polite">
+              <div className="embedded-dashboard-loading-mark">DB</div>
+              <div>
+                <strong>Loading live dashboard</strong>
+                <p>Databricks can take a few seconds to draw the charts.</p>
+              </div>
+            </div>
+          )}
+          <iframe
+            className="embedded-dashboard-frame"
+            src={cleanUrl}
+            title={title}
+            loading="eager"
+            allow="clipboard-write; fullscreen"
+            referrerPolicy="strict-origin-when-cross-origin"
+            onLoad={() => setFrameLoaded(true)}
+          />
+        </div>
+      ) : (
+        <div className="embedded-dashboard-empty">
+          <strong>Dashboard not connected yet</strong>
+          <p>Add the Databricks embed URL to <code>frontend/.env.local</code>.</p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+
+function RecommendationIntelligencePage({ onNavigate }) {
+  const recommendationDashboardUrl = String(
+    import.meta.env.VITE_DATABRICKS_RECOMMENDATION_DASHBOARD_EMBED_URL ||
+      import.meta.env.VITE_DATABRICKS_DASHBOARD_EMBED_URL ||
+      "",
+  ).trim();
+
+  const [customers, setCustomers] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(21);
+  const [modelData, setModelData] = useState(null);
+  const [loadingCustomers, setLoadingCustomers] = useState(true);
+  const [loadingModel, setLoadingModel] = useState(true);
+  const [modelError, setModelError] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
 
-    async function loadPage() {
+    async function loadCustomerList() {
       try {
-        setLoading(true);
-        setError("");
+        setLoadingCustomers(true);
 
-        const result = await loadRecommendationIntelligence({
-          limit: 10,
+        const result = await getCustomers({
+          limit: 100,
+          signal: controller.signal,
+        });
+
+        if (controller.signal.aborted) return;
+
+        const rows = result?.customers || [];
+        setCustomers(rows);
+
+        if (rows.length > 0) {
+          const containsDefault = rows.some(
+            (customer) => Number(customer.user_id) === 21,
+          );
+
+          if (!containsDefault) {
+            setSelectedUserId(Number(rows[0].user_id));
+          }
+        }
+      } catch (err) {
+        if (err?.name === "AbortError") return;
+        console.error(err);
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoadingCustomers(false);
+        }
+      }
+    }
+
+    loadCustomerList();
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    if (!selectedUserId) return undefined;
+
+    const controller = new AbortController();
+
+    async function loadModelExample() {
+      try {
+        setLoadingModel(true);
+        setModelError("");
+        setModelData(null);
+
+        const result = await getCustomer360(selectedUserId, {
           signal: controller.signal,
         });
 
         if (!controller.signal.aborted) {
-          setData(result);
+          setModelData(result);
         }
       } catch (err) {
         if (err?.name === "AbortError") return;
 
         console.error(err);
-        setError(
+        setModelData(null);
+        setModelError(
           err?.message ||
-            "Unable to load Recommendation Intelligence from the serving layer.",
+            `Unable to load ML predictions for customer ${selectedUserId}.`,
         );
       } finally {
         if (!controller.signal.aborted) {
-          setLoading(false);
+          setLoadingModel(false);
         }
       }
     }
 
-    loadPage();
-
+    loadModelExample();
     return () => controller.abort();
-  }, []);
+  }, [selectedUserId]);
 
-  if (loading) {
-    return (
-      <section className="recommendation-page-state">
-        <PlatformLoading />
-      </section>
-    );
-  }
+  const predictions = modelData?.next_basket?.predictions || [];
+  const topPredictions = predictions.slice(0, 5);
+  const customerSummary = modelData?.customer_summary || {};
+  const topPrediction = topPredictions[0] || null;
 
-  if (error) {
-    return (
-      <section className="platform-alert error recommendation-page-alert">
-        <div className="platform-alert-icon">!</div>
-        <div>
-          <strong>Unable to load Recommendation Intelligence</strong>
-          <p>{error}</p>
-        </div>
-      </section>
-    );
-  }
-
-  const overview = data?.overview || {};
-  const sources = data?.sourceMix?.sources || [];
-  const ranks = data?.rankPerformance?.ranks || [];
-  const departments = data?.departments?.departments || [];
-
-  const totalRecommendations = Number(overview.recommendations_generated) || 0;
-  const reorderRecommendations = Number(overview.reorder_recommendations) || 0;
-  const discoveryRecommendations =
-    Number(overview.new_or_discovery_recommendations) || 0;
-
-  const reorderShare =
-    totalRecommendations > 0
-      ? (reorderRecommendations / totalRecommendations) * 100
-      : 0;
-
-  const discoveryShare =
-    totalRecommendations > 0
-      ? (discoveryRecommendations / totalRecommendations) * 100
-      : 0;
-
-  const rankOne = ranks.find((item) => Number(item.recommendation_rank) === 1);
-
-  const rankLast = ranks.length > 0 ? ranks[ranks.length - 1] : null;
-
-  const rankLift =
-    rankOne && rankLast
-      ? Number(rankOne.avg_purchase_probability_pct) -
-        Number(rankLast.avg_purchase_probability_pct)
-      : null;
-
-  const dominantSource =
-    [...sources].sort(
-      (a, b) =>
-        Number(b.recommendation_count || 0) -
-        Number(a.recommendation_count || 0),
-    )[0] || null;
-
-  const maxSourceCount = Math.max(
-    1,
-    ...sources.map((item) => Number(item.recommendation_count) || 0),
-  );
-
-  const maxDepartmentCount = Math.max(
-    1,
-    ...departments.map((item) => Number(item.recommendation_count) || 0),
-  );
-
-  const rankChart = buildRankChartPoints(ranks);
-
-  const kpis = [
-    {
-      label: "Customers served",
-      value: formatCompact(overview.customers_served),
-      detail: "Customers receiving ranked recommendations",
-      tone: "green",
-    },
-    {
-      label: "Recommendations",
-      value: formatCompact(overview.recommendations_generated),
-      detail: `${formatNumber(overview.departments_recommended)} departments covered`,
-      tone: "blue",
-    },
-    {
-      label: "Avg. purchase probability",
-      value: formatPercent(overview.avg_purchase_probability_pct),
-      detail: "Average confidence across served recommendations",
-      tone: "violet",
-    },
-    {
-      label: "Discovery recommendations",
-      value: formatCompact(discoveryRecommendations),
-      detail: `${formatPercent(discoveryShare)} of served recommendations`,
-      tone: "amber",
-    },
+  const pipeline = [
+    ["01", "Purchase history", "What this customer bought before"],
+    ["02", "Candidate products", "Possible products are collected"],
+    ["03", "Feature engineering", "Shopping signals become model inputs"],
+    ["04", "ML scoring", "Each candidate gets a purchase probability"],
+    ["05", "Ranking", "The strongest predictions move to the top"],
+    ["06", "Customer action", "The ranked output is used in Customer 360"],
   ];
 
   return (
-    <div className="recommendation-intelligence-page">
-      <section className="recommendation-intelligence-hero">
-        <div className="recommendation-intelligence-hero-copy">
-          <span className="hero-pill">Recommendation intelligence</span>
+    <div className="recommendation-intelligence-page simplified-business-page ml-recommendation-page">
+      <DatabricksDashboardSection
+        url={recommendationDashboardUrl}
+        kicker="LIVE DATABRICKS DASHBOARD"
+        title="Recommendation performance"
+        description="Use the dashboard to monitor recommendation volume, purchase likelihood, rank performance, departments and recommendation sources."
+        openLabel="Open recommendation dashboard ↗"
+      />
 
-          <h2>
-            Understand how the ranking system
-            <span> converts candidate signals into action.</span>
-          </h2>
-
-          <p>
-            This view exposes the recommendation work already built in
-            Databricks: scale, candidate generation, ranking confidence and
-            category coverage. It is a system-performance view, not another
-            customer shopping screen.
-          </p>
-        </div>
-
-        <div className="recommendation-hero-signal">
-          <span>Dominant candidate source</span>
-          <strong>
-            {formatCandidateSource(dominantSource?.candidate_source)}
-          </strong>
-          <p>
-            {formatPercent(dominantSource?.share_pct)} of served recommendations
-          </p>
-
-          <div className="highlight-divider" />
-
-          <span>Rank #1 confidence</span>
-          <strong>
-            {formatPercent(rankOne?.avg_purchase_probability_pct)}
-          </strong>
-          <p>
-            {rankLift === null
-              ? "Top-ranked recommendation performance"
-              : `${formatNumber(rankLift, 1)} percentage-point advantage vs rank #${rankLast?.recommendation_rank}`}
-          </p>
-        </div>
-      </section>
-
-      <section className="executive-kpi-grid recommendation-kpi-grid">
-        {kpis.map((kpi) => (
-          <article key={kpi.label} className={`executive-kpi-card ${kpi.tone}`}>
-            <div className="kpi-card-top">
-              <span>{kpi.label}</span>
-              <span className="kpi-mini-mark" />
-            </div>
-
-            <strong>{kpi.value}</strong>
-            <p>{kpi.detail}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="recommendation-two-column-grid">
-        <article className="recommendation-panel source-mix-panel">
-          <div className="recommendation-panel-heading">
-            <div>
-              <span className="panel-kicker">CANDIDATE GENERATION</span>
-              <h3>Where recommendations come from</h3>
-              <p>
-                Compare the sources feeding the recommendation layer and verify
-                how strongly the system currently relies on repeat-purchase
-                candidates.
-              </p>
-            </div>
+      <section className="ml-live-demo-panel">
+        <div className="ml-live-demo-heading">
+          <div>
+            <span className="panel-kicker">ML MODEL IN ACTION</span>
+            <h3>See what the next-basket model predicts for one customer</h3>
+            <p>
+              These are live model outputs served through Neon PostgreSQL and FastAPI —
+              not values typed into the website.
+            </p>
           </div>
 
-          <div className="recommendation-source-list">
-            {sources.map((source, index) => {
-              const width =
-                ((Number(source.recommendation_count) || 0) / maxSourceCount) *
-                100;
+          <label className="ml-customer-picker">
+            <span>Choose customer</span>
+            <select
+              value={String(selectedUserId)}
+              onChange={(event) => setSelectedUserId(Number(event.target.value))}
+              disabled={loadingCustomers || customers.length === 0}
+            >
+              {!customers.some(
+                (customer) => Number(customer.user_id) === Number(selectedUserId),
+              ) && <option value={selectedUserId}>Customer {selectedUserId}</option>}
 
-              return (
-                <article
-                  className="recommendation-source-row"
-                  key={source.candidate_source}
-                >
-                  <div className="recommendation-source-rank">
-                    {String(index + 1).padStart(2, "0")}
-                  </div>
+              {customers.map((customer) => (
+                <option key={customer.user_id} value={customer.user_id}>
+                  Customer {customer.user_id}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
 
-                  <div className="recommendation-source-main">
-                    <div className="recommendation-source-topline">
-                      <div>
-                        <strong>
-                          {formatCandidateSource(source.candidate_source)}
+        {modelError && (
+          <div className="ml-demo-error">
+            <strong>Could not load this customer's predictions.</strong>
+            <span>{modelError}</span>
+          </div>
+        )}
+
+        <div className="ml-live-demo-grid">
+          <article className="ml-prediction-board">
+            <div className="ml-prediction-board-heading">
+              <div>
+                <span>Customer #{selectedUserId}</span>
+                <strong>Top next-basket predictions</strong>
+              </div>
+              <span className="ml-model-badge">NEXT-BASKET ML</span>
+            </div>
+
+            {loadingModel && !modelData ? (
+              <div className="ml-demo-loading">
+                <span />
+                <strong>Loading model predictions…</strong>
+              </div>
+            ) : topPredictions.length > 0 ? (
+              <div className="ml-prediction-list">
+                {topPredictions.map((prediction) => (
+                  <div className="ml-prediction-row" key={prediction.product_id}>
+                    <div className="ml-prediction-rank">#{prediction.rank}</div>
+
+                    <div className="ml-prediction-main">
+                      <div className="ml-prediction-topline">
+                        <div>
+                          <strong>{prediction.product_name}</strong>
+                          <span>
+                            {titleCase(prediction.department)} · {titleCase(prediction.aisle)}
+                          </span>
+                        </div>
+                        <strong className="ml-prediction-score">
+                          {formatPercent(prediction.predicted_probability_pct)}
                         </strong>
-                        <span>
-                          {formatCompact(source.recommendation_count)}{" "}
-                          recommendations
-                        </span>
                       </div>
 
-                      <strong>{formatPercent(source.share_pct)}</strong>
-                    </div>
+                      <div className="ml-prediction-track">
+                        <span
+                          style={{
+                            width: `${clampPercent(
+                              prediction.predicted_probability_pct,
+                            )}%`,
+                          }}
+                        />
+                      </div>
 
-                    <div className="recommendation-source-track">
-                      <span style={{ width: `${width}%` }} />
+                      <div className="ml-prediction-meta">
+                        <span>
+                          Why suggested: {formatCandidateSource(prediction.candidate_source)}
+                        </span>
+                        <span>
+                          {prediction.is_new_to_customer
+                            ? "New for this customer"
+                            : "Bought before"}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </article>
-              );
-            })}
-          </div>
+                ))}
+              </div>
+            ) : (
+              <div className="ml-demo-empty">
+                No next-basket predictions are available for this customer.
+              </div>
+            )}
+          </article>
 
-          <div className="recommendation-mix-summary">
-            <div>
-              <span>Reorder recommendations</span>
-              <strong>{formatCompact(reorderRecommendations)}</strong>
-              <small>{formatPercent(reorderShare)} of total</small>
+          <aside className="ml-output-card">
+            <span className="panel-kicker">MODEL OUTPUT</span>
+            <h3>{topPrediction?.product_name || "Waiting for prediction"}</h3>
+            <p>
+              {topPrediction
+                ? `The model gives this product the highest chance of appearing in customer ${selectedUserId}'s next order.`
+                : "Choose a customer to inspect the model output."}
+            </p>
+
+            <div className="ml-output-facts">
+              <div>
+                <span>Top purchase likelihood</span>
+                <strong>
+                  {formatPercent(topPrediction?.predicted_probability_pct)}
+                </strong>
+              </div>
+              <div>
+                <span>Predictions returned</span>
+                <strong>{formatNumber(predictions.length)}</strong>
+              </div>
+              <div>
+                <span>Shopper group</span>
+                <strong>{formatPersonaName(customerSummary.persona)}</strong>
+              </div>
+              <div>
+                <span>Top suggestion came from</span>
+                <strong>{formatCandidateSource(topPrediction?.candidate_source)}</strong>
+              </div>
             </div>
 
-            <div>
-              <span>Discovery / new-product</span>
-              <strong>{formatCompact(discoveryRecommendations)}</strong>
-              <small>{formatPercent(discoveryShare)} of total</small>
-            </div>
-          </div>
-        </article>
-
-        <article className="recommendation-panel ranking-panel">
-          <div className="recommendation-panel-heading">
-            <div>
-              <span className="panel-kicker">RANKING QUALITY</span>
-              <h3>Purchase probability by recommendation rank</h3>
+            <div className="ml-output-proof">
+              <strong>What this proves</strong>
               <p>
-                A healthy ranking should place the highest-confidence products
-                first. The descending probability curve makes that quality
-                visible.
+                The website is consuming the prediction layer produced by the ML
+                pipeline. React displays the result; it does not calculate the model
+                score itself.
               </p>
             </div>
-          </div>
 
-          <div className="rank-chart-shell">
-            <div className="rank-chart-y-label">Purchase probability</div>
-
-            <svg
-              className="rank-performance-chart"
-              viewBox="0 0 640 280"
-              role="img"
-              aria-label="Average purchase probability by recommendation rank"
-            >
-              <g className="rank-grid">
-                {[20, 30, 40, 50, 60].map((tick) => {
-                  const y = rankChart.yScale(tick);
-                  return (
-                    <g key={tick}>
-                      <line x1="58" x2="618" y1={y} y2={y} />
-                      <text x="48" y={y + 4} textAnchor="end">
-                        {tick}%
-                      </text>
-                    </g>
-                  );
-                })}
-              </g>
-
-              {rankChart.points.length > 0 && (
-                <>
-                  <polyline
-                    className="rank-performance-line"
-                    points={rankChart.points
-                      .map((point) => `${point.x},${point.y}`)
-                      .join(" ")}
-                  />
-
-                  {rankChart.points.map((point) => (
-                    <g key={point.rank} className="rank-performance-point">
-                      <circle cx={point.x} cy={point.y} r="5.5" />
-                      <text x={point.x} y={point.y - 13} textAnchor="middle">
-                        {formatNumber(point.value, 1)}%
-                      </text>
-                    </g>
-                  ))}
-                </>
-              )}
-
-              <g className="rank-chart-x-axis">
-                {rankChart.points.map((point) => (
-                  <text
-                    key={point.rank}
-                    x={point.x}
-                    y="258"
-                    textAnchor="middle"
-                  >
-                    Rank {point.rank}
-                  </text>
-                ))}
-              </g>
-            </svg>
-          </div>
-
-          <div className="rank-performance-cards">
-            {ranks.map((rank) => (
-              <article
-                className="rank-performance-card"
-                key={rank.recommendation_rank}
-              >
-                <span>Rank #{rank.recommendation_rank}</span>
-                <strong>
-                  {formatPercent(rank.avg_purchase_probability_pct)}
-                </strong>
-                <small>
-                  {formatCompact(rank.recommendation_count)} recommendations
-                </small>
-              </article>
-            ))}
-          </div>
-        </article>
-      </section>
-
-      <section className="recommendation-panel recommendation-department-panel">
-        <div className="recommendation-panel-heading">
-          <div>
-            <span className="panel-kicker">CATEGORY COVERAGE</span>
-            <h3>Departments represented in recommendations</h3>
-            <p>
-              See which departments dominate the served recommendation set and
-              whether recommendation confidence remains strong across
-              categories.
-            </p>
-          </div>
-        </div>
-
-        <div className="recommendation-department-list">
-          {departments.map((department, index) => {
-            const width =
-              ((Number(department.recommendation_count) || 0) /
-                maxDepartmentCount) *
-              100;
-
-            return (
-              <article
-                className="recommendation-department-row"
-                key={department.department}
-              >
-                <div className="recommendation-department-rank">
-                  {String(index + 1).padStart(2, "0")}
-                </div>
-
-                <div className="recommendation-department-main">
-                  <div className="recommendation-department-topline">
-                    <div>
-                      <strong>{titleCase(department.department)}</strong>
-                      <span>
-                        {formatCompact(department.recommendation_count)}{" "}
-                        recommendations
-                      </span>
-                    </div>
-
-                    <strong>
-                      {formatPercent(department.avg_purchase_probability_pct)}
-                    </strong>
-                  </div>
-
-                  <div className="recommendation-department-track">
-                    <span style={{ width: `${width}%` }} />
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+            <button type="button" onClick={() => onNavigate("customer360")}>
+              Open full Customer 360 →
+            </button>
+          </aside>
         </div>
       </section>
 
-      <section className="recommendation-decision-strip">
-        <article>
-          <span>01</span>
-          <div>
-            <strong>Scale</strong>
-            <p>
-              {formatCompact(totalRecommendations)} scored recommendations are
-              currently served across{" "}
-              {formatNumber(overview.departments_recommended)} departments.
-            </p>
-          </div>
-        </article>
+      <section className="ml-pipeline-panel">
+        <div className="ml-pipeline-heading">
+          <span className="panel-kicker">END-TO-END ML FLOW</span>
+          <h3>What happens before a recommendation reaches the website</h3>
+          <p>
+            The interface is the last step. The prediction has already passed through
+            data preparation, feature engineering, model scoring and ranking.
+          </p>
+        </div>
 
-        <article>
-          <span>02</span>
-          <div>
-            <strong>Candidate concentration</strong>
-            <p>
-              {formatCandidateSource(dominantSource?.candidate_source)}{" "}
-              currently contributes {formatPercent(dominantSource?.share_pct)}{" "}
-              of the served set.
-            </p>
-          </div>
-        </article>
+        <div className="ml-pipeline-flow">
+          {pipeline.map(([number, title, text], index) => (
+            <article key={number} className="ml-pipeline-step">
+              <span>{number}</span>
+              <div>
+                <strong>{title}</strong>
+                <p>{text}</p>
+              </div>
+              {index < pipeline.length - 1 && <b aria-hidden="true">→</b>}
+            </article>
+          ))}
+        </div>
+      </section>
 
-        <article>
-          <span>03</span>
-          <div>
-            <strong>Ranking signal</strong>
-            <p>
-              Rank #1 averages{" "}
-              {formatPercent(rankOne?.avg_purchase_probability_pct)} purchase
-              probability, confirming that the model concentrates stronger
-              candidates near the top.
-            </p>
-          </div>
-        </article>
+      <section className="recommendation-term-strip">
+        <div>
+          <strong>Purchase likelihood</strong>
+          <span>The probability produced by the model for a customer-product pair.</span>
+        </div>
+        <div>
+          <strong>Rank</strong>
+          <span>The strongest predicted products are placed first.</span>
+        </div>
+        <div>
+          <strong>Why suggested</strong>
+          <span>The candidate source that brought the product into the scoring set.</span>
+        </div>
       </section>
     </div>
   );
 }
+
 
 function CustomerIntelligencePage() {
   const [data, setData] = useState(null);
@@ -1395,7 +1064,7 @@ function CustomerIntelligencePage() {
         console.error(err);
         setError(
           err?.message ||
-            "Unable to load Customer Intelligence from the Shopping DNA serving layer.",
+            "Unable to load customer insights. Make sure the FastAPI backend is running.",
         );
       } finally {
         if (!controller.signal.aborted) {
@@ -1422,7 +1091,7 @@ function CustomerIntelligencePage() {
       <section className="platform-alert error customer-intelligence-page-alert">
         <div className="platform-alert-icon">!</div>
         <div>
-          <strong>Unable to load Customer Intelligence</strong>
+          <strong>Unable to load customer insights</strong>
           <p>{error}</p>
         </div>
       </section>
@@ -1473,23 +1142,23 @@ function CustomerIntelligencePage() {
     {
       label: "Customers profiled",
       value: formatCompact(overview.customers_profiled),
-      detail: "Shopping DNA profiles in the served population",
+      detail: "Customers with a Shopping DNA profile",
       tone: "green",
     },
     {
       label: "Average basket size",
       value: formatNumber(overview.avg_basket_size, 1),
-      detail: "Items per observed customer order",
+      detail: "Average items in each order",
       tone: "blue",
     },
     {
       label: "Days between orders",
       value: formatNumber(overview.avg_days_between_orders, 1),
-      detail: "Average shopping cadence",
+      detail: "Average time between orders",
       tone: "violet",
     },
     {
-      label: "Largest persona",
+      label: "Largest shopper group",
       value: formatPercent(dominantPersona?.share_pct),
       detail: formatPersonaName(dominantPersona?.shopping_persona),
       tone: "amber",
@@ -1500,35 +1169,34 @@ function CustomerIntelligencePage() {
     <div className="customer-intelligence-page">
       <section className="customer-intelligence-hero">
         <div className="customer-intelligence-hero-copy">
-          <span className="hero-pill">Customer intelligence</span>
+          <span className="hero-pill">Customer insights</span>
 
           <h2>
-            Understand who your customers are and
-            <span> how they shop.</span>
+            See how your customers shop and
+            <span> what they prefer.</span>
           </h2>
 
           <p>
-            This view turns the Shopping DNA work into population-level retail
-            intelligence: customer personas, shopping rhythm, behavioral
-            fingerprints and strongest category affinities.
+            This page groups customers by shopping style and shows their common habits,
+            order rhythm and favorite departments.
           </p>
         </div>
 
         <div className="customer-hero-signal">
-          <span>Largest shopping persona</span>
-          <strong>
-            {formatPersonaName(dominantPersona?.shopping_persona)}
-          </strong>
+          <span>Largest shopper group</span>
+          <strong>{formatPersonaName(dominantPersona?.shopping_persona)}</strong>
           <p>
-            {formatCompact(dominantPersona?.customer_count)} customers ·{" "}
+            {formatCompact(dominantPersona?.customer_count)} customers · {" "}
             {formatPercent(dominantPersona?.share_pct)} of profiled customers
           </p>
 
           <div className="highlight-divider" />
 
-          <span>Strongest population trait</span>
+          <span>Strongest shopping habit</span>
           <strong>{dominantBehavior?.[1] || "—"}</strong>
-          <p>{formatScore(dominantBehavior?.[2])} average behavioral score</p>
+          <p>
+            {formatScore(dominantBehavior?.[2])} average score
+          </p>
         </div>
       </section>
 
@@ -1550,11 +1218,10 @@ function CustomerIntelligencePage() {
         <article className="customer-intelligence-panel persona-panel">
           <div className="customer-intelligence-panel-heading">
             <div>
-              <span className="panel-kicker">CUSTOMER SEGMENTS</span>
-              <h3>Shopping persona distribution</h3>
+              <span className="panel-kicker">SHOPPER GROUPS</span>
+              <h3>Main shopper groups</h3>
               <p>
-                Compare the major Shopping DNA personas and see how much of the
-                profiled customer base each behavioral archetype represents.
+                See the main shopper types and how many customers belong to each group.
               </p>
             </div>
           </div>
@@ -1579,16 +1246,12 @@ function CustomerIntelligencePage() {
                         <strong>
                           {formatPersonaName(persona.shopping_persona)}
                         </strong>
-                        <span>
-                          {personaDescription(persona.shopping_persona)}
-                        </span>
+                        <span>{personaDescription(persona.shopping_persona)}</span>
                       </div>
 
                       <div className="persona-distribution-metrics">
                         <strong>{formatPercent(persona.share_pct)}</strong>
-                        <span>
-                          {formatCompact(persona.customer_count)} customers
-                        </span>
+                        <span>{formatCompact(persona.customer_count)} customers</span>
                       </div>
                     </div>
 
@@ -1605,12 +1268,10 @@ function CustomerIntelligencePage() {
         <article className="customer-intelligence-panel behavior-panel">
           <div className="customer-intelligence-panel-heading">
             <div>
-              <span className="panel-kicker">BEHAVIORAL FINGERPRINT</span>
-              <h3>Average Shopping DNA</h3>
+              <span className="panel-kicker">SHOPPING HABITS</span>
+              <h3>Average shopping habits</h3>
               <p>
-                The five behavioral dimensions summarize the average customer
-                profile across loyalty, exploration, routine, basket intensity
-                and category focus.
+                These five scores summarize how customers usually shop.
               </p>
             </div>
           </div>
@@ -1644,9 +1305,7 @@ function CustomerIntelligencePage() {
 
                 <polygon
                   className="behavior-radar-area"
-                  points={radar.points
-                    .map((point) => `${point.x},${point.y}`)
-                    .join(" ")}
+                  points={radar.points.map((point) => `${point.x},${point.y}`).join(" ")}
                 />
 
                 {radar.points.map((point) => (
@@ -1661,7 +1320,11 @@ function CustomerIntelligencePage() {
 
                 {radar.labels.map((label) => (
                   <g key={label.key} className="behavior-radar-label">
-                    <text x={label.x} y={label.y} textAnchor={label.anchor}>
+                    <text
+                      x={label.x}
+                      y={label.y}
+                      textAnchor={label.anchor}
+                    >
                       {label.label}
                     </text>
                     <text
@@ -1701,10 +1364,8 @@ function CustomerIntelligencePage() {
             </div>
 
             <div>
-              <span>Order cadence</span>
-              <strong>
-                {formatNumber(overview.avg_days_between_orders, 1)}
-              </strong>
+              <span>Shopping frequency</span>
+              <strong>{formatNumber(overview.avg_days_between_orders, 1)}</strong>
               <small>days between orders</small>
             </div>
           </div>
@@ -1714,11 +1375,10 @@ function CustomerIntelligencePage() {
       <section className="customer-intelligence-panel customer-department-panel">
         <div className="customer-intelligence-panel-heading">
           <div>
-            <span className="panel-kicker">CATEGORY AFFINITY</span>
-            <h3>Most common favorite departments</h3>
+            <span className="panel-kicker">FAVORITE DEPARTMENTS</span>
+            <h3>Departments customers prefer most</h3>
             <p>
-              See which departments most often appear as a customer's strongest
-              category affinity and how concentrated that preference is.
+              See which departments are most often a customer's favorite.
             </p>
           </div>
         </div>
@@ -1726,8 +1386,7 @@ function CustomerIntelligencePage() {
         <div className="customer-department-list">
           {departments.map((department, index) => {
             const width =
-              ((Number(department.customer_count) || 0) / maxDepartmentCount) *
-              100;
+              ((Number(department.customer_count) || 0) / maxDepartmentCount) * 100;
 
             return (
               <article
@@ -1749,16 +1408,12 @@ function CustomerIntelligencePage() {
 
                     <div className="customer-department-metrics">
                       <div>
-                        <span>Customer share</span>
-                        <strong>
-                          {formatPercent(department.customer_share_pct)}
-                        </strong>
+                        <span>Share of customers</span>
+                        <strong>{formatPercent(department.customer_share_pct)}</strong>
                       </div>
                       <div>
-                        <span>Avg affinity</span>
-                        <strong>
-                          {formatPercent(department.avg_affinity_pct)}
-                        </strong>
+                        <span>Avg preference</span>
+                        <strong>{formatPercent(department.avg_affinity_pct)}</strong>
                       </div>
                     </div>
                   </div>
@@ -1788,10 +1443,10 @@ function CustomerIntelligencePage() {
         <article>
           <span>02</span>
           <div>
-            <strong>Dominant persona</strong>
+            <strong>Largest shopper group</strong>
             <p>
-              {formatPersonaName(dominantPersona?.shopping_persona)} represents{" "}
-              {formatPercent(dominantPersona?.share_pct)} of the profiled base.
+              {formatPersonaName(dominantPersona?.shopping_persona)} represents
+              {" "}{formatPercent(dominantPersona?.share_pct)} of the profiled base.
             </p>
           </div>
         </article>
@@ -1799,12 +1454,11 @@ function CustomerIntelligencePage() {
         <article>
           <span>03</span>
           <div>
-            <strong>Category signal</strong>
+            <strong>Favorite department</strong>
             <p>
               {titleCase(strongestDepartment?.department)} is the most common
-              strongest department affinity, covering{" "}
-              {formatPercent(strongestDepartment?.customer_share_pct)} of
-              customers.
+              favorite department, covering {" "}
+              {formatPercent(strongestDepartment?.customer_share_pct)} of customers.
             </p>
           </div>
         </article>
@@ -1946,9 +1600,7 @@ function Customer360Page() {
 
     if (!normalized) return;
 
-    setBasketItems((current) =>
-      mergeCustomer360BasketItem(current, normalized),
-    );
+    setBasketItems((current) => mergeCustomer360BasketItem(current, normalized));
   }
 
   function removeBasketItem(productId) {
@@ -2031,8 +1683,8 @@ function Customer360Page() {
     (item) => item?.name,
   );
   const aisles = (categorySignature.aisles || []).filter((item) => item?.name);
-  const insightItems = Object.entries(dna?.insights || {}).filter(([, value]) =>
-    Boolean(value),
+  const insightItems = Object.entries(dna?.insights || {}).filter(
+    ([, value]) => Boolean(value),
   );
 
   const activeCustomer = customers.find(
@@ -2055,19 +1707,19 @@ function Customer360Page() {
 
   const kpis = [
     {
-      label: "Prior orders",
+      label: "Past orders",
       value: formatNumber(summary.prior_orders ?? history.prior_orders),
       detail: `${formatNumber(summary.unique_products ?? history.unique_products)} unique products observed`,
       tone: "green",
     },
     {
-      label: "Next-basket confidence",
+      label: "Top prediction",
       value: formatPercent(summary.top_prediction_probability_pct),
-      detail: topPrediction?.product_name || "Top-ranked ML prediction",
+      detail: topPrediction?.product_name || "Most likely next product",
       tone: "blue",
     },
     {
-      label: "Reorder attention",
+      label: "Buy-again reminders",
       value: formatNumber(attentionCount),
       detail:
         attentionCount === 1
@@ -2078,7 +1730,7 @@ function Customer360Page() {
     {
       label: "Favorite department",
       value: titleCase(summary.favorite_department),
-      detail: `${formatPercent(topDepartment?.affinity_pct)} affinity`,
+      detail: `${formatPercent(topDepartment?.affinity_pct)} preference`,
       tone: "amber",
     },
   ];
@@ -2088,27 +1740,27 @@ function Customer360Page() {
     {
       id: "next-basket",
       label: "Next Basket",
-      short: `${formatNumber(predictions.length)} predictions`,
+      short: `ML · ${formatNumber(predictions.length)} predictions`,
     },
     {
       id: "reorder",
-      label: "Reorder Cycle",
-      short: `${formatNumber(attentionCount)} need attention`,
+      label: "Buy Again",
+      short: `Timing · ${formatNumber(attentionCount)} need attention`,
     },
     {
       id: "recommendations",
       label: "Recommendations",
-      short: `${formatNumber(recommendationItems.length)} served`,
+      short: `ML · ${formatNumber(recommendationItems.length)} served`,
     },
     {
       id: "basket",
-      label: "Action Basket",
-      short: `${formatNumber(basketItems.length)} suggested items`,
+      label: "Suggested Basket",
+      short: `ML + signals · ${formatNumber(basketItems.length)} items`,
     },
     {
       id: "dna",
-      label: "Shopping DNA",
-      short: formatPersonaName(dna?.profile?.dominant_trait),
+      label: "Shopping Habits",
+      short: `Behavior · ${formatPersonaName(dna?.profile?.dominant_trait)}`,
     },
   ];
 
@@ -2116,11 +1768,11 @@ function Customer360Page() {
     <div className="customer360-page customer360-v2">
       <section className="customer360-toolbar customer360-toolbar-v2">
         <div className="customer360-toolbar-copy">
-          <span className="panel-kicker">LOYALTY DESK</span>
-          <strong>Find a shopper and open the full customer story</strong>
+          <span className="panel-kicker">CUSTOMER LOOKUP</span>
+          <strong>Find a customer</strong>
           <p>
-            One customer ID connects purchase history, ML predictions, reorder
-            timing, recommendation logic and Shopping DNA.
+            See purchase history, predicted next items, buy-again timing,
+            recommendations and shopping habits in one place.
           </p>
         </div>
 
@@ -2133,18 +1785,12 @@ function Customer360Page() {
               disabled={loadingCustomers || customers.length === 0}
             >
               {!customers.some(
-                (customer) =>
-                  Number(customer.user_id) === Number(selectedUserId),
-              ) && (
-                <option value={selectedUserId}>
-                  Customer {selectedUserId}
-                </option>
-              )}
+                (customer) => Number(customer.user_id) === Number(selectedUserId),
+              ) && <option value={selectedUserId}>Customer {selectedUserId}</option>}
 
               {customers.map((customer) => (
                 <option key={customer.user_id} value={customer.user_id}>
-                  Customer {customer.user_id} · {customer.recommendation_count}{" "}
-                  recs
+                  Customer {customer.user_id} · {customer.recommendation_count} suggestions
                 </option>
               ))}
             </select>
@@ -2179,23 +1825,17 @@ function Customer360Page() {
       )}
 
       {loadingCustomer && data && (
-        <div className="customer360-refreshing">
-          Refreshing customer intelligence…
-        </div>
+        <div className="customer360-refreshing">Refreshing customer intelligence…</div>
       )}
 
       {data && (
         <>
           <section className="customer360-profile-strip">
             <div className="customer360-profile-strip-main">
-              <span className="customer360-number">
-                Customer #{selectedUserId}
-              </span>
+              <span className="customer360-number">Customer #{selectedUserId}</span>
               <div>
                 <strong>{formatPersonaName(summary.persona)}</strong>
-                <p>
-                  {summary.headline || dna.summary || dna.persona_description}
-                </p>
+                <p>{summary.headline || dna.summary || dna.persona_description}</p>
               </div>
             </div>
 
@@ -2215,10 +1855,7 @@ function Customer360Page() {
             </div>
           </section>
 
-          <nav
-            className="customer360-view-tabs"
-            aria-label="Customer intelligence views"
-          >
+          <nav className="customer360-view-tabs" aria-label="Customer intelligence views">
             {views.map((view, index) => (
               <button
                 type="button"
@@ -2241,32 +1878,24 @@ function Customer360Page() {
             <div className="customer360-view-panel customer360-snapshot-view">
               <section className="customer360-snapshot-hero">
                 <div className="customer360-snapshot-copy">
-                  <span className="hero-pill">
-                    Customer 360 · #{selectedUserId}
-                  </span>
+                  <span className="hero-pill">Customer 360 · #{selectedUserId}</span>
                   <h2>
                     {formatPersonaName(summary.persona)}
-                    <span> in one checkout-sized view.</span>
+                    <span> at a glance.</span>
                   </h2>
                   <p>
-                    {summary.headline ||
-                      dna.summary ||
-                      dna.persona_description ||
+                    {summary.headline || dna.summary || dna.persona_description ||
                       "Unified customer intelligence is available for this customer."}
                   </p>
 
                   <div className="customer360-hero-tags">
                     <span>
-                      {formatPersonaName(dna?.profile?.dominant_trait)} dominant
-                      trait
+                      {formatPersonaName(dna?.profile?.dominant_trait)} strongest habit
                     </span>
                     <span>
                       {formatPersonaName(history.loyalty_profile)} loyalty
-                      profile
                     </span>
-                    <span>
-                      {titleCase(summary.favorite_department)} affinity
-                    </span>
+                    <span>{titleCase(summary.favorite_department)} preference</span>
                   </div>
                 </div>
 
@@ -2280,37 +1909,29 @@ function Customer360Page() {
                     <span>Most likely next</span>
                     <strong>{topPrediction?.product_name || "—"}</strong>
                     <small>
-                      {formatPercent(topPrediction?.predicted_probability_pct)}{" "}
-                      probability
+                      {formatPercent(topPrediction?.predicted_probability_pct)} chance
                     </small>
                   </div>
 
                   <div className="customer360-basket-note-row">
-                    <span>Reorder attention</span>
+                    <span>Buy-again reminders</span>
                     <strong>
                       {attentionCount} item{attentionCount === 1 ? "" : "s"}
                     </strong>
-                    <small>
-                      {reorder?.planner_summary || "Nothing urgent right now."}
-                    </small>
+                    <small>{reorder?.planner_summary || "Nothing urgent right now."}</small>
                   </div>
 
                   <div className="customer360-basket-note-row">
                     <span>Favorite department</span>
                     <strong>{titleCase(summary.favorite_department)}</strong>
-                    <small>
-                      {formatPercent(topDepartment?.affinity_pct)} affinity
-                    </small>
+                    <small>{formatPercent(topDepartment?.affinity_pct)} preference</small>
                   </div>
                 </aside>
               </section>
 
               <section className="executive-kpi-grid customer360-kpi-grid customer360-kpi-grid-v2">
                 {kpis.map((kpi) => (
-                  <article
-                    key={kpi.label}
-                    className={`executive-kpi-card ${kpi.tone}`}
-                  >
+                  <article key={kpi.label} className={`executive-kpi-card ${kpi.tone}`}>
                     <div className="kpi-card-top">
                       <span>{kpi.label}</span>
                       <span className="kpi-mini-mark" />
@@ -2325,40 +1946,30 @@ function Customer360Page() {
                 <article className="customer360-snapshot-lane prediction">
                   <span className="customer360-lane-number">01</span>
                   <div>
-                    <span className="panel-kicker">NEXT-BASKET ML</span>
-                    <strong>
-                      {topPrediction?.product_name || "No prediction"}
-                    </strong>
+                    <span className="panel-kicker">NEXT BASKET</span>
+                    <strong>{topPrediction?.product_name || "No prediction"}</strong>
                     <p>
-                      Leads the model ranking at{" "}
-                      {formatPercent(topPrediction?.predicted_probability_pct)}.
+                      The model gives it a {formatPercent(
+                        topPrediction?.predicted_probability_pct,
+                      )} chance.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setActiveView("next-basket")}
-                  >
-                    View ranking
+                  <button type="button" onClick={() => setActiveView("next-basket")}>
+                    View predictions
                   </button>
                 </article>
 
                 <article className="customer360-snapshot-lane reorder">
                   <span className="customer360-lane-number">02</span>
                   <div>
-                    <span className="panel-kicker">REORDER CYCLE</span>
+                    <span className="panel-kicker">BUY AGAIN</span>
                     <strong>
-                      {attentionCount} item{attentionCount === 1 ? "" : "s"}{" "}
-                      need attention
+                      {attentionCount} item{attentionCount === 1 ? "" : "s"} need attention
                     </strong>
-                    <p>
-                      {reorder?.planner_summary || "No urgent reorder signal."}
-                    </p>
+                    <p>{reorder?.planner_summary || "No urgent reorder signal."}</p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setActiveView("reorder")}
-                  >
-                    Open planner
+                  <button type="button" onClick={() => setActiveView("reorder")}>
+                    View timing
                   </button>
                 </article>
 
@@ -2366,11 +1977,9 @@ function Customer360Page() {
                   <span className="customer360-lane-number">03</span>
                   <div>
                     <span className="panel-kicker">SHOPPING DNA</span>
-                    <strong>
-                      {formatPersonaName(dna?.profile?.dominant_trait)}
-                    </strong>
+                    <strong>{formatPersonaName(dna?.profile?.dominant_trait)}</strong>
                     <p>
-                      Strongest behavioral signal inside the customer profile.
+                      Strongest shopping habit for this customer.
                     </p>
                   </div>
                   <button type="button" onClick={() => setActiveView("dna")}>
@@ -2385,11 +1994,10 @@ function Customer360Page() {
             <section className="customer360-view-panel customer360-panel customer360-focus-panel">
               <div className="customer360-panel-heading">
                 <div>
-                  <span className="panel-kicker">NEXT-BASKET ML</span>
+                  <span className="panel-kicker">NEXT-BASKET ML MODEL</span>
                   <h3>What this customer is most likely to purchase next</h3>
                   <p>
-                    Ranked model probabilities from the next-basket pipeline.
-                    These are predictions, not manually selected products.
+                    These are the products the model thinks this customer is most likely to buy next.
                   </p>
                 </div>
                 <div className="customer360-panel-badge">
@@ -2399,18 +2007,14 @@ function Customer360Page() {
 
               <div className="customer360-prediction-list customer360-prediction-list-v2">
                 {predictions.map((item) => (
-                  <article
-                    className="customer360-prediction-row"
-                    key={item.product_id}
-                  >
+                  <article className="customer360-prediction-row" key={item.product_id}>
                     <div className="customer360-rank">#{item.rank}</div>
                     <div className="customer360-row-main">
                       <div className="customer360-row-topline">
                         <div>
                           <strong>{item.product_name}</strong>
                           <span>
-                            {titleCase(item.department)} ·{" "}
-                            {titleCase(item.aisle)}
+                            {titleCase(item.department)} · {titleCase(item.aisle)}
                           </span>
                         </div>
                         <strong className="customer360-probability">
@@ -2427,9 +2031,7 @@ function Customer360Page() {
                       </div>
 
                       <div className="customer360-row-meta">
-                        <span>
-                          {formatPersonaName(item.candidate_source)} candidate
-                        </span>
+                        <span>Suggested because: {formatCandidateSource(item.candidate_source)}</span>
                         <span>
                           {item.is_new_to_customer
                             ? "New to customer"
@@ -2438,9 +2040,7 @@ function Customer360Page() {
                         <button
                           type="button"
                           className={`customer360-inline-basket-button ${
-                            basketProductIds.has(Number(item.product_id))
-                              ? "added"
-                              : ""
+                            basketProductIds.has(Number(item.product_id)) ? "added" : ""
                           }`}
                           onClick={() =>
                             addSignalToBasket(
@@ -2450,9 +2050,7 @@ function Customer360Page() {
                               item.predicted_probability_pct,
                             )
                           }
-                          disabled={basketProductIds.has(
-                            Number(item.product_id),
-                          )}
+                          disabled={basketProductIds.has(Number(item.product_id))}
                         >
                           {basketProductIds.has(Number(item.product_id))
                             ? "In basket"
@@ -2470,14 +2068,10 @@ function Customer360Page() {
             <section className="customer360-view-panel customer360-panel customer360-focus-panel">
               <div className="customer360-panel-heading">
                 <div>
-                  <span className="panel-kicker">REORDER INTELLIGENCE</span>
-                  <h3>
-                    Timing against this customer's observed purchase cycle
-                  </h3>
+                  <span className="panel-kicker">BUY AGAIN TIMING</span>
+                  <h3>When this customer may need to buy products again</h3>
                   <p>
-                    Compare elapsed orders with each product's usual repeat
-                    interval to see what is overdue, due, approaching, or still
-                    early.
+                    See which products are overdue, due soon, or still early based on this customer's usual buying pattern.
                   </p>
                 </div>
                 <div className="customer360-panel-badge">
@@ -2494,9 +2088,7 @@ function Customer360Page() {
                 ].map(([key, label]) => (
                   <div className={`customer360-status-card ${key}`} key={key}>
                     <span>{label}</span>
-                    <strong>
-                      {formatNumber(reorder?.status_counts?.[key] || 0)}
-                    </strong>
+                    <strong>{formatNumber(reorder?.status_counts?.[key] || 0)}</strong>
                   </div>
                 ))}
               </div>
@@ -2512,22 +2104,17 @@ function Customer360Page() {
                         <div>
                           <strong>{item.product_name}</strong>
                           <span>
-                            {titleCase(item.department)} ·{" "}
-                            {titleCase(item.aisle)}
+                            {titleCase(item.department)} · {titleCase(item.aisle)}
                           </span>
                         </div>
                         <div className="customer360-row-actions">
-                          <span
-                            className={`customer360-status-badge ${item.sectionKey}`}
-                          >
+                          <span className={`customer360-status-badge ${item.sectionKey}`}>
                             {item.sectionLabel}
                           </span>
                           <button
                             type="button"
                             className={`customer360-inline-basket-button ${
-                              basketProductIds.has(Number(item.product_id))
-                                ? "added"
-                                : ""
+                              basketProductIds.has(Number(item.product_id)) ? "added" : ""
                             }`}
                             onClick={() =>
                               addSignalToBasket(
@@ -2537,9 +2124,7 @@ function Customer360Page() {
                                 item.purchase_probability_pct,
                               )
                             }
-                            disabled={basketProductIds.has(
-                              Number(item.product_id),
-                            )}
+                            disabled={basketProductIds.has(Number(item.product_id))}
                           >
                             {basketProductIds.has(Number(item.product_id))
                               ? "In basket"
@@ -2550,19 +2135,15 @@ function Customer360Page() {
 
                       <div className="customer360-reorder-metrics">
                         <div>
-                          <span>Orders since purchase</span>
-                          <strong>
-                            {formatNumber(item.orders_since_last_purchase)}
-                          </strong>
+                          <span>Orders since last buy</span>
+                          <strong>{formatNumber(item.orders_since_last_purchase)}</strong>
                         </div>
                         <div>
-                          <span>Usual gap</span>
-                          <strong>
-                            {formatNumber(item.usual_order_gap, 1)}
-                          </strong>
+                          <span>Usually every</span>
+                          <strong>{formatNumber(item.usual_order_gap, 1)}</strong>
                         </div>
                         <div>
-                          <span>Historical reorder</span>
+                          <span>Repeat purchase rate</span>
                           <strong>
                             {formatPercent(item.historical_reorder_rate_pct)}
                           </strong>
@@ -2575,8 +2156,7 @@ function Customer360Page() {
                 </div>
               ) : (
                 <div className="customer360-empty-state">
-                  No reorder-cycle rows are currently surfaced for this
-                  customer.
+                  No reorder-cycle rows are currently surfaced for this customer.
                 </div>
               )}
             </section>
@@ -2586,16 +2166,10 @@ function Customer360Page() {
             <section className="customer360-view-panel customer360-panel customer360-focus-panel">
               <div className="customer360-panel-heading">
                 <div>
-                  <span className="panel-kicker">
-                    RECOMMENDATION INTELLIGENCE
-                  </span>
-                  <h3>
-                    Why the recommendation layer is surfacing these products
-                  </h3>
+                  <span className="panel-kicker">ML RECOMMENDATIONS</span>
+                  <h3>Why these products are recommended</h3>
                   <p>
-                    Recommendation strategy remains separate from next-basket
-                    prediction: section, candidate source, suggested action and
-                    explanation are all retained.
+                    Each product shows why it was suggested and what action to take.
                   </p>
                 </div>
                 <div className="customer360-panel-badge">
@@ -2610,14 +2184,10 @@ function Customer360Page() {
                     key={`${item.product_id}-${item.sectionKey}`}
                   >
                     <div className="customer360-recommendation-topline">
-                      <span
-                        className={`customer360-section-badge ${item.sectionKey}`}
-                      >
+                      <span className={`customer360-section-badge ${item.sectionKey}`}>
                         {item.sectionLabel}
                       </span>
-                      <strong>
-                        {formatPercent(item.purchase_probability_pct)}
-                      </strong>
+                      <strong>{formatPercent(item.purchase_probability_pct)}</strong>
                     </div>
 
                     <h4>{item.product_name}</h4>
@@ -2627,13 +2197,11 @@ function Customer360Page() {
 
                     <div className="customer360-recommendation-meta">
                       <div>
-                        <span>Candidate source</span>
-                        <strong>
-                          {formatPersonaName(item.candidate_source)}
-                        </strong>
+                        <span>Why suggested</span>
+                        <strong>{formatPersonaName(item.candidate_source)}</strong>
                       </div>
                       <div>
-                        <span>Suggested action</span>
+                        <span>Action</span>
                         <strong>{item.action || "Review"}</strong>
                       </div>
                     </div>
@@ -2643,19 +2211,13 @@ function Customer360Page() {
                     <button
                       type="button"
                       className={`customer360-inline-basket-button recommendation ${
-                        basketProductIds.has(Number(item.product_id))
-                          ? "added"
-                          : ""
+                        basketProductIds.has(Number(item.product_id)) ? "added" : ""
                       }`}
                       onClick={() =>
                         addSignalToBasket(
                           item,
-                          item.sectionKey === "discover"
-                            ? "Discovery"
-                            : "Recommendation",
-                          item.sectionLabel ||
-                            item.action ||
-                            "Recommendation signal",
+                          item.sectionKey === "discover" ? "Discovery" : "Recommendation",
+                          item.sectionLabel || item.action || "Recommendation signal",
                           item.purchase_probability_pct,
                         )
                       }
@@ -2663,7 +2225,7 @@ function Customer360Page() {
                     >
                       {basketProductIds.has(Number(item.product_id))
                         ? "Already in basket"
-                        : "Add to action basket"}
+                        : "Add to suggested basket"}
                     </button>
                   </article>
                 ))}
@@ -2675,15 +2237,10 @@ function Customer360Page() {
             <section className="customer360-view-panel customer360-panel customer360-action-basket-panel">
               <div className="customer360-panel-heading customer360-basket-heading">
                 <div>
-                  <span className="panel-kicker">ACTION CENTER</span>
-                  <h3>
-                    Suggested basket built from the customer's strongest signals
-                  </h3>
+                  <span className="panel-kicker">SUGGESTED BASKET</span>
+                  <h3>Suggested basket for this customer</h3>
                   <p>
-                    The default pick list combines the top three next-basket
-                    predictions with every overdue or due-now reorder item.
-                    Duplicate products are merged so one product can carry
-                    multiple reasons.
+                    It starts with the top three predicted products and anything that is overdue or due now.
                   </p>
                 </div>
 
@@ -2692,7 +2249,7 @@ function Customer360Page() {
                     {formatNumber(basketItems.length)} items
                   </div>
                   <button type="button" onClick={resetSuggestedBasket}>
-                    Reset suggestion
+                    Reset basket
                   </button>
                 </div>
               </div>
@@ -2701,7 +2258,7 @@ function Customer360Page() {
                 <div className="customer360-pick-list">
                   <div className="customer360-pick-list-header">
                     <div>
-                      <span className="panel-kicker">PICK LIST</span>
+                      <span className="panel-kicker">BASKET ITEMS</span>
                       <strong>Customer #{selectedUserId}</strong>
                     </div>
                     <button
@@ -2730,8 +2287,7 @@ function Customer360Page() {
                               <div>
                                 <strong>{item.product_name}</strong>
                                 <span>
-                                  {titleCase(item.department)} ·{" "}
-                                  {titleCase(item.aisle)}
+                                  {titleCase(item.department)} · {titleCase(item.aisle)}
                                 </span>
                               </div>
 
@@ -2773,12 +2329,10 @@ function Customer360Page() {
                   ) : (
                     <div className="customer360-basket-empty">
                       <span>EMPTY PICK LIST</span>
-                      <strong>
-                        No products are currently in the action basket.
-                      </strong>
+                      <strong>No products are currently in the action basket.</strong>
                       <p>
-                        Reset the suggestion or add products from Next Basket,
-                        Reorder Cycle or Recommendations.
+                        Reset the suggestion or add products from Next Basket, Reorder
+                        Cycle or Recommendations.
                       </p>
                       <button type="button" onClick={resetSuggestedBasket}>
                         Restore suggested basket
@@ -2789,11 +2343,9 @@ function Customer360Page() {
 
                 <aside className="customer360-basket-receipt">
                   <div className="customer360-receipt-ticket">
-                    <span className="customer360-receipt-label">
-                      CUSTOMER ACTION BASKET
-                    </span>
+                    <span className="customer360-receipt-label">SUGGESTED BASKET</span>
                     <strong>#{selectedUserId}</strong>
-                    <small>Decision-support pick list</small>
+                    <small>Products to consider</small>
                   </div>
 
                   <div className="customer360-receipt-line">
@@ -2801,19 +2353,15 @@ function Customer360Page() {
                     <strong>{formatNumber(basketItems.length)}</strong>
                   </div>
                   <div className="customer360-receipt-line">
-                    <span>ML prediction signals</span>
-                    <strong>
-                      {formatNumber(basketSourceCounts["ML Prediction"] || 0)}
-                    </strong>
+                    <span>Model predictions</span>
+                    <strong>{formatNumber(basketSourceCounts["ML Prediction"] || 0)}</strong>
                   </div>
                   <div className="customer360-receipt-line">
-                    <span>Reorder signals</span>
-                    <strong>
-                      {formatNumber(basketSourceCounts.Reorder || 0)}
-                    </strong>
+                    <span>Buy-again items</span>
+                    <strong>{formatNumber(basketSourceCounts.Reorder || 0)}</strong>
                   </div>
                   <div className="customer360-receipt-line">
-                    <span>Recommendation signals</span>
+                    <span>Other suggestions</span>
                     <strong>
                       {formatNumber(
                         (basketSourceCounts.Recommendation || 0) +
@@ -2822,7 +2370,7 @@ function Customer360Page() {
                     </strong>
                   </div>
                   <div className="customer360-receipt-line total">
-                    <span>Avg. surfaced probability</span>
+                    <span>Avg. purchase chance</span>
                     <strong>
                       {basketItems.length > 0
                         ? formatPercent(basketAverageProbability)
@@ -2831,24 +2379,16 @@ function Customer360Page() {
                   </div>
 
                   <div className="customer360-basket-rules">
-                    <span className="panel-kicker">DEFAULT LOGIC</span>
+                    <span className="panel-kicker">HOW IT IS BUILT</span>
                     <ol>
-                      <li>
-                        Take the three highest-ranked next-basket predictions.
-                      </li>
+                      <li>Take the three highest-ranked next-basket predictions.</li>
                       <li>Add every product currently overdue or due now.</li>
-                      <li>
-                        Merge duplicate products and keep every supporting
-                        signal.
-                      </li>
+                      <li>Merge duplicate products and keep every supporting signal.</li>
                     </ol>
                   </div>
 
                   <p className="customer360-basket-note-copy">
-                    This basket is a decision-support output. It does not
-                    replace the ML model, recommendation layer or reorder logic;
-                    it combines their results into one operational customer
-                    action.
+                    This basket combines the strongest signals from the prediction, buy-again and recommendation sections.
                   </p>
                 </aside>
               </div>
@@ -2861,13 +2401,11 @@ function Customer360Page() {
                 <div>
                   <span className="panel-kicker">SHOPPING DNA</span>
                   <h3>
-                    {dna?.profile?.headline ||
-                      formatPersonaName(dna?.profile?.persona)}
+                    {dna?.profile?.headline || formatPersonaName(dna?.profile?.persona)}
                   </h3>
                   <p>
-                    {dna.summary ||
-                      dna.persona_description ||
-                      "Behavioral fingerprint and category signature for this customer."}
+                    {dna.summary || dna.persona_description ||
+                      "Shopping habits and favorite categories for this customer."}
                   </p>
                 </div>
                 <div className="customer360-panel-badge">
@@ -2922,11 +2460,7 @@ function Customer360Page() {
 
                       {radar.labels.map((label) => (
                         <g key={label.key} className="behavior-radar-label">
-                          <text
-                            x={label.x}
-                            y={label.y}
-                            textAnchor={label.anchor}
-                          >
+                          <text x={label.x} y={label.y} textAnchor={label.anchor}>
                             {label.label}
                           </text>
                           <text
@@ -2959,7 +2493,7 @@ function Customer360Page() {
 
                 <div className="customer360-dna-detail-column">
                   <div className="customer360-profile-card">
-                    <span>Behavioral identity</span>
+                    <span>Shopper type</span>
                     <strong>{formatPersonaName(dna?.profile?.persona)}</strong>
                     <p>{dna.persona_description}</p>
 
@@ -2973,10 +2507,8 @@ function Customer360Page() {
                         <strong>{formatPersonaName(rhythm.regularity)}</strong>
                       </div>
                       <div>
-                        <span>Basket momentum</span>
-                        <strong>
-                          {formatPersonaName(rhythm.basket_momentum)}
-                        </strong>
+                        <span>Basket trend</span>
+                        <strong>{formatPersonaName(rhythm.basket_momentum)}</strong>
                       </div>
                       <div>
                         <span>Preferred time</span>
@@ -3000,9 +2532,7 @@ function Customer360Page() {
                           <span>
                             #{department.rank} {titleCase(department.name)}
                           </span>
-                          <strong>
-                            {formatPercent(department.affinity_pct)}
-                          </strong>
+                          <strong>{formatPercent(department.affinity_pct)}</strong>
                         </div>
                       ))}
                     </div>
@@ -3040,9 +2570,7 @@ function Customer360Page() {
 
           {activeCustomer && (
             <p className="customer360-serving-note customer360-serving-note-v2">
-              Serving record: target order {activeCustomer.target_order_id} ·{" "}
-              {activeCustomer.recommendation_count} recommendation rows
-              available.
+              Serving record: target order {activeCustomer.target_order_id} · {activeCustomer.recommendation_count} recommendation rows available.
             </p>
           )}
         </>
@@ -3050,6 +2578,7 @@ function Customer360Page() {
     </div>
   );
 }
+
 
 function normalizeCustomer360BasketItem(item, source, reason, probabilityPct) {
   const productId = Number(item?.product_id);
@@ -3247,10 +2776,7 @@ function personaDescription(value) {
     "FREQUENT PLANNER": "Frequent and structured shopping",
   };
 
-  return (
-    descriptions[String(value || "").toUpperCase()] ||
-    "Observed behavioral segment"
-  );
+  return descriptions[String(value || "").toUpperCase()] || "Observed behavioral segment";
 }
 
 function formatScore(value) {
@@ -3269,7 +2795,11 @@ function buildRankChartPoints(ranks) {
       rank: Number(rank.recommendation_rank),
       value: Number(rank.avg_purchase_probability_pct),
     }))
-    .filter((item) => Number.isFinite(item.rank) && Number.isFinite(item.value))
+    .filter(
+      (item) =>
+        Number.isFinite(item.rank) &&
+        Number.isFinite(item.value),
+    )
     .sort((a, b) => a.rank - b.rank);
 
   const minY = 20;
@@ -3284,19 +2814,28 @@ function buildRankChartPoints(ranks) {
       return (left + right) / 2;
     }
 
-    const denominator = items[items.length - 1].rank - items[0].rank;
+    const denominator =
+      items[items.length - 1].rank - items[0].rank;
 
     if (denominator <= 0) {
       return left + ((right - left) * index) / (items.length - 1);
     }
 
-    return left + ((rank - items[0].rank) / denominator) * (right - left);
+    return (
+      left +
+      ((rank - items[0].rank) / denominator) *
+        (right - left)
+    );
   };
 
   const yScale = (value) => {
     const clamped = Math.max(minY, Math.min(maxY, value));
 
-    return bottom - ((clamped - minY) / (maxY - minY)) * (bottom - top);
+    return (
+      bottom -
+      ((clamped - minY) / (maxY - minY)) *
+        (bottom - top)
+    );
   };
 
   return {
@@ -3316,7 +2855,7 @@ function formatCandidateSource(value) {
     reorder: "Reorder",
     copurchase: "Co-purchase",
     aisletopurchase: "Aisle co-purchase",
-    aisle: "Aisle affinity",
+    aisle: "Aisle preference",
   };
 
   const normalized = String(value).trim().toLowerCase();
@@ -3327,19 +2866,23 @@ function formatCandidateSource(value) {
       .replace(/[_-]+/g, " ")
       .split(" ")
       .filter(Boolean)
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .map(
+        (word) =>
+          word.charAt(0).toUpperCase() +
+          word.slice(1),
+      )
       .join(" ")
   );
 }
 
 function ProductBusinessProfile({ product }) {
   const metrics = [
-    ["Purchase events", formatCompact(product.total_purchase_count)],
-    ["Unique customers", formatCompact(product.unique_customer_count)],
+    ["Purchases", formatCompact(product.total_purchase_count)],
+    ["Customers", formatCompact(product.unique_customer_count)],
     ["Customer reach", formatPercent(product.customer_penetration_pct)],
-    ["Reorder rate", formatPercent(product.product_reorder_rate_pct)],
-    ["Purchases / customer", formatNumber(product.purchases_per_customer, 2)],
-    ["Department rank", `#${formatNumber(product.department_purchase_rank)}`],
+    ["Repeat purchase rate", formatPercent(product.product_reorder_rate_pct)],
+    ["Avg purchases / customer", formatNumber(product.purchases_per_customer, 2)],
+    ["Rank in department", `#${formatNumber(product.department_purchase_rank)}`],
   ];
 
   return (
@@ -3350,16 +2893,14 @@ function ProductBusinessProfile({ product }) {
           <h4>{product.product_name}</h4>
         </div>
 
-        <span
-          className={`segment-badge ${segmentClass(product.product_segment)}`}
-        >
+        <span className={`segment-badge ${segmentClass(product.product_segment)}`}>
           {formatSegment(product.product_segment)}
         </span>
       </div>
 
       <div className="product-business-focus">
-        <span>Recommended business focus</span>
-        <strong>{product.business_focus || "Monitor performance"}</strong>
+        <span>Action</span>
+        <strong>{formatBusinessFocus(product.business_focus)}</strong>
       </div>
 
       <div className="product-profile-metrics">
@@ -3372,12 +2913,9 @@ function ProductBusinessProfile({ product }) {
       </div>
 
       <div className="product-signal-strip">
-        <SignalPill label="Demand" value={product.demand_tier} />
-        <SignalPill
-          label="Repeat behavior"
-          value={product.repeat_behavior_tier}
-        />
-        <SignalPill label="Reliability" value={product.metric_reliability} />
+        <SignalPill label="Sales level" value={product.demand_tier} />
+        <SignalPill label="Repeat buying" value={product.repeat_behavior_tier} />
+        <SignalPill label="Data confidence" value={product.metric_reliability} />
       </div>
     </div>
   );
@@ -3399,9 +2937,7 @@ function SegmentCard({ segment, totalProducts }) {
       : 0;
 
   return (
-    <article
-      className={`segment-card ${segmentClass(segment.product_segment)}`}
-    >
+    <article className={`segment-card ${segmentClass(segment.product_segment)}`}>
       <div className="segment-card-top">
         <span className="segment-card-name">
           {formatSegment(segment.product_segment)}
@@ -3443,11 +2979,39 @@ function SegmentCard({ segment, totalProducts }) {
 function formatSegment(value) {
   if (!value) return "—";
 
-  return String(value)
-    .toLowerCase()
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  const labels = {
+    "CORE STAPLE": "Core product",
+    "HIGH REACH / LOW REPEAT": "Popular, low repeat",
+    "LOW TRACTION": "Low activity",
+    "NICHE LOYAL": "Niche favorite",
+    "INSUFFICIENT HISTORY": "Not enough history",
+    "BALANCED": "Balanced",
+  };
+
+  const normalized = String(value).trim().toUpperCase();
+
+  return (
+    labels[normalized] ||
+    String(value)
+      .toLowerCase()
+      .split(/[_\s]+/)
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+  );
+}
+
+function formatBusinessFocus(value) {
+  const labels = {
+    "Protect core demand": "Keep well stocked",
+    "Investigate repeat-purchase opportunity": "Encourage repeat purchases",
+    "Monitor product engagement": "Watch product interest",
+    "Nurture loyal niche demand": "Support loyal shoppers",
+    "Monitor performance": "Keep monitoring",
+    "Build more history": "Wait for more data",
+  };
+
+  return labels[String(value || "")] || value || "Keep monitoring";
 }
 
 function segmentClass(value) {
@@ -3457,6 +3021,7 @@ function segmentClass(value) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
+
 
 function MiniStat({ label, value }) {
   return (
@@ -3502,10 +3067,9 @@ function PlatformLoading() {
       </div>
 
       <div>
-        <strong>Loading Retail Intelligence</strong>
+        <strong>Loading store data</strong>
         <p>
-          Connecting to the FastAPI serving layer and assembling executive
-          metrics.
+          Loading the latest data from the application API.
         </p>
       </div>
     </section>
@@ -3550,6 +3114,15 @@ function NavIcon({ type }) {
         <path d="M3.5 19c.7-3.3 2.6-5 5.5-5s4.8 1.7 5.5 5" />
         <circle cx="17" cy="9" r="2.2" />
         <path d="M15 14.5c2.8-.5 4.7 1 5.5 4.5" />
+      </svg>
+    );
+  }
+
+  if (type === "analytics") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
+        <path d="m4 7 6-4 6 6 5-5" />
       </svg>
     );
   }
